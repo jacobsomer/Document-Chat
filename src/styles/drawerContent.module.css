@@ -1,0 +1,88 @@
+.drawerContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 20px;
+  background-color: hsl(var(--b1));
+  box-shadow: 0 0 10px rgb(0 0 0 / 20%);
+}
+
+.topSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+}
+
+.bottomSection {
+  margin-top: 20px;
+  position: relative;
+}
+
+.title {
+  margin-bottom: 10px;
+}
+
+.title h1 {
+  font-size: 24px;
+  font-weight: bold;
+  color: hsl(var(--p));
+}
+
+.filesList {
+  margin-bottom: 20px;
+}
+
+.filesList h2 {
+  font-size: 18px;
+  font-weight: bold;
+  color: hsl(var(--p));
+}
+
+.filesListContainer {
+  margin-top: 10px;
+}
+
+.file {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: hsl(var(--b2));
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid hsl(var(--b1));
+  border-radius: 5px;
+}
+
+.file p {
+  margin: 0;
+}
+
+.deleteButton {
+  background-color: hsl(var(--er));
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.deleteButton:hover {
+  background-color: hsl(var(--wac));
+}
+
+.addDataButtonContainer {
+  position: relative;
+  color: #fff;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.uploadIcon {
+  margin-right: 4px;
+}

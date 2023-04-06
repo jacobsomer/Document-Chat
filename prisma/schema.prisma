@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Video {
+    youtubeId String @id
+    createdAt DateTime @default(now())
+    title String
+    transcriptBytes Bytes @db.ByteA
+}
+
+// model Message {
+//     id String @id @default(cuid())
+//     createdAt DateTime @default(now())
+//     text String
+//     isUserMessage Boolean
+//     chat Chat @relation(fields: [chatId], references: [id])
+//     chatId String
+// }
+
+// model Chat {
+//     id String @id @default(cuid())
+//     createdAt DateTime @default(now())
+//     messages Message[]
+//     // video Video @relation(fields: [videoId], references: [id])
+//     // videoId String
+// }

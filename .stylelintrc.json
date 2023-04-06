@@ -1,0 +1,11 @@
+{
+  "extends": "stylelint-config-standard",
+  "rules": {
+    "selector-class-pattern": null,
+    "declaration-block-no-redundant-longhand-properties":null,
+    "font-family-no-missing-generic-family-keyword":null,
+    "declaration-block-single-line-max-declarations":null,
+    "at-rule-no-unknown": null,
+    "no-invalid-position-at-import-rule": null
+  }
+}
