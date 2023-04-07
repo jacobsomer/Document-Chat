@@ -24,7 +24,17 @@ export default function Login() {
           <h1>DocuChat</h1>
           <Auth
             supabaseClient={supabaseClient}
-            appearance={{ theme: ThemeSupa }}
+            appearance={{
+              theme: ThemeSupa,
+              variables: {
+                default: {
+                  colors: {
+                    brand: 'hsl(var(--p))',
+                    brandAccent: 'hsl(var(--s))'
+                  }
+                }
+              }
+            }}
             providers={['google']}
             redirectTo="/chat"
           />

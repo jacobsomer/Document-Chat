@@ -42,7 +42,6 @@ const createMessage = (
 
 const Chat = () => {
   const user = useUser();
-  const [drawerWidth, setDrawerWidth] = useState(0);
 
   const ref = useRef<HTMLParagraphElement | null>(null);
 
@@ -51,11 +50,6 @@ const Chat = () => {
       scrollToBottom(ref.current);
     }
   }, []);
-
-  const handleLogin = () => {
-    // redirect to login page
-    window.location.href = '/login';
-  };
 
   const [messages, setMessages] =
     useState<ChatCompletionRequestMessage[]>(initMessages);
@@ -186,12 +180,15 @@ const Chat = () => {
           padding: '10px'
         }}
       >
-        <DrawerContent />
+        <DrawerContent handleClearSubmit={handleClearSubmit}/>
+       
       </div>
       <div className="flex h-screen w-full flex-col gap-4 bg-white p-8">
         <div className="flex items-center justify-center gap-x-2">
           <div className="flex-1 text-center text-3xl font-bold">DocuChat</div>
+           
         </div>
+        
         <div
           className="w-full flex-grow overflow-y-scroll"
           ref={ref}
@@ -233,6 +230,7 @@ const Chat = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
           />
+        
           <button className="btn-primary btn" onClick={handleSubmit}>
             Send
           </button>

@@ -84,7 +84,8 @@ const AddMedia = () => {
         url = data.path;
       }
 
-      const baseStorageUrl = 'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
+      const baseStorageUrl =
+        'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
       url = baseStorageUrl + url;
       const userID = localStorage.getItem('userID');
       if (userID != null) {
