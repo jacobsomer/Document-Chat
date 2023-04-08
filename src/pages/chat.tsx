@@ -57,7 +57,6 @@ const Chat = () => {
 
   useEffect(() => {
     handleScroll();
-    localStorage.setItem('userID', user?.id || v4());
   }, [messages, handleScroll]);
 
   const stream = async (input: string) => {
@@ -180,15 +179,13 @@ const Chat = () => {
           padding: '10px'
         }}
       >
-        <DrawerContent handleClearSubmit={handleClearSubmit}/>
-       
+        <DrawerContent handleClearSubmit={handleClearSubmit} />
       </div>
       <div className="flex h-screen w-full flex-col gap-4 bg-white p-8">
         <div className="flex items-center justify-center gap-x-2">
           <div className="flex-1 text-center text-3xl font-bold">DocuChat</div>
-           
         </div>
-        
+
         <div
           className="w-full flex-grow overflow-y-scroll"
           ref={ref}
@@ -230,7 +227,7 @@ const Chat = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
           />
-        
+
           <button className="btn-primary btn" onClick={handleSubmit}>
             Send
           </button>

@@ -5,6 +5,7 @@ import { GettingStartedModal } from '~/components/gettingStartedModal';
 import { FiUpload } from 'react-icons/fi';
 import { useEffect } from 'react';
 import Login from '~/components/login';
+import { v4 } from 'uuid';
 
 const Home: NextPage = () => {
   const user = useUser();
@@ -12,6 +13,7 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (user) {
       // redirect to chat page
+      localStorage.setItem('userID', user?.id || v4());
       window.location.href = '/chat';
     }
   }, [user]);
