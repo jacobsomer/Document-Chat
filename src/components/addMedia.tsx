@@ -7,10 +7,6 @@ import { createClient } from '@supabase/supabase-js';
 import { FiUpload } from 'react-icons/fi';
 import { handleObjectUpload } from '~/utils/handleUpload';
 
-type Inputs = {
-  url: string;
-};
-
 const AddMedia = (props: any) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -73,7 +69,7 @@ const AddMedia = (props: any) => {
         'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
       url = baseStorageUrl + url;
       if (userID != null) {
-        const resp = await handleObjectUpload(url, userID);
+        await handleObjectUpload(url, userID);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         props.onFileUpload();
       }
@@ -82,7 +78,9 @@ const AddMedia = (props: any) => {
     }
   };
 
-  const handleUrlUpload = async (event: React.MouseEvent<HTMLButtonElement>): Promise<any> => {
+  const handleUrlUpload = async (
+    event: React.MouseEvent<HTMLButtonElement>
+  ): Promise<any> => {
     event.preventDefault();
     setLoading(true);
     const userID = localStorage.getItem('userID');
@@ -99,7 +97,7 @@ const AddMedia = (props: any) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     props.onFileUpload();
     setLoading(false);
-    return
+    return;
   };
 
   return (
@@ -137,8 +135,7 @@ const AddMedia = (props: any) => {
                 <button
                   type="submit"
                   className="btn-primary btn"
-                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                  onClick={handleUrlUpload}
+                  onClick={(e)=> void handleUrlUpload(e)}
                 >
                   Submit
                 </button>

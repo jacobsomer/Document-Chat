@@ -4,13 +4,8 @@ import type {
   ChatCompletionRequestMessage,
   ChatCompletionRequestMessageRoleEnum
 } from 'openai';
-import { useUser } from '@supabase/auth-helpers-react';
-import Image from 'next/image';
 import type { CompletionRequest, OaiModel } from '~/pages/api/stream';
-import { GettingStartedModal } from '~/components/gettingStartedModal';
-import Account from '~/components/account';
 import { BotMessage, UserMessage } from '~/components/message';
-import Login from '~/components/login';
 import DrawerContent from '~/components/drawerContent';
 
 const model: OaiModel = 'gpt-3.5-turbo';

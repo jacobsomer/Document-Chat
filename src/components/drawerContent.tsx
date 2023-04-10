@@ -8,16 +8,12 @@ import { useUser } from '@supabase/auth-helpers-react';
 import Account from './account';
 import AddMedia from './addMedia';
 import Login from './login';
-import { MouseEventHandler, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import Image from 'next/image';
 import { AiFillFileAdd } from 'react-icons/ai';
 import { BsFillTrashFill } from 'react-icons/bs';
-type File = {
-  filename: string;
-  url: string;
-  type: string;
-};
+import { useRouter } from 'next/router';
+import styles from '~/styles/drawerStyles.module.css';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -36,57 +32,20 @@ const FileComponent = (props: { url: string; deleteFile: any }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       key={urlToFileName(props.url)}
-      style={{
-        position: 'relative',
-        width: '200px',
-        color: 'hsl(var(--pc))',
-        backgroundColor: 'hsl(var(--pc))',
-        margin: '8px',
-        borderRadius: '8px',
-        padding: '8px',
-        display: 'flex',
-        alignItems: 'center'
-      }}
+      className={styles.fileItem}
     >
-      <AiFillFileAdd color="hsl(var(--p))" />
+      <AiFillFileAdd color="hsl(var(--p))" className={styles.fileIcon} />
 
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          fontSize: '16px',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
-          textOverflow: 'ellipsis',
-          left: '0px',
-          color: 'hsl(var(--p))'
-        }}
-      >
-        &nbsp; {urlToFileName(props.url)}
-      </div>
+      <div className={styles.fileName}>&nbsp; {urlToFileName(props.url)}</div>
       {isHovered && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            right: '4px',
-            zIndex: 100,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
+        <div className={styles.deleteIconContainer}>
           <div className="tooltip" data-tip="Delete">
             <BsFillTrashFill
               onClick={() => {
                 props.deleteFile(props.url);
               }}
               color="hsl(var(--p))"
-              style={{
-                width: '20px',
-                height: '20px'
-              }}
+              className={styles.deleteIcon}
             />
           </div>
         </div>
@@ -98,14 +57,14 @@ const FileComponent = (props: { url: string; deleteFile: any }) => {
 export const DrawerContent = (props: any) => {
   const user = useUser();
   const [files, setFiles] = useState<{ [x: string]: any }[]>([]);
+  const router = useRouter();
+  const [chatId, setChatId] = useState(router.asPath.split('=')[1]);
 
   const onFileUpload = useCallback(async () => {
-    const userid = user?.id || localStorage.getItem('userid');
-    console.log(user?.id);
     const { data, error } = await supabase
       .from('userdocuments')
       .select('*')
-      .eq('userid', userid);
+      .eq('userid', chatId);
     if (error) {
       console.log(error);
     }
@@ -124,7 +83,7 @@ export const DrawerContent = (props: any) => {
 
   const deleteFile = useCallback(
     async (url: string) => {
-      const userid = user?.id || localStorage.getItem('userid');
+      const userid = user?.id;
       const { data, error } = await supabase
         .from('userdocuments')
         .delete()
@@ -141,26 +100,23 @@ export const DrawerContent = (props: any) => {
   );
 
   useEffect(() => {
-    if (user) {
-      void onFileUpload();
-    }
+    // if (user) {
+    //   setChatId(user.id);
+    // } else {
+    //   const chatId = router.query.chatID || router.asPath.split('=')[1];
+    //   if (chatId !== undefined && chatId !== '' && typeof chatId === 'string') {
+    //     setChatId(chatId);
+    //   } else {
+    //     void router.push('/');
+    //   }
+    // }
+    // void onFileUpload();
   }, [user]);
 
   return (
-    <div>
-      <div className="flex h-full w-full flex-col items-center justify-center">
-        <div
-          style={{
-            width: '100%',
-            height: '80vh',
-            backgroundColor: 'var(--color-bg)',
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            overflow: 'scroll'
-          }}
-        >
+    <div className="flex h-full w-full flex-col items-center justify-center">
+      <div>
+        <div className={styles.filesContainer}>
           <div>Files</div>
           {files.map((file) => (
             <FileComponent
@@ -196,6 +152,7 @@ export const DrawerContent = (props: any) => {
           ) : (
             <>
               <Login />
+              <div className="h-10"></div>
             </>
           )}
         </div>

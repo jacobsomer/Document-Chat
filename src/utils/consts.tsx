@@ -8,6 +8,7 @@ export const supportedExtensions = [
   'docx',
   'ppt',
   'pptx',
+  'csv',
   'odt',
   'py',
   'js',

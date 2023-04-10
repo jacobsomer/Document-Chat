@@ -15,7 +15,10 @@ export default function Login() {
 
   return (
     <>
-      <label htmlFor="my-modal" className="btn rounded-md px-4 py-2 text-white">
+      <label
+        htmlFor="my-modal"
+        className="btn-ghost avatar btn  rounded-md px-4 py-2 text-white"
+      >
         Login
       </label>
       <input type="checkbox" id="my-modal" className="modal-toggle" />

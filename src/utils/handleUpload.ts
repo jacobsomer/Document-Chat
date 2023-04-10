@@ -2,13 +2,19 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 const handleObjectUploadURL = "https://docuchat-extract-fhpwesohfa-ue.a.run.app/createEmbeddingForObject"
 
-export const handleObjectUpload = async (url: string, userID: string): Promise<string>  => {
+
+type response = {
+    docId: string;
+    error: string;
+  }
+
+export const handleObjectUpload = async (url: string, docId: string): Promise<response>  => {
   const options = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       url: url,
-      userID: userID,
+      docId: docId,
     }),
   };
   try {
@@ -16,10 +22,11 @@ export const handleObjectUpload = async (url: string, userID: string): Promise<s
       "https://docuchat-extract-fhpwesohfa-ue.a.run.app/createEmbeddingForObject",
       options
     );
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    console.error(err);
-    return "error"
+    const resp = await response.json();
+    return resp
+  } catch (err ) {
+    let message = 'Unknown Error'
+    if (err instanceof Error) message = err.message
+    return { error: message }  as response;
   }
 };
