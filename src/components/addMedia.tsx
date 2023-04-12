@@ -1,21 +1,24 @@
-import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import UploadSquare from './uploadSquare';
-import { useUser } from '@supabase/auth-helpers-react';
 import { supportedExtensions } from '~/utils/consts';
 import { createClient } from '@supabase/supabase-js';
 import { FiUpload } from 'react-icons/fi';
 import { handleObjectUpload } from '~/utils/handleUpload';
+import { useRouter } from 'next/router';
+import { useUser } from '@supabase/auth-helpers-react';
 
 const AddMedia = (props: any) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [input, setInput] = useState('');
+  const user = useUser()
   // Create a single supabase client for interacting with your database
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
   );
+
+  
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -23,7 +26,6 @@ const AddMedia = (props: any) => {
     setLoading(true);
     const file = event.target.files?.[0];
     if (file) {
-      // get file
       const userID = localStorage.getItem('userID');
       if (!userID) {
         setErrorMessage('User Not Logged In');
@@ -31,8 +33,6 @@ const AddMedia = (props: any) => {
         setTimeout(() => {
           setErrorMessage('');
         }, 2000);
-        // exit component
-
         return;
       }
       const extension = file.name.split('.').pop();
@@ -64,7 +64,6 @@ const AddMedia = (props: any) => {
       if (data) {
         url = data.path;
       }
-
       const baseStorageUrl =
         'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
       url = baseStorageUrl + url;
@@ -92,7 +91,6 @@ const AddMedia = (props: any) => {
       }, 2000);
       return;
     }
-
     await handleObjectUpload(input, userID);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     props.onFileUpload();
@@ -104,7 +102,7 @@ const AddMedia = (props: any) => {
     <>
       <label
         htmlFor="my-modal-2"
-        className="btn-ghost avatar btn text-neutral-content"
+        className="btn-ghost avatar btn text-base-content"
       >
         {' '}
         <FiUpload />
@@ -113,11 +111,11 @@ const AddMedia = (props: any) => {
       <input type="checkbox" id="my-modal-2" className="modal-toggle" />
       <label htmlFor="my-modal-2" className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
-          <h3 className="text-lg font-bold">Add Data</h3>
+          <h3 className="text-lg font-base-content">Add Data</h3>
           <UploadSquare handleFileUpload={handleFileUpload} />
           <br />
           <div className="flex justify-center">
-            <h6 className="text-lg font-bold">Or</h6>
+            <h6 className="text-lg font-base-content">Or</h6>
           </div>
           <div>
             <form className="flex w-full max-w-xl flex-col gap-2 py-4">
@@ -140,7 +138,6 @@ const AddMedia = (props: any) => {
                   Submit
                 </button>
               </div>
-
               {loading && <progress className="progress w-56"></progress>}
               {errorMessage && (
                 <p className="text-sm" style={{ color: 'red' }}>

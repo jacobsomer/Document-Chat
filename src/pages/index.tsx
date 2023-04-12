@@ -24,13 +24,6 @@ const Home: NextPage = () => {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
   );
 
-  useEffect(() => {
-    if (user) {
-      void Router.push({
-        pathname: '/chat'
-      });
-    }
-  }, [user]);
 
   const removeErrorMessageAfter2Seconds = () => {
     setLoading(false);
@@ -67,11 +60,7 @@ const Home: NextPage = () => {
         removeErrorMessageAfter2Seconds();
         return;
       }
-      let url = '';
-      if (data) {
-        url = baseStorageUrl + data.path;
-      }
-
+      const url = baseStorageUrl + data.path;
       const generatedDocId = v4();
       const { docId, error: uploadError } = await handleObjectUpload(
         url,
@@ -119,6 +108,7 @@ const Home: NextPage = () => {
       url,
       generatedDocId
     );
+
     if (!docId) {
       setErrorMessage(uploadError);
       // wait for 2 seconds and then remove error message
@@ -159,8 +149,8 @@ const Home: NextPage = () => {
         <link rel="manifest" href="/site.webmanifest" />
       </Head>
       <main
-        data-theme="light"
-        className="flex min-h-screen flex-col justify-center bg-base-content"
+        data-theme="dark"
+        className="flex min-h-screen flex-col justify-center bg-base-100"
       >
         {!user && (
           <div className="absolute top-0 right-0 p-4">
@@ -168,10 +158,10 @@ const Home: NextPage = () => {
           </div>
         )}
         <div className="absolute top-0 left-0 p-4">
-          <h1 className="text-3xl font-bold text-white">DocuChat</h1>
+          <h1 className="text-3xl font-bold text-base-content">DocuChat</h1>
         </div>
         <div className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
-          <p className="mt-12 text-4xl text-white">
+          <p className="mt-12 text-4xl text-base-content">
             Interact with
             <b className="display-inline font-bold text-primary"> PDFs</b>,{' '}
             <b className="display-inline font-bold text-primary">Videos</b>, and
@@ -187,19 +177,19 @@ const Home: NextPage = () => {
                   width: '80%',
                   height: '90px',
                   maxWidth: '400px',
-                  border: '2px dashed #fff',
+                  border: '2px dashed hsl(var(--bc))',
                   borderRadius: '5px',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  color: '#fff',
+                  color: 'hsl(var(--bc))',
                   cursor: 'pointer'
                 }}
                 htmlFor="upload-input1"
               >
                 <input
                   id="upload-input1"
-                  className="height-0 relative top-0 right-0 w-0 text-9xl opacity-0"
+                  className="height-0 relative top-0 right-0 w-0 text-9xl opacity-0 text-primary"
                   type="file"
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   onChange={handleFileUpload}
@@ -214,7 +204,7 @@ const Home: NextPage = () => {
               </label>
               <br />
               <div className="flex justify-center">
-                <h6 className="text-lg font-bold text-white">Or</h6>
+                <h6 className="text-lg font-bold text-base-content">Or</h6>
               </div>
               <form
                 style={{

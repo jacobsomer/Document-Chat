@@ -1,8 +1,8 @@
 .uploadsquare {
   position: relative;
   font-family: "Open Sans", sans-serif;
-  color: hsl(var(--nc));
-  border: 2px dotted hsl(var(--nc));
+  color: hsl(var(--bc));
+  border: 2px dotted hsl(var(--bc));
   background: transparent;
 }
 

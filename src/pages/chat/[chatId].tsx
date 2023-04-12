@@ -162,20 +162,21 @@ const Chat = () => {
   }
 
   return (
+    <main data-theme="dark">
     <div className="flex flex-1 flex-row">
       <div
         style={{
           width: '250px',
           height: '100vh',
-          backgroundColor: 'var(--color-bg)',
+          backgroundColor: 'hsl(var(--b3))',
           padding: '10px'
         }}
       >
         <DrawerContent handleClearSubmit={handleClearSubmit} />
       </div>
-      <div className="flex h-screen w-full flex-col gap-4 bg-white p-8">
+      <div className="flex h-screen w-full flex-col gap-4 bg-base-100 p-8">
         <div className="flex items-center justify-center gap-x-2">
-          <div className="flex-1 text-center text-3xl font-bold">DocuChat</div>
+          <div className="flex-1 text-center text-3xl text-base-content ">DocuChat</div>
         </div>
         <div
           className="w-full flex-grow overflow-y-scroll"
@@ -183,7 +184,6 @@ const Chat = () => {
           style={{
             width: '100%',
             height: '100vh',
-            backgroundColor: 'var(--color-bg)',
             padding: '10px',
             overflow: 'hidden'
           }}
@@ -213,7 +213,7 @@ const Chat = () => {
           <input
             type="text"
             placeholder="Type here"
-            className="input-bordered input w-full"
+            className="input-bordered input w-full bg-base-100"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -225,6 +225,7 @@ const Chat = () => {
         </form>
       </div>
     </div>
+    </main>
   );
 };
 

@@ -17,7 +17,7 @@ export default function Login() {
     <>
       <label
         htmlFor="my-modal"
-        className="btn-ghost avatar btn  rounded-md px-4 py-2 text-white"
+        className="btn-ghost avatar btn rounded-md px-4 py-2 text-base-content"
       >
         Login
       </label>
@@ -33,7 +33,7 @@ export default function Login() {
                 default: {
                   colors: {
                     brand: 'hsl(var(--p))',
-                    brandAccent: 'hsl(var(--s))'
+                    brandAccent: 'hsl(var(--pf))'
                   }
                 }
               }

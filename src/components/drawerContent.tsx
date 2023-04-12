@@ -58,26 +58,46 @@ export const DrawerContent = (props: any) => {
   const user = useUser();
   const [files, setFiles] = useState<{ [x: string]: any }[]>([]);
   const router = useRouter();
-  const [chatId, setChatId] = useState(router.asPath.split('=')[1]);
+  const [chatId, setChatId] = useState("");
+
+  useEffect(() => {
+   
+    void onFileUpload();
+
+  }, [user]);
 
   const onFileUpload = useCallback(async () => {
+    const chat_id = window.location.href.split("/").pop()
+    if (chat_id){
+      setChatId(chat_id)
+    }
+    else {
+      setChatId("")
+    }
     const { data, error } = await supabase
-      .from('userdocuments')
+      .from('chats')
       .select('*')
-      .eq('userid', chatId);
+      .eq('chatId', chat_id);
     if (error) {
       console.log(error);
+      return;
     }
     if (data) {
-      setFiles(data);
-      const tmpFiles: Array<any> = [];
+      
       for (const file of data) {
-        const url = file.url;
-        if (!tmpFiles.find((f) => f.url === url)) {
-          tmpFiles.push(file);
-        }
+        const docId = file.docId;
+        const { data: data1, error:error1 } = await supabase
+          .from('userdocuments')
+          .select('*')
+          .eq('docId', docId);
+           if (error1) {
+          console.log(error1);
+          return;
       }
-      setFiles(tmpFiles);
+      console.log(data1);
+      }
+     
+     
     }
   }, [user]);
 
@@ -99,19 +119,7 @@ export const DrawerContent = (props: any) => {
     [user]
   );
 
-  useEffect(() => {
-    // if (user) {
-    //   setChatId(user.id);
-    // } else {
-    //   const chatId = router.query.chatID || router.asPath.split('=')[1];
-    //   if (chatId !== undefined && chatId !== '' && typeof chatId === 'string') {
-    //     setChatId(chatId);
-    //   } else {
-    //     void router.push('/');
-    //   }
-    // }
-    // void onFileUpload();
-  }, [user]);
+  
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
@@ -143,7 +151,7 @@ export const DrawerContent = (props: any) => {
               <AddMedia onFileUpload={onFileUpload} />
               <button
                 onClick={props.handleClearSubmit}
-                className="btn-ghost avatar btn text-neutral-content"
+                className="btn-ghost avatar btn text-base-content"
               >
                 Clear Chat
               </button>

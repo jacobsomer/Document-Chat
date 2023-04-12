@@ -23,13 +23,13 @@ export default function Account() {
       <div className="dropdown-right dropdown-end dropdown">
         <label
           tabIndex={0}
-          className="btn-ghost avatar btn text-neutral-content"
+          className="btn-ghost avatar btn text-base-content"
         >
           Account
         </label>
         <ul
           tabIndex={0}
-          className="dropdown-content menu rounded-box w-52 bg-base-100 bg-primary p-2 shadow"
+          className="dropdown-content menu rounded-box w-52 bg-base-100 bg-accent p-2 shadow"
         >
           <li>
             <a className="justify-between" href="" target="_blank">
