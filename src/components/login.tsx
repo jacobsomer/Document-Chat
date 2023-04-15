@@ -3,7 +3,7 @@ import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { useEffect } from 'react';
 
-export default function Login() {
+export default function Login(props: { chatURL: string }) {
   const supabaseClient = useSupabaseClient();
   const user = useUser();
 
@@ -39,7 +39,7 @@ export default function Login() {
               }
             }}
             providers={['google']}
-            redirectTo="/chat"
+            redirectTo={props.chatURL}
           />
         </label>
       </label>

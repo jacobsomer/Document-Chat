@@ -21,10 +21,7 @@ export default function Account() {
       }}
     >
       <div className="dropdown-right dropdown-end dropdown">
-        <label
-          tabIndex={0}
-          className="btn-ghost avatar btn text-base-content"
-        >
+        <label tabIndex={0} className="btn-ghost avatar btn text-base-content">
           Account
         </label>
         <ul

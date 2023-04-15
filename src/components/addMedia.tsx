@@ -6,19 +6,28 @@ import { FiUpload } from 'react-icons/fi';
 import { handleObjectUpload } from '~/utils/handleUpload';
 import { useRouter } from 'next/router';
 import { useUser } from '@supabase/auth-helpers-react';
+import { v4 } from 'uuid';
 
-const AddMedia = (props: any) => {
+const AddMedia = (props: {
+  chatId: string;
+  updateFiles: () => Promise<void>;
+}) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [input, setInput] = useState('');
-  const user = useUser()
+  const user = useUser();
   // Create a single supabase client for interacting with your database
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
   );
 
-  
+  const removeErrorMessageAfter4Seconds = () => {
+    setLoading(false);
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 4000);
+  };
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -29,19 +38,13 @@ const AddMedia = (props: any) => {
       const userID = localStorage.getItem('userID');
       if (!userID) {
         setErrorMessage('User Not Logged In');
-        // wait for 2 seconds and then remove error message
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 2000);
+        removeErrorMessageAfter4Seconds();
         return;
       }
       const extension = file.name.split('.').pop();
       if (!extension || !supportedExtensions.includes(extension)) {
         setErrorMessage('FileType Not Supported');
-        // wait for 2 seconds and then remove error message
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 2000);
+        removeErrorMessageAfter4Seconds();
         return;
       }
       // get file name
@@ -54,10 +57,7 @@ const AddMedia = (props: any) => {
         });
       if (error) {
         setErrorMessage(error.message);
-        // wait for 2 seconds and then remove error message
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 2000);
+        removeErrorMessageAfter4Seconds();
         return;
       }
       let url = '';
@@ -67,11 +67,29 @@ const AddMedia = (props: any) => {
       const baseStorageUrl =
         'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
       url = baseStorageUrl + url;
-      if (userID != null) {
-        await handleObjectUpload(url, userID);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        props.onFileUpload();
+      const newDocId = v4();
+      const { docId: docId, error: error1 } = await handleObjectUpload(
+        url,
+        newDocId
+      );
+      if (error1) {
+        setErrorMessage(error1);
+        removeErrorMessageAfter4Seconds();
+        return;
       }
+      const { error: insertError } = await supabase.from('chats').insert({
+        chatId: props.chatId,
+        docId: docId
+      });
+
+      if (insertError) {
+        setErrorMessage(insertError.message);
+        removeErrorMessageAfter4Seconds();
+        return;
+      }
+
+      await props.updateFiles();
+
       // upload file to supabase storage
       setLoading(false);
     }
@@ -85,15 +103,56 @@ const AddMedia = (props: any) => {
     const userID = localStorage.getItem('userID');
     if (!userID) {
       setErrorMessage('User Not Logged In');
-      // wait for 2 seconds and then remove error message
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 2000);
+      removeErrorMessageAfter4Seconds();
       return;
     }
-    await handleObjectUpload(input, userID);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    props.onFileUpload();
+
+    // check if url is already in userdocuments
+    const { data: userDocs, error: userDocsError } = await supabase
+      .from('userdocuments')
+      .select('*')
+      .eq('url', input);
+    if (userDocsError) {
+      setErrorMessage(userDocsError.message);
+      removeErrorMessageAfter4Seconds();
+    }
+    if (userDocs && userDocs.length > 0) {
+      if (userDocs[0]) {
+        const docId = userDocs[0].docId as string;
+        const { error: insertError } = await supabase.from('chats').insert({
+          chatId: props.chatId,
+          docId: docId
+        });
+        if (insertError) {
+          setErrorMessage(insertError.message);
+          removeErrorMessageAfter4Seconds();
+          return;
+        }
+        await props.updateFiles();
+        setLoading(false);
+        return;
+      }
+    }
+    const newDocId = v4();
+    const { docId: docId, error: error1 } = await handleObjectUpload(
+      input,
+      newDocId
+    );
+    if (error1) {
+      setErrorMessage(error1);
+      removeErrorMessageAfter4Seconds();
+      return;
+    }
+    const { error: insertError } = await supabase.from('chats').insert({
+      chatId: props.chatId,
+      docId: docId
+    });
+    if (insertError) {
+      setErrorMessage(insertError.message);
+      removeErrorMessageAfter4Seconds();
+      return;
+    }
+    await props.updateFiles();
     setLoading(false);
     return;
   };
@@ -111,11 +170,11 @@ const AddMedia = (props: any) => {
       <input type="checkbox" id="my-modal-2" className="modal-toggle" />
       <label htmlFor="my-modal-2" className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
-          <h3 className="text-lg font-base-content">Add Data</h3>
+          <h3 className="font-base-content text-lg">Add Data</h3>
           <UploadSquare handleFileUpload={handleFileUpload} />
           <br />
           <div className="flex justify-center">
-            <h6 className="text-lg font-base-content">Or</h6>
+            <h6 className="font-base-content text-lg">Or</h6>
           </div>
           <div>
             <form className="flex w-full max-w-xl flex-col gap-2 py-4">
@@ -133,7 +192,7 @@ const AddMedia = (props: any) => {
                 <button
                   type="submit"
                   className="btn-primary btn"
-                  onClick={(e)=> void handleUrlUpload(e)}
+                  onClick={(e) => void handleUrlUpload(e)}
                 >
                   Submit
                 </button>

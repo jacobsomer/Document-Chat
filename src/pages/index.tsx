@@ -9,6 +9,7 @@ import { supportedExtensions } from '~/utils/consts';
 import { createClient } from '@supabase/supabase-js';
 import { handleObjectUpload } from '~/utils/handleUpload';
 import Router from 'next/router';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
 const baseStorageUrl =
   'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
@@ -18,14 +19,20 @@ const Home: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [input, setInput] = useState('');
+  const supabaseClient = useSupabaseClient();
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
   );
 
+  useEffect(() => {
+    if (user) {
+      void Router.push('/chat');
+    }
+  }, [user]);
 
-  const removeErrorMessageAfter2Seconds = () => {
+  const removeErrorMessageAfter4Seconds = () => {
     setLoading(false);
     setTimeout(() => {
       setErrorMessage('');
@@ -42,7 +49,7 @@ const Home: NextPage = () => {
       if (!extension || !supportedExtensions.includes(extension)) {
         setErrorMessage('FileType Not Supported');
         // wait for 2 seconds and then remove error message
-        removeErrorMessageAfter2Seconds();
+        removeErrorMessageAfter4Seconds();
         return;
       }
       // get file name
@@ -57,7 +64,7 @@ const Home: NextPage = () => {
       if (error) {
         setErrorMessage(error.message);
         // wait for 2 seconds and then remove error message
-        removeErrorMessageAfter2Seconds();
+        removeErrorMessageAfter4Seconds();
         return;
       }
       const url = baseStorageUrl + data.path;
@@ -69,7 +76,7 @@ const Home: NextPage = () => {
       if (!docId) {
         setErrorMessage(uploadError);
         // wait for 2 seconds and then remove error message
-        removeErrorMessageAfter2Seconds();
+        removeErrorMessageAfter4Seconds();
         return;
       }
 
@@ -81,7 +88,7 @@ const Home: NextPage = () => {
       if (insertError) {
         setErrorMessage(insertError.message);
         // wait for 2 seconds and then remove error message
-        removeErrorMessageAfter2Seconds();
+        removeErrorMessageAfter4Seconds();
         return;
       }
 
@@ -112,7 +119,7 @@ const Home: NextPage = () => {
     if (!docId) {
       setErrorMessage(uploadError);
       // wait for 2 seconds and then remove error message
-      removeErrorMessageAfter2Seconds();
+      removeErrorMessageAfter4Seconds();
       return;
     }
 
@@ -124,7 +131,7 @@ const Home: NextPage = () => {
     if (insertError) {
       setErrorMessage(insertError.message);
       // wait for 2 seconds and then remove error message
-      removeErrorMessageAfter2Seconds();
+      removeErrorMessageAfter4Seconds();
       return;
     }
 
@@ -154,9 +161,10 @@ const Home: NextPage = () => {
       >
         {!user && (
           <div className="absolute top-0 right-0 p-4">
-            <Login />
+            <Login chatURL="/chat" />
           </div>
         )}
+
         <div className="absolute top-0 left-0 p-4">
           <h1 className="text-3xl font-bold text-base-content">DocuChat</h1>
         </div>
@@ -189,7 +197,7 @@ const Home: NextPage = () => {
               >
                 <input
                   id="upload-input1"
-                  className="height-0 relative top-0 right-0 w-0 text-9xl opacity-0 text-primary"
+                  className="height-0 relative top-0 right-0 w-0 text-9xl text-primary opacity-0"
                   type="file"
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   onChange={handleFileUpload}
@@ -227,7 +235,9 @@ const Home: NextPage = () => {
                   <button
                     type="submit"
                     className="btn-primary btn"
-                    onClick={(e)=>{void handleUrlUpload(e)}}
+                    onClick={(e) => {
+                      void handleUrlUpload(e);
+                    }}
                   >
                     Go
                   </button>

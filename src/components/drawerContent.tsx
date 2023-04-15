@@ -1,31 +1,22 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { useUser } from '@supabase/auth-helpers-react';
 import Account from './account';
 import AddMedia from './addMedia';
 import Login from './login';
-import { useCallback, useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { useState } from 'react';
 import { AiFillFileAdd } from 'react-icons/ai';
 import { BsFillTrashFill } from 'react-icons/bs';
-import { useRouter } from 'next/router';
 import styles from '~/styles/drawerStyles.module.css';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
+import { type DrawerProps } from '~/types/types';
 
 const urlToFileName = (url: string) => {
   const split = url.split('/');
   return split[split.length - 1];
 };
 
-const FileComponent = (props: { url: string; deleteFile: any }) => {
+const FileComponent = (props: {
+  url: string;
+  deleteFile: (url: string) => Promise<void>;
+}) => {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <div
@@ -42,7 +33,7 @@ const FileComponent = (props: { url: string; deleteFile: any }) => {
           <div className="tooltip" data-tip="Delete">
             <BsFillTrashFill
               onClick={() => {
-                props.deleteFile(props.url);
+                void props.deleteFile(props.url);
               }}
               color="hsl(var(--p))"
               className={styles.deleteIcon}
@@ -54,86 +45,24 @@ const FileComponent = (props: { url: string; deleteFile: any }) => {
   );
 };
 
-export const DrawerContent = (props: any) => {
+export const DrawerContent = (props: DrawerProps) => {
   const user = useUser();
-  const [files, setFiles] = useState<{ [x: string]: any }[]>([]);
-  const router = useRouter();
-  const [chatId, setChatId] = useState("");
-
-  useEffect(() => {
-   
-    void onFileUpload();
-
-  }, [user]);
-
-  const onFileUpload = useCallback(async () => {
-    const chat_id = window.location.href.split("/").pop()
-    if (chat_id){
-      setChatId(chat_id)
-    }
-    else {
-      setChatId("")
-    }
-    const { data, error } = await supabase
-      .from('chats')
-      .select('*')
-      .eq('chatId', chat_id);
-    if (error) {
-      console.log(error);
-      return;
-    }
-    if (data) {
-      
-      for (const file of data) {
-        const docId = file.docId;
-        const { data: data1, error:error1 } = await supabase
-          .from('userdocuments')
-          .select('*')
-          .eq('docId', docId);
-           if (error1) {
-          console.log(error1);
-          return;
-      }
-      console.log(data1);
-      }
-     
-     
-    }
-  }, [user]);
-
-  const deleteFile = useCallback(
-    async (url: string) => {
-      const userid = user?.id;
-      const { data, error } = await supabase
-        .from('userdocuments')
-        .delete()
-        .eq('userid', userid)
-        .eq('url', url);
-      if (error) {
-        console.log(error);
-      }
-      if (data) {
-        console.log(data);
-      }
-    },
-    [user]
-  );
-
-  
-
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
-      <div>
-        <div className={styles.filesContainer}>
-          <div>Files</div>
-          {files.map((file) => (
-            <FileComponent
-              key={file.url}
-              url={file.url}
-              deleteFile={deleteFile}
-            />
-          ))}
-        </div>
+      <div className={styles.filesContainer}>
+        
+        <select className="select w-full max-w-xs mb-5">
+          <option value="DEFAULT">{props.chatId}</option>
+          <option value="1">Tuna </option>
+        </select>
+        
+        {props.files.map((file) => (
+          <FileComponent
+            key={file.url}
+            url={file.url}
+            deleteFile={() => props.deleteFile(file.docId)}
+          />
+        ))}
       </div>
       <div
         style={{
@@ -148,7 +77,7 @@ export const DrawerContent = (props: any) => {
         <div className="flex flex-1 flex-col items-center justify-center ">
           {user ? (
             <>
-              <AddMedia onFileUpload={onFileUpload} />
+              <AddMedia updateFiles={props.updateFiles} chatId={props.chatId} />
               <button
                 onClick={props.handleClearSubmit}
                 className="btn-ghost avatar btn text-base-content"
@@ -159,7 +88,7 @@ export const DrawerContent = (props: any) => {
             </>
           ) : (
             <>
-              <Login />
+              <Login chatURL={'/chat/' + props.chatId} />
               <div className="h-10"></div>
             </>
           )}
