@@ -175,11 +175,12 @@ const AddMedia = (props: AddMediaProps) => {
           </div>
           <div>
             <form className="flex w-full max-w-xl flex-col gap-2 py-4">
-              <p>Enter Video:</p>
+              <p>Enter URL:</p>
               <div className="flex gap-x-4">
                 <input
-                  placeholder="Paste YouTube URL here: "
+                  placeholder="ex. https://www.youtube.com"
                   className="input-bordered input w-full"
+                  accept=".txt,.csv,.pdf,.doc,.docx,.ppt,.pptx"
                   type="text"
                   value={input}
                   onInput={(e) =>

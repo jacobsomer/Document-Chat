@@ -24,9 +24,9 @@ const FileComponent = (props: {
       className={styles.fileItem}
     >
       <AiFillFileAdd color="hsl(var(--s))" className={styles.fileIcon} />
-        <div className="relative w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-base text-base-content">
-          &nbsp; {props.name}
-        </div>
+      <div className="relative w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-base text-base-content">
+        &nbsp; {props.name}
+      </div>
 
       {isHovered && (
         <>

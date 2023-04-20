@@ -54,7 +54,7 @@ const ChatRoom = () => {
             }
             if (data2.length == 0 && chat.chatId != chatId) {
               // delete the current chat from the userChats table
-              void deleteChat()
+              void deleteChat();
               // redirect to the chat with length 0
               void router.push(`/chat/${chat.chatId as string}`);
               return;
@@ -170,7 +170,6 @@ const ChatRoom = () => {
       .delete()
       .eq('chatId', currentChat?.chatId || '');
 
-      
     if (error1) {
       console.log(error1);
     }

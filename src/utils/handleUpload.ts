@@ -9,7 +9,7 @@ type response = {
   }
 
 export const handleObjectUpload = async (url: string, docId: string): Promise<response>  => {
-  const options = {
+  const options: RequestInit= {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

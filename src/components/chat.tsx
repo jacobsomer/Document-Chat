@@ -8,6 +8,7 @@ import type { CompletionRequest, OaiModel } from '~/pages/api/stream';
 import { BotMessage, UserMessage } from '~/components/message';
 import DrawerContent from '~/components/drawerContent';
 import { SearchResponse, type ChatProps } from '~/types/types';
+import { MdOutlineDarkMode } from 'react-icons/md';
 
 const model: OaiModel = 'gpt-3.5-turbo';
 
@@ -40,7 +41,8 @@ const Chat = (props: ChatProps) => {
   const [messages, setMessages] =
     useState<ChatCompletionRequestMessage[]>(initMessages);
   const [input, setInput] = useState('');
-  const [files, setFiles] = useState(props.files);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [themeButtonIsHovered, setThemeButtonIsHovered] = useState(false);
 
   const handleScroll = useCallback(() => {
     if (ref.current) {
@@ -59,7 +61,8 @@ const Chat = (props: ChatProps) => {
     };
 
     const getDataSources = async (prompt: string): Promise<SearchResponse> => {
-      const url = 'https://docuchat-embeddings-search-fhpwesohfa-ue.a.run.app/searchChatRoom';
+      const url =
+        'https://docuchat-embeddings-search-fhpwesohfa-ue.a.run.app/searchChatRoom';
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -181,7 +184,7 @@ const Chat = (props: ChatProps) => {
   }
 
   return (
-    <main data-theme="light">
+    <main data-theme={theme}>
       <div className="flex flex-1 flex-row">
         <div
           style={{
@@ -207,10 +210,55 @@ const Chat = (props: ChatProps) => {
         <div className="flex h-screen w-full flex-col gap-4 bg-base-100 p-8">
           <div className="flex items-center justify-center gap-x-2">
             <div className="text-center text-3xl text-base-content ">
-              Chat Boba 🧋{' '}
+              Chat Boba 🧋
               <span className="text-sm text-warning">Beta Release</span>
             </div>
           </div>
+          <div className="absolute right-12">
+            {theme === 'dark' ? (
+              <div className="tooltip" data-tip="Dark Mode">
+                {themeButtonIsHovered ? (
+                  <MdOutlineDarkMode
+                    className="h-8 w-8"
+                    color="hsl(var(--b3))"
+                    onMouseEnter={() => setThemeButtonIsHovered(true)}
+                    onMouseLeave={() => setThemeButtonIsHovered(false)}
+                    onClick={() => setTheme('light')}
+                  />
+                ) : (  
+                  <MdOutlineDarkMode
+                    className="h-8 w-8"
+                    color="hsl(var(--ps))"
+                    onMouseEnter={() => setThemeButtonIsHovered(true)}
+                    onMouseLeave={() => setThemeButtonIsHovered(false)}
+                    onClick={() => setTheme('light')}
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="tooltip" data-tip="Light Mode">
+                {themeButtonIsHovered ? (
+                  <MdOutlineDarkMode
+                    className="h-8 w-8"
+                    color="hsl(var(--b3))"
+                    onMouseEnter={() => setThemeButtonIsHovered(true)}
+                    onMouseLeave={() => setThemeButtonIsHovered(false)}
+                    onClick={() => setTheme('dark')}
+                  />
+                ) : (
+                  <MdOutlineDarkMode
+                    className="h-8 w-8"
+                    color="hsl(var(--ps))"
+                    onMouseEnter={() => setThemeButtonIsHovered(true)}
+                    onMouseLeave={() => setThemeButtonIsHovered(false)}
+                    onClick={() => setTheme('dark')}
+                  />
+                )}
+               </div>
+            )}
+          </div>
+          {/* div at the top right for switching dark to light */}
+
           <div
             className="w-full flex-grow overflow-y-scroll"
             ref={ref}
