@@ -21,7 +21,7 @@
   position: relative;
   width: 200px;
   color: hsl(var(--pc));
-  background-color: hsl(var(--pc));
+  background-color: hsl(var(--b1));
   margin: 8px;
   border-radius: 8px;
   padding: 8px;
@@ -31,17 +31,8 @@
 
 .fileIcon {
   position: relative;
-}
-
-.fileName {
-  position: relative;
-  width: 100%;
-  font-size: 16px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  left: 0;
-  color: hsl(var(--p));
+  width: 20px;
+  height: 20px;
 }
 
 .deleteIconContainer {
@@ -56,6 +47,7 @@
 }
 
 .delete-icon {
-  width: 20px;
-  height: 20px;
+  position: relative;
+  width: 28px;
+  height: 28px;
 }

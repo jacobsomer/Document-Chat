@@ -1,31 +1,54 @@
 import { type SupabaseClient } from '@supabase/supabase-js';
 
-export type Chunk = {
-  text: string;
-  start: number;
-  end: number;
-  embedding: number[];
-};
-
 export type File = {
   url: string;
   docId: string;
+  name: string;
 };
 
-export type DrawerProps = {
+export type SearchResponse = {
+      index: number[];
+      body: string[];
+      docName: string[];
+    };
+
+export type UserChat = {
   chatId: string;
-  handleClearSubmit: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  name: string;
+};
+
+export  type ChatFile = {
+    chatId: string;
+    docId: string;
+    name: string;
+  };
+
+export type AddMediaProps = {
+   chatId: string;
+  updateFiles:  (chatId: string) => Promise<void>;
+}
+export type DrawerProps = {
+  currentChat: UserChat;
+  userChats: UserChat[] | undefined;
   supabase: SupabaseClient<any, 'public', any>;
   files: File[];
+  handleClearSubmit: (e: React.MouseEvent<HTMLButtonElement>) => void;
   deleteFile: (docId: string) => Promise<void>;
-  updateFiles: () => Promise<void>;
+  updateFiles: (chatId: string) => Promise<void>;
+  createNewChat: () => Promise<void>;
+  deleteChat: () => Promise<void>;
+  renameChat: (newName: string) => Promise<void>;
 };
 
 export type ChatProps =  {
-  chatId: string;
+  currentChat: UserChat;
+   userChats: UserChat[] | undefined;
   userId: string | undefined;
   supabase: SupabaseClient<any, 'public', any>;
   files: File[];
   deleteFile: (docId: string) => Promise<void>;
-  updateFiles: () => Promise<void>;
+  updateFiles: (chatId: string) => Promise<void>;
+  createNewChat: () => Promise<void>;
+  deleteChat: () => Promise<void>;
+  renameChat: (newName: string) => Promise<void>;
 };

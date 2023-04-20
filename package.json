@@ -1,5 +1,6 @@
+
 {
-  "name": "boba",
+  "name": "chatboba",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -52,6 +53,7 @@
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
     "autoprefixer": "^10.4.7",
+    "compute-cosine-similarity": "^1.0.0",
     "eslint": "^8.34.0",
     "eslint-config-next": "^13.2.1",
     "postcss": "^8.4.14",
@@ -67,5 +69,10 @@
   },
   "ct3aMetadata": {
     "initVersion": "7.7.0"
-  }
+  },
+  "browser": {
+  "fs": false,
+  "path": false,
+  "os": false
+}
 }

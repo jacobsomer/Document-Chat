@@ -4,14 +4,15 @@ import { supportedExtensions } from '~/utils/consts';
 import { createClient } from '@supabase/supabase-js';
 import { FiUpload } from 'react-icons/fi';
 import { handleObjectUpload } from '~/utils/handleUpload';
-import { useRouter } from 'next/router';
 import { useUser } from '@supabase/auth-helpers-react';
 import { v4 } from 'uuid';
+import { type AddMediaProps } from '~/types/types';
 
-const AddMedia = (props: {
-  chatId: string;
-  updateFiles: () => Promise<void>;
-}) => {
+const cleanFileName = (fileName: string) => {
+  // replace any characters that are not letters, numbers, dashes, spaces, or underscores with an underscore
+  return fileName.replace(/[^a-zA-Z0-9-_]/g, '_');
+};
+const AddMedia = (props: AddMediaProps) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [input, setInput] = useState('');
@@ -35,26 +36,29 @@ const AddMedia = (props: {
     setLoading(true);
     const file = event.target.files?.[0];
     if (file) {
-      const userID = localStorage.getItem('userID');
-      if (!userID) {
-        setErrorMessage('User Not Logged In');
-        removeErrorMessageAfter4Seconds();
-        return;
-      }
       const extension = file.name.split('.').pop();
       if (!extension || !supportedExtensions.includes(extension)) {
-        setErrorMessage('FileType Not Supported');
+        setErrorMessage(
+          'FileType is not one of: ' + supportedExtensions.toString()
+        );
         removeErrorMessageAfter4Seconds();
         return;
       }
       // get file name
       const name = file.name.split('.').slice(0, -1).join('.');
+
+      const cleaned_name = cleanFileName(name);
+
       const { data, error } = await supabase.storage
         .from('media')
-        .upload(`userFiles/${userID}/${name}.${extension}`, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
+        .upload(
+          `userFiles/${props.chatId}/${cleaned_name}.${extension}`,
+          file,
+          {
+            cacheControl: '3600',
+            upsert: false
+          }
+        );
       if (error) {
         setErrorMessage(error.message);
         removeErrorMessageAfter4Seconds();
@@ -88,7 +92,7 @@ const AddMedia = (props: {
         return;
       }
 
-      await props.updateFiles();
+      await props.updateFiles(props.chatId);
 
       // upload file to supabase storage
       setLoading(false);
@@ -100,12 +104,6 @@ const AddMedia = (props: {
   ): Promise<any> => {
     event.preventDefault();
     setLoading(true);
-    const userID = localStorage.getItem('userID');
-    if (!userID) {
-      setErrorMessage('User Not Logged In');
-      removeErrorMessageAfter4Seconds();
-      return;
-    }
 
     // check if url is already in userdocuments
     const { data: userDocs, error: userDocsError } = await supabase
@@ -128,7 +126,7 @@ const AddMedia = (props: {
           removeErrorMessageAfter4Seconds();
           return;
         }
-        await props.updateFiles();
+        await props.updateFiles(props.chatId);
         setLoading(false);
         return;
       }
@@ -152,7 +150,7 @@ const AddMedia = (props: {
       removeErrorMessageAfter4Seconds();
       return;
     }
-    await props.updateFiles();
+    await props.updateFiles(props.chatId);
     setLoading(false);
     return;
   };
@@ -163,7 +161,6 @@ const AddMedia = (props: {
         htmlFor="my-modal-2"
         className="btn-ghost avatar btn text-base-content"
       >
-        {' '}
         <FiUpload />
         &nbsp;&nbsp;Add Media
       </label>

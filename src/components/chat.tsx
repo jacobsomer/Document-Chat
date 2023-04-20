@@ -7,8 +7,7 @@ import type {
 import type { CompletionRequest, OaiModel } from '~/pages/api/stream';
 import { BotMessage, UserMessage } from '~/components/message';
 import DrawerContent from '~/components/drawerContent';
-import { SupabaseClient } from '@supabase/supabase-js';
-import { type ChatProps } from '~/types/types';
+import { SearchResponse, type ChatProps } from '~/types/types';
 
 const model: OaiModel = 'gpt-3.5-turbo';
 
@@ -41,6 +40,7 @@ const Chat = (props: ChatProps) => {
   const [messages, setMessages] =
     useState<ChatCompletionRequestMessage[]>(initMessages);
   const [input, setInput] = useState('');
+  const [files, setFiles] = useState(props.files);
 
   const handleScroll = useCallback(() => {
     if (ref.current) {
@@ -58,12 +58,30 @@ const Chat = (props: ChatProps) => {
       role: 'user'
     };
 
+    const getDataSources = async (prompt: string): Promise<SearchResponse> => {
+      const url = 'https://docuchat-embeddings-search-fhpwesohfa-ue.a.run.app/searchChatRoom';
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query: prompt,
+          chatId: props.currentChat.chatId
+        })
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      const data = (await response.json()) as SearchResponse;
+      return data;
+    };
+
+    const dataSources = await getDataSources(input);
+
     const completionRequestBody: CompletionRequest = {
       messages: messages.concat([newUserMessage]),
-      dataSources: [
-        'Justin Liang likes tacos because they are really yummy [page 5, meow.pdf]',
-        "Bob Smith likes boba cause it's chewy [3:23 - 4:34, Bob Smith's Vlog #32]"
-      ],
+      dataSources: dataSources.body,
       model: model
     };
 
@@ -163,7 +181,7 @@ const Chat = (props: ChatProps) => {
   }
 
   return (
-    <main data-theme="dark">
+    <main data-theme="light">
       <div className="flex flex-1 flex-row">
         <div
           style={{
@@ -175,17 +193,22 @@ const Chat = (props: ChatProps) => {
         >
           <DrawerContent
             handleClearSubmit={handleClearSubmit}
-            chatId={props.chatId}
             supabase={props.supabase}
             files={props.files}
             deleteFile={props.deleteFile}
             updateFiles={props.updateFiles}
+            userChats={props.userChats}
+            currentChat={props.currentChat}
+            createNewChat={props.createNewChat}
+            deleteChat={props.deleteChat}
+            renameChat={props.renameChat}
           />
         </div>
         <div className="flex h-screen w-full flex-col gap-4 bg-base-100 p-8">
           <div className="flex items-center justify-center gap-x-2">
-            <div className="flex-1 text-center text-3xl text-base-content ">
-              DocuChat
+            <div className="text-center text-3xl text-base-content ">
+              Chat Boba 🧋{' '}
+              <span className="text-sm text-warning">Beta Release</span>
             </div>
           </div>
           <div

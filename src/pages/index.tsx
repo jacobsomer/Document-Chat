@@ -9,7 +9,6 @@ import { supportedExtensions } from '~/utils/consts';
 import { createClient } from '@supabase/supabase-js';
 import { handleObjectUpload } from '~/utils/handleUpload';
 import Router from 'next/router';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
 const baseStorageUrl =
   'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
@@ -19,7 +18,6 @@ const Home: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [input, setInput] = useState('');
-  const supabaseClient = useSupabaseClient();
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -47,8 +45,9 @@ const Home: NextPage = () => {
     if (file) {
       const extension = file.name.split('.').pop();
       if (!extension || !supportedExtensions.includes(extension)) {
-        setErrorMessage('FileType Not Supported');
-        // wait for 2 seconds and then remove error message
+        setErrorMessage(
+          'FileType is not one of: ' + supportedExtensions.toString()
+        );
         removeErrorMessageAfter4Seconds();
         return;
       }
@@ -63,7 +62,6 @@ const Home: NextPage = () => {
         });
       if (error) {
         setErrorMessage(error.message);
-        // wait for 2 seconds and then remove error message
         removeErrorMessageAfter4Seconds();
         return;
       }
@@ -75,19 +73,18 @@ const Home: NextPage = () => {
       );
       if (!docId) {
         setErrorMessage(uploadError);
-        // wait for 2 seconds and then remove error message
         removeErrorMessageAfter4Seconds();
         return;
       }
 
       const { error: insertError } = await supabase.from('chats').insert({
         chatId: chatId,
-        docId: docId
+        docId: docId,
+        name: 'New Chat'
       });
 
       if (insertError) {
         setErrorMessage(insertError.message);
-        // wait for 2 seconds and then remove error message
         removeErrorMessageAfter4Seconds();
         return;
       }
@@ -156,16 +153,16 @@ const Home: NextPage = () => {
         <link rel="manifest" href="/site.webmanifest" />
       </Head>
       <main
-        data-theme="dark"
-        className="flex min-h-screen flex-col justify-center bg-base-100"
+        data-theme="light"
+        className="flex min-h-screen flex-col justify-center bg-gradient-radial from-primary via-base-100 to-accent"
       >
         {!user && (
-          <div className="absolute top-0 right-0 p-4">
+          <div className="absolute right-0 top-0 p-4">
             <Login chatURL="/chat" />
           </div>
         )}
 
-        <div className="absolute top-0 left-0 p-4">
+        <div className="absolute left-0 top-0 p-4">
           <h1 className="text-3xl font-bold text-base-content">DocuChat</h1>
         </div>
         <div className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
@@ -197,7 +194,7 @@ const Home: NextPage = () => {
               >
                 <input
                   id="upload-input1"
-                  className="height-0 relative top-0 right-0 w-0 text-9xl text-primary opacity-0"
+                  className="height-0 relative right-0 top-0 w-0 text-9xl text-primary opacity-0"
                   type="file"
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   onChange={handleFileUpload}
