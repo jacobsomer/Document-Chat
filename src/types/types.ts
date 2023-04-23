@@ -3,7 +3,7 @@ import { type SupabaseClient } from '@supabase/supabase-js';
 export type File = {
   url: string;
   docId: string;
-  name: string;
+  docName: string;
 };
 
 export type SearchResponse = {
@@ -14,13 +14,13 @@ export type SearchResponse = {
 
 export type UserChat = {
   chatId: string;
-  name: string;
+  chatName: string;
 };
 
 export  type ChatFile = {
     chatId: string;
     docId: string;
-    name: string;
+    docName: string;
   };
 
 export type AddMediaProps = {

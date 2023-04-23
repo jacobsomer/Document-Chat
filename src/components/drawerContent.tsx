@@ -2,13 +2,14 @@ import { useUser } from '@supabase/auth-helpers-react';
 import Account from './account';
 import AddMedia from './addMedia';
 import Login from './login';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AiFillFileAdd } from 'react-icons/ai';
 import { BsFillCloudDownloadFill, BsFillTrashFill } from 'react-icons/bs';
 import styles from '~/styles/drawerStyles.module.css';
 import { type DrawerProps } from '~/types/types';
 import { useRouter } from 'next/router';
 import ChatSettings from './chatSettings';
+import { HiSelector } from 'react-icons/hi';
 
 const FileComponent = (props: {
   name: string;
@@ -72,41 +73,147 @@ export const DrawerContent = (props: DrawerProps) => {
   const user = useUser();
   const router = useRouter();
 
+  const alternateChatLength = props.userChats?.map(
+    (chat) => chat.chatId !== props.currentChat.chatId
+  ).length;
+
+  useEffect(() => {
+    if (!user && props.files.length == 0) {
+      // get element by id
+      const introModal = document.getElementById('introModal');
+      // if element exists, click it
+      if (introModal) {
+        introModal.click();
+      }
+    }
+  }, [props.files.length, props.userChats, user]);
+
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center">
-      <div className={styles.filesContainer}>
-        <select
-          className="select mb-5 w-full max-w-xs"
-          onChange={(e) => {
-            void router.push('/chat/' + e.target.value);
-          }}
-        >
-          <option value={props.currentChat.chatId}>
-            {props.currentChat.name}
-          </option>
-          {props.userChats?.map((chat) => {
-            if (chat.chatId === props.currentChat.chatId) {
-              return;
-            }
-            return (
-              <option value={chat.chatId} key={chat.chatId}>
-                {chat.name}
-              </option>
-            );
-          })}
-        </select>
-        {props.files.map((file) => (
-          <FileComponent
-            key={file.docId}
-            url={file.url}
-            name={file.name}
-            deleteFile={() => props.deleteFile(file.docId)}
-          />
-        ))}
+    <div className="relative flex h-[100vh] w-[250px] flex-col bg-[hsl(var(--b3))] text-[hsl(var(--bc))]">
+      <div className="flex h-[100px] w-[250px] flex-col items-center justify-center">
+        {user ? (
+          <>
+            <div className="flex w-[90%] items-center justify-between px-4">
+              <div
+                className={
+                  'relative h-fit text-center text-xl text-base-content'
+                }
+              >
+                {alternateChatLength && alternateChatLength > 1 && (
+                  <div className="dropdown dropdown-bottom">
+                    <label tabIndex={0} className="btn-ghost btn m-1">
+                      <HiSelector /> {props.currentChat.chatName}
+                    </label>
+                    <ul
+                      tabIndex={0}
+                      className={
+                        'dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow'
+                      }
+                    >
+                      {props.userChats?.map((chat) => {
+                        if (chat.chatId !== props.currentChat.chatId) {
+                          return (
+                            <li key={chat.chatId}>
+                              <a
+                                onClick={() => {
+                                  void router.push('/chat/' + chat.chatId);
+                                }}
+                              >
+                                {chat.chatName}
+                              </a>
+                            </li>
+                          );
+                        }
+                      })}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <ChatSettings
+                handleClearSubmit={props.handleClearSubmit}
+                createNewChat={props.createNewChat}
+                deleteChat={props.deleteChat}
+                renameChat={props.renameChat}
+              />
+            </div>
+          </>
+        ) : (
+          <div className="text-xl text-base-content">
+            {props.currentChat.chatName} Hello
+          </div>
+        )}
       </div>
+
+      {
+        // If user is not logged in, display intro modal
+        !user && (
+          <>
+            <label
+              id="introModal"
+              htmlFor="IntroModal"
+              className="btn invisible"
+            />
+            <input type="checkbox" id="IntroModal" className="modal-toggle" />
+            <div className="modal">
+              <div className="modal-box relative">
+                <label
+                  htmlFor="IntroModal"
+                  className="btn-sm btn-circle btn absolute right-2 top-2"
+                  id="introModalClose"
+                >
+                  ✕
+                </label>
+                <h3 className="text-lg font-bold">
+                  👋 Hey there! Welcome to DocuChat!
+                </h3>
+                <p className="py-4">
+                  Chat with anything! 🤩 From PDFs and DOCX files to CSVs and
+                  news articles, Wikipedia, and YouTube videos, we&apos;ve got
+                  you covered! 🙌 So come join the fun and create the most
+                  amazing chat experience ever! 🚀
+                </p>
+              </div>
+            </div>
+          </>
+        )
+      }
       <div
         style={{
-          height: '20vh',
+          width: '100%',
+          height: '100%',
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          overflowY: 'scroll',
+          msOverflowStyle: 'none',
+          scrollbarWidth: 'none',
+          color: 'hsl(var(--bc))',
+          fontSize: 'large'
+        }}
+      >
+        <div className="my-2 w-20 border-t-2 border-black"></div>
+
+        {props.files.length === 0 ? (
+          <>
+            <div className="text-sm text-base-content">No files yet!</div>
+          </>
+        ) : (
+          props.files.map((file) => (
+            <FileComponent
+              key={file.docId}
+              url={file.url}
+              name={file.docName}
+              deleteFile={() => props.deleteFile(file.docId)}
+            />
+          ))
+        )}
+      </div>
+
+      <div
+        style={{
+          height: '20%',
+          minHeight: '150px',
           position: 'relative',
           display: 'flex',
           justifyContent: 'end',
@@ -114,19 +221,25 @@ export const DrawerContent = (props: DrawerProps) => {
           padding: '10px'
         }}
       >
-        <div className="flex flex-1 flex-col items-center justify-center ">
+        <div
+          style={{
+            position: 'relative',
+            display: 'flex',
+            flex: '1',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%'
+          }}
+        >
           {user ? (
             <>
-              <AddMedia
-                updateFiles={props.updateFiles}
-                chatId={props.currentChat.chatId}
-              />
-              <ChatSettings
-                handleClearSubmit={props.handleClearSubmit}
-                createNewChat={props.createNewChat}
-                deleteChat={props.deleteChat}
-                renameChat={props.renameChat}
-              />
+              <div className="tooltip" data-tip="Click me to add files">
+                <AddMedia
+                  updateFiles={props.updateFiles}
+                  chatId={props.currentChat.chatId}
+                />
+              </div>
               <Account />
             </>
           ) : (

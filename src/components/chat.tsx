@@ -7,8 +7,9 @@ import type {
 import type { CompletionRequest, OaiModel } from '~/pages/api/stream';
 import { BotMessage, UserMessage } from '~/components/message';
 import DrawerContent from '~/components/drawerContent';
-import { SearchResponse, type ChatProps } from '~/types/types';
+import { type SearchResponse, type ChatProps } from '~/types/types';
 import { MdOutlineDarkMode } from 'react-icons/md';
+import { useRouter } from 'next/router';
 
 const model: OaiModel = 'gpt-3.5-turbo';
 
@@ -43,6 +44,7 @@ const Chat = (props: ChatProps) => {
   const [input, setInput] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [themeButtonIsHovered, setThemeButtonIsHovered] = useState(false);
+  const router = useRouter();
 
   const handleScroll = useCallback(() => {
     if (ref.current) {
@@ -185,32 +187,26 @@ const Chat = (props: ChatProps) => {
 
   return (
     <main data-theme={theme}>
-      <div className="flex flex-1 flex-row">
-        <div
-          style={{
-            width: '250px',
-            height: '100vh',
-            backgroundColor: 'hsl(var(--b3))',
-            padding: '10px'
-          }}
-        >
-          <DrawerContent
-            handleClearSubmit={handleClearSubmit}
-            supabase={props.supabase}
-            files={props.files}
-            deleteFile={props.deleteFile}
-            updateFiles={props.updateFiles}
-            userChats={props.userChats}
-            currentChat={props.currentChat}
-            createNewChat={props.createNewChat}
-            deleteChat={props.deleteChat}
-            renameChat={props.renameChat}
-          />
-        </div>
+      <div className="z-0 flex flex-1 flex-row">
+        <DrawerContent
+          handleClearSubmit={handleClearSubmit}
+          supabase={props.supabase}
+          files={props.files}
+          deleteFile={props.deleteFile}
+          updateFiles={props.updateFiles}
+          userChats={props.userChats}
+          currentChat={props.currentChat}
+          createNewChat={props.createNewChat}
+          deleteChat={props.deleteChat}
+          renameChat={props.renameChat}
+        />
         <div className="flex h-screen w-full flex-col gap-4 bg-base-100 p-8">
           <div className="flex items-center justify-center gap-x-2">
-            <div className="text-center text-3xl text-base-content ">
-              Chat Boba 🧋
+            <div
+              className="cursor-pointer text-center text-3xl text-base-content"
+              onClick={() => void router.push('/')}
+            >
+              DocuChat 📄
               <span className="text-sm text-warning">Beta Release</span>
             </div>
           </div>
@@ -225,7 +221,7 @@ const Chat = (props: ChatProps) => {
                     onMouseLeave={() => setThemeButtonIsHovered(false)}
                     onClick={() => setTheme('light')}
                   />
-                ) : (  
+                ) : (
                   <MdOutlineDarkMode
                     className="h-8 w-8"
                     color="hsl(var(--ps))"
@@ -254,19 +250,16 @@ const Chat = (props: ChatProps) => {
                     onClick={() => setTheme('dark')}
                   />
                 )}
-               </div>
+              </div>
             )}
           </div>
-          {/* div at the top right for switching dark to light */}
-
           <div
             className="w-full flex-grow overflow-y-scroll"
             ref={ref}
             style={{
               width: '100%',
               height: '100vh',
-              padding: '10px',
-              overflow: 'hidden'
+              padding: '10px'
             }}
           >
             <ul>

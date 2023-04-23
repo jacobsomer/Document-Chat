@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import UploadSquare from './uploadSquare';
 import { supportedExtensions } from '~/utils/consts';
 import { createClient } from '@supabase/supabase-js';
 import { FiUpload } from 'react-icons/fi';
 import { handleObjectUpload } from '~/utils/handleUpload';
-import { useUser } from '@supabase/auth-helpers-react';
 import { v4 } from 'uuid';
 import { type AddMediaProps } from '~/types/types';
 
@@ -16,7 +15,6 @@ const AddMedia = (props: AddMediaProps) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [input, setInput] = useState('');
-  const user = useUser();
   // Create a single supabase client for interacting with your database
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -59,7 +57,7 @@ const AddMedia = (props: AddMediaProps) => {
             upsert: false
           }
         );
-      if (error) {
+      if (error && !error.message.includes('The resource already exists')) {
         setErrorMessage(error.message);
         removeErrorMessageAfter4Seconds();
         return;
@@ -67,10 +65,13 @@ const AddMedia = (props: AddMediaProps) => {
       let url = '';
       if (data) {
         url = data.path;
+      } else {
+        url = `userFiles/${props.chatId}/${cleaned_name}.${extension}`;
       }
       const baseStorageUrl =
         'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
       url = baseStorageUrl + url;
+      console.log(url);
       const newDocId = v4();
       const { docId: docId, error: error1 } = await handleObjectUpload(
         url,

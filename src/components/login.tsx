@@ -39,7 +39,7 @@ export default function Login(props: { chatURL: string }) {
               }
             }}
             providers={['google']}
-            redirectTo={props.chatURL}
+            redirectTo={props.chatURL || '/chat'}
           />
         </label>
       </label>

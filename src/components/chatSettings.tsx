@@ -79,12 +79,12 @@ export default function Account(props: AccountProps) {
           left: '0px'
         }}
       >
-        <div className="dropdown-right dropdown-end dropdown">
+        <div className="dropdown-right dropdown">
           <label
             tabIndex={0}
             className="btn-ghost avatar btn text-base-content"
           >
-            <AiOutlineSetting /> &nbsp;&nbsp;Chat Settings
+            <AiOutlineSetting />
           </label>
           <ul
             tabIndex={0}

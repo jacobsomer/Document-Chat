@@ -24,16 +24,10 @@ const Home: NextPage = () => {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
   );
 
-  useEffect(() => {
-    if (user) {
-      void Router.push('/chat');
-    }
-  }, [user]);
-
   return (
     <>
       <Head>
-        <title>DocuChat</title>
+        <title>DC</title>
         <meta name="description" content="Chat with any data source" />
         <link
           rel="icon"
@@ -52,7 +46,7 @@ const Home: NextPage = () => {
         )}
 
         <div className="absolute left-0 top-0 p-4">
-          <h1 className="text-3xl font-bold text-base-content">DocuChat</h1>
+          <h1 className="text-3xl font-bold text-base-content">DC</h1>
         </div>
         <div className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
           <p className="mt-12 text-4xl text-base-content">
@@ -64,6 +58,15 @@ const Home: NextPage = () => {
           <br />
           <br />
           <br />
+          <button
+            type="button"
+            className="btn-ghost btn bg-primary  text-primary-content hover:bg-primary-focus"
+            onClick={() => {
+              void Router.push('/chat');
+            }}
+          >
+            Get Started
+          </button>
         </div>
         <div className="flex h-20 w-full flex-col items-center justify-center bg-base-200">
           <div className="flex flex-row items-center justify-center gap-x-4">

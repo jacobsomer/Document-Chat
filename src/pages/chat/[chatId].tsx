@@ -17,8 +17,9 @@ const ChatRoom = () => {
   const router = useRouter();
   const [files, setFiles] = useState<File[]>([]);
   const [userChats, setUserChats] = useState<UserChat[] | undefined>(undefined);
+  const [finishedLoading, setFinishedLoading] = useState(false);
 
-  const updateFiles = useCallback(
+  const getAndUpdateFilesForChat = useCallback(
     async (chatId: string) => {
       const { data, error } = await supabase
         .from('chats')
@@ -29,58 +30,21 @@ const ChatRoom = () => {
         return;
       }
 
-      // if length of data is 0, check if the user is logged in and already has a chat with a 0 length,
-      //  that is not the current chat
-      if (data.length == 0) {
-        if (user) {
-          const { data: data1, error: error1 } = await supabase
-            .from('userChats')
-            .select('chatId, name')
-            .eq('userId', user.id);
-          if (error1) {
-            console.log(error1.message);
-            return;
-          }
-          //  of the user chats, search the chats database to find the lenght of each chat
-          // if we find a chat with length 0, redirect to that chat
-          for (const chat of data1) {
-            const { data: data2, error: error2 } = await supabase
-              .from('chats')
-              .select('*')
-              .eq('chatId', chat.chatId);
-            if (error2) {
-              console.log(error2);
-              return;
-            }
-            if (data2.length == 0 && chat.chatId != chatId) {
-              // delete the current chat from the userChats table
-              void deleteChat();
-              // redirect to the chat with length 0
-              void router.push(`/chat/${chat.chatId as string}`);
-              return;
-            }
-          }
-        }
-      }
-
       const files_: File[] = [];
       let name = '';
       for (const file of data) {
         const chat = file as ChatFile;
-        if (!currentChat) {
-          if (name === '') {
-            name = chat.name;
-          }
-
+        if (!currentChat && name === '') {
+          name = chat.docName;
           setCurrentChat({
             chatId: chatId,
-            name: chat.name
+            chatName: chat.docName || 'New Chat'
           });
         }
         const docId = chat.docId;
         const { data, error } = await supabase
           .from('userdocuments')
-          .select('url, docId, name, body, embedding')
+          .select('url, docId, docName, body, embedding')
           .eq('docId', docId);
         if (error) {
           console.log(error);
@@ -95,80 +59,98 @@ const ChatRoom = () => {
         }
       }
       setFiles(files_);
+    },
+    [currentChat]
+  );
+
+  const getAndUpdateUserChats = async (chatId: string, userId: string) => {
+    const { data, error } = await supabase
+      .from('userChats')
+      .select('*')
+      .eq('userId', userId);
+    if (error) {
+      console.log(error);
+      return;
+    }
+    const chat = data.find((chat) => chat.chatId == chatId);
+    if (chat) {
+      setCurrentChat(chat as UserChat);
+    } else {
+      const names = data.map((chat) => chat.chatName as string);
+      let chatName = 'New Chat';
+      let i = 1;
+      while (names.includes(chatName)) {
+        chatName = 'New Chat ' + String(i);
+        i++;
+      }
+      setCurrentChat({
+        chatId: chatId,
+        chatName: chatName
+      });
+      const { error: error1 } = await supabase.from('userChats').upsert({
+        chatId: chatId,
+        userId: userId,
+        chatName: chatName
+      });
+      if (error1) {
+        console.log(error1);
+      }
+    }
+    const chats: UserChat[] = [];
+    for (const chat of data) {
+      chats.push(chat as UserChat);
+    }
+    setUserChats(chats);
+  };
+
+  const updateChat = useCallback(
+    async (chatId: string) => {
+      if (!chatId || chatId.length != 36) {
+        await router.push('/');
+        return;
+      }
 
       if (!user) {
-        if (!currentChat)
+        if (!currentChat) {
           setCurrentChat({
             chatId: chatId,
-            name: 'New Chat'
+            chatName: 'New Chat'
           });
-        return;
-      }
-      // make sure the current chat is in the userChats
-      const { data: data1, error: error1 } = await supabase
-        .from('userChats')
-        .select('*')
-        .eq('chatId', chatId)
-        .eq('userId', user.id);
-      if (error1) {
-        console.log(error1.message);
-        return;
-      }
-      if (data1.length == 0) {
-        const { error: error2 } = await supabase.from('userChats').upsert(
-          {
-            chatId: chatId,
-            userId: user.id,
-            name: name
-          },
-          {
-            ignoreDuplicates: true
-          }
-        );
-        if (error2) {
-          console.log(error2.message);
-          return;
         }
-      }
-
-      const { data: data2, error: error2 } = await supabase
-        .from('userChats')
-        .select('chatId, name')
-        .eq('userId', user.id);
-      if (error2) {
-        console.log(error2.message);
+        await getAndUpdateFilesForChat(chatId);
+        setFinishedLoading(true);
         return;
       }
-      if (!currentChat) {
-        // filter data1 to find the chat with the chatId
-        const chat = data2.find((chat) => chat.chatId == chatId);
-        if (chat) {
-          setCurrentChat(chat as UserChat);
-        }
-      }
-      const chats: UserChat[] = [];
-      for (const chat of data2) {
-        chats.push(chat as UserChat);
-      }
-      setUserChats(chats);
+      // sets the files in the chat room if there are any
+      await getAndUpdateFilesForChat(chatId);
+      await getAndUpdateUserChats(chatId, user.id);
+      setFinishedLoading(true);
     },
-    [currentChat, user]
+    [router, user]
   );
 
   useEffect(() => {
     const chat_id = window.location.pathname.split('/')[2];
-    if (chat_id == undefined) {
-      void router.push('/chat/');
-      return;
+    if (!chat_id) {
+      if (!user) {
+        void router.push('/chat/' + v4());
+      } else {
+        void router.push('/chat/' + v4());
+      }
+    } else {
+      void updateChat(chat_id);
     }
-    void updateFiles(chat_id);
-  }, [router, updateFiles]);
+  }, [router, updateChat, user]);
 
   const deleteFile = async (docId: string) => {
+    if (!currentChat) {
+      return;
+    }
+
     const { error: error1 } = await supabase
       .from('chats')
       .delete()
-      .eq('chatId', currentChat?.chatId || '');
+      .eq('docId', docId);
 
     if (error1) {
       console.log(error1);
@@ -191,11 +173,12 @@ const ChatRoom = () => {
     if (error) {
       console.log(error);
     }
-    await updateFiles(currentChat?.chatId || '');
+
+    await getAndUpdateFilesForChat(currentChat.chatId);
   };
 
   const createNewChat = async () => {
-    if (!user) {
+    if (!user || !currentChat) {
       return;
     }
 
@@ -203,7 +186,7 @@ const ChatRoom = () => {
     const { data: data1, error: error2 } = await supabase
       .from('chats')
       .select('*')
-      .eq('chatId', currentChat?.chatId || '');
+      .eq('chatId', currentChat.chatId);
     if (error2) {
       console.log(error2);
       return;
@@ -220,66 +203,87 @@ const ChatRoom = () => {
       console.log(error);
       return;
     }
-    const names = [];
-    let name = 'New Chat';
-    let count = 1;
-    if (data?.length > 0) {
-      for (const chat of data) {
-        names.push(chat.name);
-        if (names.includes(name)) {
-          name = 'New Chat ' + String(count);
-          count++;
-        }
-      }
+    const names = data.map((chat) => chat.chatName as string);
+    let chatName = 'New Chat';
+    let i = 1;
+    while (names.includes(chatName)) {
+      chatName = 'New Chat ' + String(i);
+      i++;
     }
-
     const newChatID = v4();
 
     const { error: error1 } = await supabase
       .from('userChats')
-      .insert({ userId: user.id, chatId: newChatID, name: name });
+      .insert({ userId: user.id, chatId: newChatID, chatName: chatName });
 
     if (error1) {
       console.log(error1);
       return;
     }
-    void router.push('/chat/' + newChatID);
+    await router.push('/chat/' + newChatID);
   };
 
   const deleteChat = async () => {
-    if (!user || !userChats) {
+    if (!user || !userChats || !currentChat) {
       return;
     }
     if (userChats.length <= 1) {
+      alert('You cannot delete your last chat');
       return;
     }
     const { error } = await supabase
       .from('userChats')
       .delete()
-      .eq('chatId', currentChat?.chatId || '');
+      .eq('chatId', currentChat.chatId);
 
     if (error) {
       console.log(error);
       return;
     }
+
+    // get the files in the chat
+    const { data, error: error1 } = await supabase
+      .from('chats')
+      .select('*')
+      .eq('chatId', currentChat.chatId);
+
+    if (error1) {
+      console.log(error1);
+      return;
+    }
+
+    // delete the files in the chat
+    for (const file of data) {
+      const docId = file.docId as string;
+      await deleteFile(docId);
+    }
+    // delete the chat
+    const { error: error2 } = await supabase
+      .from('chats')
+      .delete()
+      .eq('chatId', currentChat.chatId);
+
+    if (error2) {
+      console.log(error2);
+      return;
+    }
+
     // redirect to another chat that is not the one being deleted
-    const newChat = userChats.find(
-      (chat) => chat.chatId != currentChat?.chatId
-    );
+    const newChat = userChats.find((chat) => chat.chatId != currentChat.chatId);
     if (newChat) {
       void router.push('/chat/' + newChat.chatId);
     }
   };
 
   const renameChat = async (newName: string) => {
-    if (!user) {
+    if (!user || !currentChat) {
       return;
     }
 
     const { error } = await supabase
       .from('userChats')
-      .update({ name: newName })
-      .eq('chatId', currentChat?.chatId || '');
+      .update({ chatName: newName })
+      .eq('chatId', currentChat.chatId);
 
     if (error) {
       console.log(error.message);
@@ -287,20 +291,20 @@ const ChatRoom = () => {
     }
 
     setCurrentChat({
-      chatId: currentChat?.chatId || '',
-      name: newName
+      chatId: currentChat.chatId,
+      chatName: newName
     });
   };
 
   return (
     <>
-      {currentChat && (
+      {currentChat && files && finishedLoading && (
         <Chat
           currentChat={currentChat}
           userId={user?.id}
           supabase={supabase}
           deleteFile={deleteFile}
-          updateFiles={updateFiles}
+          updateFiles={updateChat}
           files={files}
           createNewChat={createNewChat}
           userChats={userChats}
