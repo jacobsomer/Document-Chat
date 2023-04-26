@@ -13,6 +13,7 @@ import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
 import { useUser } from '@supabase/auth-helpers-react';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { isMobile } from 'react-device-detect';
 
 const model: OaiModel = 'gpt-3.5-turbo';
 
@@ -54,6 +55,7 @@ const Chat = (props: ChatProps) => {
   const [themeButtonIsHovered, setThemeButtonIsHovered] = useState(false);
   const [loadingText, setLoadingText] = useState('');
   const [drawerIsOpened, setDrawerIsOpened] = useState(false);
+  const [alreadyClicked, setAlreadyClicked] = useState(false);
   const router = useRouter();
   const user = useUser();
 
@@ -243,13 +245,13 @@ const Chat = (props: ChatProps) => {
     }
   };
 
-  return (
-    <>
-      {theme !== 'none' && (
-        <main data-theme={theme}>
-          <div className="z-0 flex flex-1 flex-row">
-            {drawerIsOpened ||
-              (
+  if (isMobile) {
+    return (
+      <>
+        {theme !== 'none' && (
+          <main data-theme={theme}>
+            <div className="z-0 flex flex-1 flex-row">
+              {drawerIsOpened || (
                 <DrawerContent
                   handleClearSubmit={handleClearSubmit}
                   supabase={props.supabase}
@@ -261,14 +263,145 @@ const Chat = (props: ChatProps) => {
                   createNewChat={props.createNewChat}
                   deleteChat={props.deleteChat}
                   renameChat={props.renameChat}
+                  alreadyClicked={alreadyClicked}
                 />
               )}
 
+              <div className="flex h-[100vh] w-full flex-col gap-4 bg-base-100 p-8">
+                <button
+                  className="btn-ghostfixed btn-circle btn-lg btn bottom-4 right-4 z-50"
+                  onClick={() => {
+                    setDrawerIsOpened(!drawerIsOpened);
+                    setAlreadyClicked(true);
+                  }}
+                >
+                  <GiHamburgerMenu />
+                </button>
+                <div className="flex items-center justify-center gap-x-2">
+                  <div
+                    className="cursor-pointer text-center text-6xl text-base-content"
+                    onClick={() => void router.push('/')}
+                  >
+                    DocuChat 📄
+                    <div className="text-5xl text-sm text-warning">
+                      Beta Release
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute right-12">
+                  {theme === 'dark' ? (
+                    <div className="tooltip" data-tip="Dark Mode">
+                      {themeButtonIsHovered ? (
+                        <MdOutlineDarkMode
+                          className="h-16 w-16"
+                          color="hsl(var(--b3))"
+                          onMouseEnter={() => setThemeButtonIsHovered(true)}
+                          onMouseLeave={() => setThemeButtonIsHovered(false)}
+                          onClick={() => void setUserTheme('light')}
+                        />
+                      ) : (
+                        <MdOutlineDarkMode
+                          className="h-16 w-16"
+                          color="hsl(var(--ps))"
+                          onMouseEnter={() => setThemeButtonIsHovered(true)}
+                          onMouseLeave={() => setThemeButtonIsHovered(false)}
+                          onClick={() => void setUserTheme('light')}
+                        />
+                      )}
+                    </div>
+                  ) : (
+                    <div className="tooltip" data-tip="Light Mode">
+                      {themeButtonIsHovered ? (
+                        <MdOutlineDarkMode
+                          className="h-16 w-16"
+                          color="hsl(var(--b3))"
+                          onMouseEnter={() => setThemeButtonIsHovered(true)}
+                          onMouseLeave={() => setThemeButtonIsHovered(false)}
+                          onClick={() => void setUserTheme('dark')}
+                        />
+                      ) : (
+                        <MdOutlineDarkMode
+                          className="h-16 w-16"
+                          color="hsl(var(--ps))"
+                          onMouseEnter={() => setThemeButtonIsHovered(true)}
+                          onMouseLeave={() => setThemeButtonIsHovered(false)}
+                          onClick={() => void setUserTheme('dark')}
+                        />
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div
+                  className="w-full flex-grow overflow-y-scroll"
+                  ref={ref}
+                  style={{
+                    width: '100%',
+                    height: '100vh',
+                    padding: '10px'
+                  }}
+                >
+                  <ul>
+                    {messages.map((msg, i) => {
+                      switch (msg.role) {
+                        case 'assistant':
+                          return (
+                            <li key={msg.role + i.toString()} className="py-2">
+                              <BotMessage msg={msg} />
+                            </li>
+                          );
+                        case 'user':
+                          return (
+                            <li key={msg.role + i.toString()} className="py-2">
+                              <UserMessage msg={msg} />
+                            </li>
+                          );
+                        case 'system':
+                          return;
+                      }
+                    })}
+                    {loadingText}
+                  </ul>
+                </div>
+                <form className="mb-[200px] flex flex-row items-center gap-x-6">
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                    className="input-bordered input h-[60px] w-full bg-base-100"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                  />
+                  <button className="btn-primary btn-lg" onClick={handleSubmit}>
+                    Send
+                  </button>
+                </form>
+              </div>
+            </div>
+          </main>
+        )}
+      </>
+    );
+  }
+
+  return (
+    <>
+      {theme !== 'none' && (
+        <main data-theme={theme}>
+          <div className="z-0 flex flex-1 flex-row">
+            <DrawerContent
+              handleClearSubmit={handleClearSubmit}
+              supabase={props.supabase}
+              files={props.files}
+              deleteFile={props.deleteFile}
+              updateFiles={props.updateFiles}
+              userChats={props.userChats}
+              currentChat={props.currentChat}
+              createNewChat={props.createNewChat}
+              deleteChat={props.deleteChat}
+              renameChat={props.renameChat}
+              alreadyClicked={alreadyClicked}
+            />
             <div className="flex h-screen w-full flex-col gap-4 bg-base-100 p-8">
-              <button className="btn btn-circle btn-ghostfixed bottom-4 right-4 z-50" onClick={() =>
-            setDrawerIsOpened(!drawerIsOpened)}>
-              <GiHamburgerMenu />
-            </button>
               <div className="flex items-center justify-center gap-x-2">
                 <div
                   className="cursor-pointer text-center text-3xl text-base-content"
