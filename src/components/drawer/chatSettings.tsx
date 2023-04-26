@@ -1,15 +1,9 @@
 import { useUser } from '@supabase/auth-helpers-react';
-import { createClient } from '@supabase/supabase-js';
 import { useState } from 'react';
 import { AiOutlineSetting, AiOutlineDelete } from 'react-icons/ai';
 import { MdDriveFileRenameOutline } from 'react-icons/md';
 import { RxReset } from 'react-icons/rx';
 import { BiMessageSquareAdd } from 'react-icons/bi';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
 
 type AccountProps = {
   handleClearSubmit: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -33,6 +27,7 @@ export default function Account(props: AccountProps) {
             type="text"
             placeholder="Enter new chat name"
             className="input-bordered input mb-3"
+            maxLength={10}
             onChange={(e) => {
               setNewChatName(e.target.value);
             }}
@@ -79,12 +74,12 @@ export default function Account(props: AccountProps) {
           left: '0px'
         }}
       >
-        <div className="dropdown-right dropdown">
+        <div className="dropdown-right dropdown-end dropdown">
           <label
             tabIndex={0}
-            className="btn-ghost avatar btn text-base-content"
+            className="btn-ghost avatar btn  text-base-content"
           >
-            <AiOutlineSetting />
+            <AiOutlineSetting /> &nbsp;&nbsp; Settings
           </label>
           <ul
             tabIndex={0}

@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 // Account Model, On Hover it should display the Account Component
 
 import { useRouter } from 'next/router';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import Profile from './profile';
 
 export default function Account() {
   const router = useRouter();
@@ -20,6 +20,7 @@ export default function Account() {
         left: '0px'
       }}
     >
+      <Profile />
       <div className="dropdown-right dropdown-end dropdown">
         <label tabIndex={0} className="btn-ghost avatar btn text-base-content">
           Account
@@ -28,18 +29,26 @@ export default function Account() {
           tabIndex={0}
           className="dropdown-content menu rounded-box w-52 bg-accent bg-base-100 p-2 shadow"
         >
-          <li>
-            <a className="justify-between" href="" target="_blank">
-              Discord
-            </a>
+          <li className="disabled">
+            <div>
+              <span>API</span> <span className="text-warning">coming soon</span>
+            </div>
           </li>
           <li>
-            <a href="" target="_blank">
-              Twitter
-            </a>
+            <label
+              className="btn-ghost avatar btn text-base-content"
+              htmlFor="profile-modal"
+            >
+              Profile
+            </label>
           </li>
           <li>
-            <a onClick={handleLogout}>Logout</a>
+            <label
+              className="btn-ghost avatar btn text-base-content"
+              onClick={() => void handleLogout()}
+            >
+              Logout
+            </label>
           </li>
         </ul>
       </div>

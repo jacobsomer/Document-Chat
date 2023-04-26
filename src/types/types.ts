@@ -1,4 +1,5 @@
 import { type SupabaseClient } from '@supabase/supabase-js';
+import { type Dispatch, type SetStateAction } from 'react';
 
 export type File = {
   url: string;
@@ -26,6 +27,7 @@ export  type ChatFile = {
 export type AddMediaProps = {
    chatId: string;
   updateFiles:  (chatId: string) => Promise<void>;
+  setToolTipString: Dispatch<SetStateAction<string>>;
 }
 export type DrawerProps = {
   currentChat: UserChat;

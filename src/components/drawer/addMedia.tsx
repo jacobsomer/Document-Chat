@@ -15,6 +15,7 @@ const AddMedia = (props: AddMediaProps) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [input, setInput] = useState('');
+  const [loadingForAWhile, setLoadingForAWhile] = useState(false);
   // Create a single supabase client for interacting with your database
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -32,6 +33,10 @@ const AddMedia = (props: AddMediaProps) => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setLoading(true);
+    setLoadingForAWhile(false);
+    setTimeout(() => {
+      setLoadingForAWhile(true);
+    }, 10000);
     const file = event.target.files?.[0];
     if (file) {
       const extension = file.name.split('.').pop();
@@ -97,15 +102,19 @@ const AddMedia = (props: AddMediaProps) => {
 
       // upload file to supabase storage
       setLoading(false);
+      setLoadingForAWhile(false);
     }
   };
 
   const handleUrlUpload = async (
     event: React.MouseEvent<HTMLButtonElement>
-  ): Promise<any> => {
+  ): Promise<void> => {
     event.preventDefault();
     setLoading(true);
-
+    setLoadingForAWhile(false);
+    setTimeout(() => {
+      setLoadingForAWhile(true);
+    }, 10000);
     // check if url is already in userdocuments
     const { data: userDocs, error: userDocsError } = await supabase
       .from('userdocuments')
@@ -153,6 +162,8 @@ const AddMedia = (props: AddMediaProps) => {
     }
     await props.updateFiles(props.chatId);
     setLoading(false);
+    setLoadingForAWhile(false);
+
     return;
   };
 
@@ -161,6 +172,9 @@ const AddMedia = (props: AddMediaProps) => {
       <label
         htmlFor="my-modal-2"
         className="btn-ghost avatar btn text-base-content"
+        onClick={() => {
+          props.setToolTipString('');
+        }}
       >
         <FiUpload />
         &nbsp;&nbsp;Add Media
@@ -202,7 +216,14 @@ const AddMedia = (props: AddMediaProps) => {
                   {errorMessage}
                 </p>
               )}
-              {loading && <p className="text-sm">Loading...</p>}
+              {loading && !loadingForAWhile && (
+                <p className="text-sm">Loading...</p>
+              )}
+              {loadingForAWhile && loading && (
+                <p className="text-sm">
+                  Please wait as this may take a few moments...
+                </p>
+              )}
             </form>
           </div>
           <div className="modal-action"></div>

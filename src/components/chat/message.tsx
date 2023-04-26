@@ -1,10 +1,8 @@
 // import Image from "next/image"
 // import avatar from "../../public/avatar.webp"
-import type { ChatCompletionRequestMessage } from 'openai';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { marked } from 'marked';
-import hljs from 'highlight.js';
 import Highlight from 'react-highlight';
 
 function CodeSnippet({ value }: { value: string }) {

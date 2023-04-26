@@ -1,28 +1,11 @@
 import { type NextPage } from 'next';
 import Head from 'next/head';
 import { useUser } from '@supabase/auth-helpers-react';
-import { FiUpload } from 'react-icons/fi';
-import { useEffect, useState } from 'react';
-import Login from '~/components/login';
-import { v4 } from 'uuid';
-import { supportedExtensions } from '~/utils/consts';
-import { createClient } from '@supabase/supabase-js';
-import { handleObjectUpload } from '~/utils/handleUpload';
+import Login from '~/components/utils/login';
 import Router from 'next/router';
-
-const baseStorageUrl =
-  'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
 
 const Home: NextPage = () => {
   const user = useUser();
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [input, setInput] = useState('');
-
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-  );
 
   return (
     <>
@@ -37,11 +20,11 @@ const Home: NextPage = () => {
       </Head>
       <main
         data-theme="light"
-        className="bg-gradient-radial flex min-h-screen flex-col justify-center from-primary via-base-100 to-accent"
+        className="flex min-h-screen flex-col justify-center from-primary"
       >
         {!user && (
           <div className="absolute right-0 top-0 p-4">
-            <Login chatURL="/chat" />
+            <Login chatURL="" />
           </div>
         )}
 
