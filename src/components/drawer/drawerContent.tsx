@@ -39,7 +39,7 @@ export const DrawerContent = (props: DrawerProps) => {
             <div className="flex w-[100%] items-center justify-center px-4">
               <div
                 className={
-                  'relative h-fit text-center text-xl text-base-content'
+                  'relative h-fit text-center text-5xl text-base-content'
                 }
               >
                 {alternateChatLength && alternateChatLength > 1 ? (
@@ -74,14 +74,14 @@ export const DrawerContent = (props: DrawerProps) => {
                     </ul>
                   </div>
                 ) : (
-                  <div className="align-right relative flex h-fit text-xl text-base-content">
-                    {props.currentChat.chatName}
+                  <div className="align-right relative flex h-fit text-4xl text-base-content">
+                    {/* {props.currentChat.chatName} */}
                   </div>
                 )}
               </div>
             </div>
           ) : (
-            <div className="align-center relative flex h-fit text-xl text-base-content">
+            <div className="align-center relative flex h-fit text-4xl text-base-content">
               {props.currentChat.chatName}
             </div>
           )}
@@ -110,7 +110,7 @@ export const DrawerContent = (props: DrawerProps) => {
 
           {props.files.length === 0 ? (
             <>
-              <div className="text-sm text-base-content">No files yet!</div>
+              <div className="text-3xl text-base-content">No files yet!</div>
             </>
           ) : (
             props.files.map((file) => (
@@ -143,7 +143,8 @@ export const DrawerContent = (props: DrawerProps) => {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              height: '100%'
+              height: '100%',
+              marginBottom: '140px'
             }}
           >
             {user ? (

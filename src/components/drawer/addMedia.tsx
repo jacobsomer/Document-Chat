@@ -6,6 +6,7 @@ import { FiUpload } from 'react-icons/fi';
 import { handleObjectUpload } from '~/utils/handleUpload';
 import { v4 } from 'uuid';
 import { type AddMediaProps } from '~/types/types';
+import { isMobile } from 'react-device-detect';
 
 const cleanFileName = (fileName: string) => {
   // replace any characters that are not letters, numbers, dashes, spaces, or underscores with an underscore
@@ -169,20 +170,40 @@ const AddMedia = (props: AddMediaProps) => {
 
   return (
     <>
-      <label
-        htmlFor="my-modal-2"
-        className="btn-ghost avatar btn text-base-content"
-        onClick={() => {
-          props.setToolTipString('');
-        }}
-      >
-        <FiUpload />
-        &nbsp;&nbsp;Add Media
-      </label>
+      {isMobile ? (
+        <label
+          htmlFor="my-modal-2"
+          className="btn-lg avatar btn btn mb-10 rounded-md px-4  py-2 text-2xl"
+          onClick={() => {
+            props.setToolTipString('');
+          }}
+        >
+          <FiUpload />
+          &nbsp;&nbsp;Add Media
+        </label>
+      ) : (
+        <label
+          htmlFor="my-modal-2"
+          className="btn-ghost avatar btn text-base-content"
+          onClick={() => {
+            props.setToolTipString('');
+          }}
+        >
+          <FiUpload />
+          &nbsp;&nbsp;Add Media
+        </label>
+      )}
+
       <input type="checkbox" id="my-modal-2" className="modal-toggle" />
       <label htmlFor="my-modal-2" className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
-          <h3 className="font-base-content text-lg">Add Data</h3>
+          {isMobile ? (
+            <h3 className="font-base-content text-3xl">Press To Add Data</h3>
+          ) : (
+            <h3 className="font-base-content text-lg">Add Data</h3>
+          )}
+          
+          
           <UploadSquare handleFileUpload={handleFileUpload} />
           <br />
           <div className="flex justify-center">
@@ -190,26 +211,54 @@ const AddMedia = (props: AddMediaProps) => {
           </div>
           <div>
             <form className="flex w-full max-w-xl flex-col gap-2 py-4">
-              <p>Enter URL:</p>
-              <div className="flex gap-x-4">
-                <input
-                  placeholder="ex. https://www.youtube.com"
-                  className="input-bordered input w-full"
-                  accept=".txt,.csv,.pdf,.doc,.docx,.ppt,.pptx"
-                  type="text"
-                  value={input}
-                  onInput={(e) =>
-                    setInput((e.target as HTMLTextAreaElement).value)
-                  }
-                />
-                <button
-                  type="submit"
-                  className="btn-primary btn"
-                  onClick={(e) => void handleUrlUpload(e)}
-                >
-                  Submit
-                </button>
-              </div>
+              {isMobile ? (
+                <>
+                <p className='text-3xl'>Enter URL:</p>
+                  <div className="flex gap-x-4">
+                    <input
+                      placeholder="ex. https://www.youtube.com/watch?v=qbIk7-JPB2c"
+                      className="input-bordered input w-full"
+                      accept=".txt,.csv,.pdf,.doc,.docx,.ppt,.pptx"
+                      type="text"
+                      value={input}
+                      onInput={(e) =>
+                        setInput((e.target as HTMLTextAreaElement).value)
+                      }
+                    />
+                    <button
+                      type="submit"
+                      className="btn-primary btn"
+                      onClick={(e) => void handleUrlUpload(e)}
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p>Enter URL:</p>
+                  <div className="flex gap-x-4">
+                    <input
+                      placeholder="ex. https://www.youtube.com/watch?v=qbIk7-JPB2c"
+                      className="input-bordered input w-full"
+                      accept=".txt,.csv,.pdf,.doc,.docx,.ppt,.pptx"
+                      type="text"
+                      value={input}
+                      onInput={(e) =>
+                        setInput((e.target as HTMLTextAreaElement).value)
+                      }
+                    />
+                    <button
+                      type="submit"
+                      className="btn-primary btn"
+                      onClick={(e) => void handleUrlUpload(e)}
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </>
+              )}
+
               {loading && <progress className="progress w-56"></progress>}
               {errorMessage && (
                 <p className="text-sm" style={{ color: 'red' }}>
