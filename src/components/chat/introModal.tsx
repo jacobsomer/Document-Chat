@@ -19,10 +19,10 @@ const IntroModal = (props: { setToolTipString: (s: string) => void }) => {
             </label>
             <br />
             <br />
-            <h3 className="text-6xl font-bold">
+            <h3 className="text-4xl font-bold">
               👋 Hey there! Welcome to ChatBoba!
             </h3>
-            <p className="py-4 text-4xl">
+            <p className="py-4 text-2xl">
               Chat with anything! 🤩 From PDFs and DOCX files to CSVs and news
               articles, Wikipedia, and YouTube videos, we&apos;ve got you
               covered! 🙌 So come join the fun and create the most amazing chat

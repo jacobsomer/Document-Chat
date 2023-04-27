@@ -195,28 +195,29 @@ const AddMedia = (props: AddMediaProps) => {
       )}
 
       <input type="checkbox" id="my-modal-2" className="modal-toggle" />
-        <div className="modal">
-          <div className="modal-box relative">
-
+      <div className="modal">
+        <div className="modal-box relative">
           {isMobile ? (
             <>
-             <label
-              htmlFor="my-modal-2"
-              className="btn-circle btn-lg btn absolute right-2 top-2 text-3xl"
-            >
-              ✕
-            </label>
-            
-            <h3 className="font-base-content text-3xl">Press To Add Data</h3></>
+              <label
+                htmlFor="my-modal-2"
+                className="btn-circle btn-lg btn absolute right-2 top-2 text-3xl"
+              >
+                ✕
+              </label>
+
+              <h3 className="font-base-content text-3xl">Press To Add Data</h3>
+            </>
           ) : (
             <>
-             <label
-              htmlFor="my-modal-2"
-              className="btn-sm btn-circle btn absolute right-2 top-2"
-            >
-              ✕
-            </label>
-            <h3 className="font-base-content text-lg">Add Data</h3></>
+              <label
+                htmlFor="my-modal-2"
+                className="btn-sm btn-circle btn absolute right-2 top-2"
+              >
+                ✕
+              </label>
+              <h3 className="font-base-content text-lg">Add Data</h3>
+            </>
           )}
 
           <UploadSquare handleFileUpload={handleFileUpload} />
@@ -248,14 +249,15 @@ const AddMedia = (props: AddMediaProps) => {
                       Submit
                     </button>
                   </div>
-                    <p className='text-xl'>
-                    Supported URLs include, youtube videos, wikipedia articles, news, and more.
+                  <p className="text-xl">
+                    Supported URLs include, youtube videos, wikipedia articles,
+                    news, and more.
                   </p>
                 </>
               ) : (
                 <>
                   <p>Enter URL </p>
-                
+
                   <div className="flex gap-x-4">
                     <input
                       placeholder="ex. https://www.youtube.com/watch?v=qbIk7-JPB2c"
@@ -274,10 +276,10 @@ const AddMedia = (props: AddMediaProps) => {
                     >
                       Submit
                     </button>
-                    
                   </div>
-                    <p className='text-sm'>
-                    Supported URLs include, youtube videos, wikipedia articles, news, and more.
+                  <p className="text-sm">
+                    Supported URLs include, youtube videos, wikipedia articles,
+                    news, and more.
                   </p>
                 </>
               )}

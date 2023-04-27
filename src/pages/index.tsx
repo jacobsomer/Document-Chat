@@ -78,10 +78,14 @@ const Home: NextPage = () => {
             <Image
               src="/logo.svg"
               alt="Chat Boba Logo"
-              width={67}
-              height={67}
+              width={50}
+              height={50}
             />
-            <h1 className="text-3xl font-bold text-base-content">ChatBoba</h1>
+            {isMobile ? (
+              <h1 className="text-xl font-bold text-base-content">ChatBoba</h1>
+            ) : (
+              <h1 className="text-3xl font-bold text-base-content">ChatBoba</h1>
+            )}
           </div>
           <div className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
             <p className="mt-12 text-4xl text-base-content">
@@ -90,33 +94,36 @@ const Home: NextPage = () => {
                 {' '}
                 Docs
               </b>,{' '}
-              <b className="display-inline font-bold text-primary">Youtube Videos</b>,
-              and
+              <b className="display-inline font-bold text-primary">
+                Youtube Videos
+              </b>
+              , and
               <b className="display-inline font-bold text-primary"> More</b>
             </p>
             <br />
             <br />
             <br />
-            {
-              isMobile? ( <button
-              type="button"
-              className="btn-ghost btn bg-primary  text-primary-content hover:bg-primary-focus w-3/4"
-              onClick={() => {
-                void Router.push('/chat');
-              }}
-            >
-              Get Started
-            </button>):( <button
-              type="button"
-              className="btn-ghost btn bg-primary text-primary-content hover:bg-primary-focus w-1/2"
-              onClick={() => {
-                void Router.push('/chat');
-              }}
-            >
-              Get Started
-            </button>)
-            }
-           
+            {isMobile ? (
+              <button
+                type="button"
+                className="btn-ghost btn w-3/4  bg-primary text-primary-content hover:bg-primary-focus"
+                onClick={() => {
+                  void Router.push('/chat');
+                }}
+              >
+                Get Started
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn-ghost btn w-1/2 bg-primary text-primary-content hover:bg-primary-focus"
+                onClick={() => {
+                  void Router.push('/chat');
+                }}
+              >
+                Get Started
+              </button>
+            )}
           </div>
         </div>
         <div>

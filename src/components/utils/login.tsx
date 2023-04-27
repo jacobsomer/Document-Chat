@@ -12,8 +12,8 @@ export default function Login(props: { chatURL: string }) {
     if (user) {
       window.location.href = '/chat';
     }
-    console.log(props.chatURL || '/chat/');
-  }, [user]);
+    console.log(props.chatURL)
+  }, [props.chatURL, user]);
 
   return (
     <>
@@ -51,7 +51,7 @@ export default function Login(props: { chatURL: string }) {
               }
             }}
             providers={['google']}
-            redirectTo={props.chatURL || 'http://localhost:3000/chat/'}
+            redirectTo={props.chatURL || 'https://www.chatboba.com/chat/'}
           />
         </label>
       </label>
