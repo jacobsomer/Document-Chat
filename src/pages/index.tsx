@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Mukta } from 'next/font/google';
 import Router from 'next/router';
 import { useRef } from 'react';
+import { isMobile } from 'react-device-detect';
 
 const mukta = Mukta({
   weight: '500',
@@ -25,7 +26,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>BobaChat</title>
+        <title>ChatBoba</title>
         <meta name="description" content="Chat with any data source" />
         <link
           rel="apple-touch-icon"
@@ -84,27 +85,38 @@ const Home: NextPage = () => {
           </div>
           <div className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
             <p className="mt-12 text-4xl text-base-content">
-              Interact with
+              Chat with
               <b className="display-inline font-bold text-primary">
                 {' '}
-                PDFs
+                Docs
               </b>,{' '}
-              <b className="display-inline font-bold text-primary">Videos</b>,
+              <b className="display-inline font-bold text-primary">Youtube Videos</b>,
               and
               <b className="display-inline font-bold text-primary"> More</b>
             </p>
             <br />
             <br />
             <br />
-            <button
+            {
+              isMobile? ( <button
               type="button"
-              className="btn-ghost btn bg-primary  text-primary-content hover:bg-primary-focus"
+              className="btn-ghost btn bg-primary  text-primary-content hover:bg-primary-focus w-3/4"
               onClick={() => {
                 void Router.push('/chat');
               }}
             >
               Get Started
-            </button>
+            </button>):( <button
+              type="button"
+              className="btn-ghost btn bg-primary text-primary-content hover:bg-primary-focus w-1/2"
+              onClick={() => {
+                void Router.push('/chat');
+              }}
+            >
+              Get Started
+            </button>)
+            }
+           
           </div>
         </div>
         <div>

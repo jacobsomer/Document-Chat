@@ -20,7 +20,7 @@ const IntroModal = (props: { setToolTipString: (s: string) => void }) => {
             <br />
             <br />
             <h3 className="text-6xl font-bold">
-              👋 Hey there! Welcome to BobaChat!
+              👋 Hey there! Welcome to ChatBoba!
             </h3>
             <p className="py-4 text-4xl">
               Chat with anything! 🤩 From PDFs and DOCX files to CSVs and news
@@ -49,7 +49,7 @@ const IntroModal = (props: { setToolTipString: (s: string) => void }) => {
             ✕
           </label>
           <h3 className="text-lg font-bold">
-            👋 Hey there! Welcome to BobaChat!
+            👋 Hey there! Welcome to ChatBoba!
           </h3>
           <p className="py-4">
             Chat with anything! 🤩 From PDFs and DOCX files to CSVs and news

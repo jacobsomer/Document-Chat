@@ -29,7 +29,7 @@ const model: OaiModel = 'gpt-3.5-turbo';
 const initMessages: ChatCompletionRequestMessage[] = [
   {
     role: 'system',
-    content: `You are a helpful assistant named BobaChat powered by GPT-4, the newest model by OpenAI.`
+    content: `You are a helpful assistant named ChatBoba powered by GPT-4, the newest model by OpenAI.`
   }
 ];
 
@@ -117,7 +117,7 @@ const Chat = (props: ChatProps) => {
       setLoadingText('Loading ...');
 
       const url =
-        'https://bobachat-embeddings-search-fhpwesohfa-ue.a.run.app/searchChatRoom';
+        'https://docuchat-embeddings-search-fhpwesohfa-ue.a.run.app/searchChatRoom';
       const response = await fetch(url, {
         method: 'POST',
         headers: {
