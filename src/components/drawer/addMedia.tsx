@@ -202,8 +202,7 @@ const AddMedia = (props: AddMediaProps) => {
           ) : (
             <h3 className="font-base-content text-lg">Add Data</h3>
           )}
-          
-          
+
           <UploadSquare handleFileUpload={handleFileUpload} />
           <br />
           <div className="flex justify-center">
@@ -213,7 +212,7 @@ const AddMedia = (props: AddMediaProps) => {
             <form className="flex w-full max-w-xl flex-col gap-2 py-4">
               {isMobile ? (
                 <>
-                <p className='text-3xl'>Enter URL:</p>
+                  <p className="text-3xl">Enter URL:</p>
                   <div className="flex gap-x-4">
                     <input
                       placeholder="ex. https://www.youtube.com/watch?v=qbIk7-JPB2c"

@@ -14,6 +14,13 @@ import { createClient } from '@supabase/supabase-js';
 import { useUser } from '@supabase/auth-helpers-react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { isMobile } from 'react-device-detect';
+import {  Mukta } from 'next/font/google'
+
+const mukta = Mukta({
+  weight:"500",
+  style: 'normal',
+  subsets: ['latin'],
+})
 
 const model: OaiModel = 'gpt-3.5-turbo';
 
@@ -249,7 +256,7 @@ const Chat = (props: ChatProps) => {
     return (
       <>
         {theme !== 'none' && (
-          <main data-theme={theme}>
+          <main data-theme={theme} style={mukta.style}>
             <div className="z-0 flex flex-1 flex-row">
               {drawerIsOpened || (
                 <DrawerContent
@@ -386,7 +393,7 @@ const Chat = (props: ChatProps) => {
   return (
     <>
       {theme !== 'none' && (
-        <main data-theme={theme}>
+        <main data-theme={theme} style={mukta.style}>
           <div className="z-0 flex flex-1 flex-row">
             <DrawerContent
               handleClearSubmit={handleClearSubmit}

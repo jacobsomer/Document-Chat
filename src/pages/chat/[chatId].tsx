@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
 import { type ChatFile, type UserChat, type File } from '~/types/types';
 import { v4 } from 'uuid';
-import { isMobile } from 'react-device-detect';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',

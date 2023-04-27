@@ -20,11 +20,9 @@ const MainChat = () => {
     if (user) {
       const { data, error } = await supabase
         .from('userChats')
-        .insert({ userId: user.id, chatId: chatID, name: 'New Chat' });
+        .insert({ userId: user.id, chatId: chatID, chatName: 'New Chat' });
       if (error) {
-        setStatus(
-          'Something went wrong, please refresh the page or try again later.'
-        );
+        setStatus(error.message);
         return;
       }
       if (data) {
@@ -44,9 +42,7 @@ const MainChat = () => {
         .select('*')
         .eq('userId', userId);
       if (error) {
-        setStatus(
-          'Something went wrong, please refresh the page or try again later.'
-        );
+        setStatus(error.message);
       } else if (data && data.length > 0) {
         const chat_id: string = data[0]?.chatId;
         if (chat_id) {

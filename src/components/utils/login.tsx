@@ -12,6 +12,7 @@ export default function Login(props: { chatURL: string }) {
     if (user) {
       window.location.href = '/chat';
     }
+    console.log(props.chatURL || '/chat/');
   }, [user]);
 
   return (
@@ -35,7 +36,7 @@ export default function Login(props: { chatURL: string }) {
       <input type="checkbox" id="my-modal" className="modal-toggle" />
       <label htmlFor="my-modal" className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
-          <h1>DocuChat</h1>
+          <h1>NimbleChat</h1>
           <Auth
             supabaseClient={supabaseClient}
             appearance={{
@@ -50,7 +51,7 @@ export default function Login(props: { chatURL: string }) {
               }
             }}
             providers={['google']}
-            redirectTo={props.chatURL || '/chat'}
+            redirectTo={props.chatURL || 'http://localhost:3000/chat/'}
           />
         </label>
       </label>
