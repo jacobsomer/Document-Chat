@@ -181,7 +181,13 @@ export const DrawerContent = (props: DrawerProps) => {
                   data-tip="Login to save this files and chats"
                   id="tooltip1"
                 >
-                  <Login chatURL={'/chat/' + props.currentChat.chatId} />
+                  <Login
+                    chatURL={
+                      'http://localhost:3000/chat/' +
+                      props.currentChat.chatId +
+                      '/'
+                    }
+                  />
                 </div>
                 <div className="h-10"></div>
               </>
@@ -335,7 +341,13 @@ export const DrawerContent = (props: DrawerProps) => {
                 data-tip="Login to save this files and chats"
                 id="tooltip1"
               >
-                <Login chatURL={'/chat/' + props.currentChat.chatId} />
+                <Login
+                  chatURL={
+                    'http://localhost:3000/chat/' +
+                    props.currentChat.chatId +
+                    '/'
+                  }
+                />
               </div>
               <div className="h-10"></div>
             </>

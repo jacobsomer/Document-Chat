@@ -5,6 +5,7 @@ import Login from '~/components/utils/login';
 import Image from 'next/image';
 import { Mukta } from 'next/font/google';
 import Router from 'next/router';
+import { useRef } from 'react';
 
 const mukta = Mukta({
   weight: '500',
@@ -14,11 +15,17 @@ const mukta = Mukta({
 
 const Home: NextPage = () => {
   const user = useUser();
-
+  const myRef = useRef<null | HTMLDivElement>(null);
+  const executeScroll = () => {
+    if (myRef.current) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      myRef.current.scrollIntoView();
+    }
+  };
   return (
     <>
       <Head>
-        <title>BC</title>
+        <title>BobaChat</title>
         <meta name="description" content="Chat with any data source" />
         <link
           rel="icon"
@@ -36,8 +43,9 @@ const Home: NextPage = () => {
                   justifyContent: 'center',
                   display: 'flex',
                   width: '100px',
-                  fontFamily: 'var(--inter-font)'
+                  cursor: 'pointer'
                 }}
+                onClick={executeScroll}
               >
                 About
               </div>
@@ -46,7 +54,10 @@ const Home: NextPage = () => {
               </div>
             </div>
           )}
-          <div className="absolute left-0 top-0 flex flex-row items-center justify-center p-4 cursor-pointer"  onClick={() => void Router.push('/')}>
+          <div
+            className="absolute left-0 top-0 flex cursor-pointer flex-row items-center justify-center p-4"
+            onClick={() => void Router.push('/')}
+          >
             <Image
               src="/logo.svg"
               alt="Chat Boba Logo"
@@ -79,51 +90,33 @@ const Home: NextPage = () => {
               Get Started
             </button>
           </div>
-          <div></div>
         </div>
         <div>
-          <div className="flex flex-col items-center justify-center p-10">
-            <h2 className="mb-4 text-4xl font-bold">How it Works</h2>
-            <div className="flex flex-col items-center justify-center md:flex-row">
-              <div className="mb-8 flex w-full items-center justify-center bg-base-300 p-8 md:mb-0 md:mr-8 md:w-auto">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 640 512"
-                  className="h-48 w-48 text-primary"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M256 224H32a32 32 0 0 0-32 32v192a32 32 0 0 0 32 32h224a32 32 0 0 0 32-32V256a32 32 0 0 0-32-32zm-32 160h-96v-96h96zm128 0h-96v-96h96zm128 0h-96v-96h96z"
-                  ></path>
-                </svg>
-                <p className="ml-4">
-                  Upload your PDFs, DOCX, CSVs, Youtube URLs, News Sources, and
-                  More
-                </p>
-              </div>
-              <div className="flex w-full items-center justify-center bg-base-300 p-8 md:ml-8 md:w-auto">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 640 512"
-                  className="h-48 w-48 text-primary"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M615.06 152.28L448 20.14c-10.9-8.24-26.74-8.24-37.64 0L256 120.12 153.64 46.91c-10.9-8.24-26.74-8.24-37.64 0L24.94 152.28c-10.9 8.24-14.85 22.41-8.6 34.62L102 307.46v117.42c0 13.25 10.75 24 24 24h288c13.25 0 24-10.75 24-24V307.46l86.66-120.57c6.25-12.21 2.3-26.38-8.6-34.61zM448 71.55L509.74 128H386.26L448 71.55zm-168 360.9V304h64v128.45L280 432z"
-                  ></path>
-                </svg>
-                <p className="ml-4">
-                  Ask GPT-3 to do anything with your files.
-                </p>
-              </div>
-            </div>
+          <div className="justify-top flex min-h-[80vh] flex-col items-center p-10">
+            <h2 className="mb-4 mb-[60px] text-4xl font-bold" ref={myRef}>
+              How it Works
+            </h2>
+            <h3 className="mb-4 text-2xl font-bold">1. Add Media</h3>
+            <Image
+              src="/addMedia.svg"
+              alt="Chat Boba Logo"
+              width={400}
+              height={400}
+            />
+            <h3 className="mb-4 text-2xl font-bold">2. Chat</h3>
+            <Image
+              src="/chatexample.svg"
+              alt="Chat Boba Logo"
+              width={400}
+              height={400}
+            />
           </div>
         </div>
 
         <div className="flex h-20 w-full flex-col items-center justify-center bg-base-200">
           <div className="flex flex-row items-center justify-center gap-x-4">
             <a
-              href="https://twitter.com/DocuChatApp"
+              href="https://twitter.com/jacob_somer_"
               target="_blank"
               rel="noopener noreferrer"
               className="link-hover link-primary link"
@@ -131,7 +124,7 @@ const Home: NextPage = () => {
               Twitter
             </a>
             <a
-              href="https://discord.gg/4Z8Q2Z8"
+              href="https://discord.gg/X3zEHukSbJ"
               target="_blank"
               rel="noopener noreferrer"
               className="link-hover link-primary link"
@@ -139,20 +132,12 @@ const Home: NextPage = () => {
               Discord
             </a>
             <a
-              href="https://www.notion.so/DocuChat-Privacy-Policy-0e2e8e2e8e2e4e4e8e2e8e2e8e2e8e2e8"
+              href="https://bright-carnation-959.notion.site/Chat-Boba-6ff9807d9e0346599d6c1c9f8b695b1f"
               target="_blank"
               rel="noopener noreferrer"
               className="link-hover link-primary link"
             >
               Privacy Policy
-            </a>
-            <a
-              href="https://www.notion.so/DocuChat-Disclaimer-0e2e8e2e8e2e4e4e8e2e8e2e8e2e8e2e"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link-hover link-primary link"
-            >
-              Disclaimer
             </a>
           </div>
         </div>

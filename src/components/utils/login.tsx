@@ -36,7 +36,7 @@ export default function Login(props: { chatURL: string }) {
       <input type="checkbox" id="my-modal" className="modal-toggle" />
       <label htmlFor="my-modal" className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
-          <h1>NimbleChat</h1>
+          <h1>BobaChat</h1>
           <Auth
             supabaseClient={supabaseClient}
             appearance={{
