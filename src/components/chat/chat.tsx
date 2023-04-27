@@ -134,12 +134,14 @@ const Chat = (props: ChatProps) => {
       const data = (await response.json()) as SearchResponse;
       return data;
     };
-
-    const dataSources = await getDataSources(input);
+    let dataSources: string[] = [];
+    if (props.files.length!=0){
+      dataSources = (await getDataSources(input)).body.slice(0,3);
+    }
 
     const completionRequestBody: CompletionRequest = {
       messages: messages.concat([newUserMessage]),
-      dataSources: dataSources.body.slice(0, 3),
+      dataSources: dataSources,
       model: model
     };
 
@@ -404,7 +406,7 @@ const Chat = (props: ChatProps) => {
                     {loadingText}
                   </ul>
                 </div>
-                <form className="mb-[200px] flex flex-row items-center gap-x-6">
+                <form className="mb-[60px] flex flex-row items-center gap-x-6">
                   <input
                     type="text"
                     placeholder="Type here"
