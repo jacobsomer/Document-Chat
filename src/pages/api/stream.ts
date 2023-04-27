@@ -18,7 +18,7 @@ function addDataSources(messages: ChatCompletionRequestMessage[], dataSources: s
     throw new Error("First message must be a system message");
   }
 
-  messages[0].content = `You are a helpful assistant named DocuChat powered by GPT-4, the newest model by OpenAI.
+  messages[0].content = `You are a helpful assistant named BobaChat powered by GPT-4, the newest model by OpenAI.
   Here are your data sources: ${dataSources.join(", ")}\n\n`
 
 }

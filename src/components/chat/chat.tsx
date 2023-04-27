@@ -16,6 +16,7 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import { isMobile } from 'react-device-detect';
 import { Mukta } from 'next/font/google';
 import Image from 'next/image';
+import Head from 'next/head';
 
 const mukta = Mukta({
   weight: '500',
@@ -28,7 +29,7 @@ const model: OaiModel = 'gpt-3.5-turbo';
 const initMessages: ChatCompletionRequestMessage[] = [
   {
     role: 'system',
-    content: `You are a helpful assistant named DocuChat powered by GPT-4, the newest model by OpenAI.`
+    content: `You are a helpful assistant named BobaChat powered by GPT-4, the newest model by OpenAI.`
   }
 ];
 
@@ -116,7 +117,7 @@ const Chat = (props: ChatProps) => {
       setLoadingText('Loading ...');
 
       const url =
-        'https://docuchat-embeddings-search-fhpwesohfa-ue.a.run.app/searchChatRoom';
+        'https://bobachat-embeddings-search-fhpwesohfa-ue.a.run.app/searchChatRoom';
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -256,6 +257,31 @@ const Chat = (props: ChatProps) => {
   if (isMobile) {
     return (
       <>
+      <Head>
+        <Head>
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+        <meta name="msapplication-TileColor" content="#da532c" />
+        <meta name="theme-color" content="#ffffff" />
+      </Head>
+      </Head>
         {theme !== 'none' && (
           <main data-theme={theme} style={mukta.style}>
             <div className="z-0 flex flex-1 flex-row">

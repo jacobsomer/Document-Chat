@@ -28,10 +28,26 @@ const Home: NextPage = () => {
         <title>BobaChat</title>
         <meta name="description" content="Chat with any data source" />
         <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
           rel="icon"
-          href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧋</text></svg>"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
         />
         <link rel="manifest" href="/site.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+        <meta name="msapplication-TileColor" content="#da532c" />
+        <meta name="theme-color" content="#ffffff" />
       </Head>
       <main data-theme="light" style={mukta.style}>
         <div className="flex min-h-screen flex-col justify-center from-primary">
@@ -92,7 +108,7 @@ const Home: NextPage = () => {
           </div>
         </div>
         <div>
-          <div className="justify-top flex min-h-[80vh] flex-col items-center p-10">
+          <div className="justify-top flex flex-col items-center p-10">
             <h2 className="mb-4 mb-[60px] text-4xl font-bold" ref={myRef}>
               How it Works
             </h2>
