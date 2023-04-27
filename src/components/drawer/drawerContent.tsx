@@ -183,7 +183,7 @@ export const DrawerContent = (props: DrawerProps) => {
                 >
                   <Login
                     chatURL={
-                      'http://localhost:3000/chat/' +
+                      'https://www.chatboba.com/chat/' +
                       props.currentChat.chatId +
                       '/'
                     }
@@ -343,7 +343,7 @@ export const DrawerContent = (props: DrawerProps) => {
               >
                 <Login
                   chatURL={
-                    'http://localhost:3000/chat/' +
+                    'https://www.chatboba.com/chat/' +
                     props.currentChat.chatId +
                     '/'
                   }
