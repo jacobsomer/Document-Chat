@@ -14,13 +14,13 @@ import { createClient } from '@supabase/supabase-js';
 import { useUser } from '@supabase/auth-helpers-react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { isMobile } from 'react-device-detect';
-import {  Mukta } from 'next/font/google'
-
+import { Mukta } from 'next/font/google';
+import Image from 'next/image';
 const mukta = Mukta({
-  weight:"500",
+  weight: '500',
   style: 'normal',
-  subsets: ['latin'],
-})
+  subsets: ['latin']
+});
 
 const model: OaiModel = 'gpt-3.5-turbo';
 
@@ -286,10 +286,18 @@ const Chat = (props: ChatProps) => {
                 </button>
                 <div className="flex items-center justify-center gap-x-2">
                   <div
-                    className="cursor-pointer text-center text-6xl text-base-content"
+                    className="flex flex-row items-center justify-center p-4 cursor-pointer"
                     onClick={() => void router.push('/')}
                   >
-                    DocuChat 📄
+                    <Image
+                      src="/logo.svg"
+                      alt="Chat Boba Logo"
+                      width={67}
+                      height={67}
+                    />
+                    <h1 className="text-3xl font-bold text-base-content">
+                      ChatBoba
+                    </h1>
                     <div className="text-5xl text-sm text-warning">
                       Beta Release
                     </div>
@@ -410,13 +418,21 @@ const Chat = (props: ChatProps) => {
             />
             <div className="flex h-screen w-full flex-col gap-4 bg-base-100 p-8">
               <div className="flex items-center justify-center gap-x-2">
-                <div
-                  className="cursor-pointer text-center text-3xl text-base-content"
-                  onClick={() => void router.push('/')}
-                >
-                  DocuChat 📄
-                  <span className="text-sm text-warning">Beta Release</span>
-                </div>
+                 <div
+                    className="flex flex-row items-center justify-center p-4 cursor-pointer"
+                    onClick={() => void router.push('/')}
+                  >
+                    <Image
+                      src="/logo.svg"
+                      alt="Chat Boba Logo"
+                      width={67}
+                      height={67}
+                    />
+                    <h1 className="text-3xl font-bold text-base-content">
+                      ChatBoba
+                    </h1>
+                    
+                  </div>
               </div>
               <div className="absolute right-12">
                 {theme === 'dark' ? (
