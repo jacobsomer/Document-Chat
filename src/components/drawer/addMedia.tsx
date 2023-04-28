@@ -77,7 +77,6 @@ const AddMedia = (props: AddMediaProps) => {
       const baseStorageUrl =
         'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
       url = baseStorageUrl + url;
-      console.log(url);
       const newDocId = v4();
       const { docId: docId, error: error1 } = await handleObjectUpload(
         url,
@@ -234,7 +233,6 @@ const AddMedia = (props: AddMediaProps) => {
                     <input
                       placeholder="ex. https://www.youtube.com/watch?v=qbIk7-JPB2c"
                       className="input-bordered input w-full"
-                      accept=".txt,.csv,.pdf,.doc,.docx,.ppt,.pptx"
                       type="text"
                       value={input}
                       onInput={(e) =>
@@ -262,7 +260,7 @@ const AddMedia = (props: AddMediaProps) => {
                     <input
                       placeholder="ex. https://www.youtube.com/watch?v=qbIk7-JPB2c"
                       className="input-bordered input w-full"
-                      accept=".txt,.csv,.pdf,.doc,.docx,.ppt,.pptx"
+  
                       type="text"
                       value={input}
                       onInput={(e) =>
