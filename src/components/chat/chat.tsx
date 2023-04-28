@@ -67,12 +67,65 @@ const Chat = (props: ChatProps) => {
   const [alreadyClicked, setAlreadyClicked] = useState(false);
   const router = useRouter();
   const user = useUser();
+  const [count, setCount] = useState(0);
 
   const handleScroll = useCallback(() => {
     if (ref.current) {
       scrollToBottom(ref.current);
     }
   }, []);
+
+  const getChat = useCallback(async () => {
+    if (!user) {
+      return;
+    }
+
+    if (count >= 1) {
+      return;
+    }
+    setCount(count + 1);
+
+    const { data, error } = await supabase
+      .from('userChats')
+      .select('*')
+      .eq('userId', user.id)
+      .eq('chatId', props.currentChat.chatId);
+    if (error) {
+      console.log(error);
+      return;
+    }
+    if (data.length === 0) {
+      return;
+    } else if (data.length === 1) {
+      try {
+        const new_chat = JSON.parse(
+          data[0]?.conversation as string
+        ) as ChatCompletionRequestMessage[];
+        if (new_chat === null) {
+          return;
+        }
+        console.log(new_chat)
+        setMessages(new_chat);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }, [messages.length, props.currentChat.chatId, user]);
+
+  const saveChat = useCallback(
+    async (ret: ChatCompletionRequestMessage[]) => {
+      if (!user) {
+        return;
+      }
+
+      await supabase
+        .from('userChats')
+        .update({ conversation: JSON.stringify(ret) })
+        .eq('userId', user.id)
+        .eq('chatId', props.currentChat.chatId);
+    },
+    [user, props.currentChat.chatId]
+  );
 
   const getAndUpdateTheme = useCallback(async () => {
     if (!user) {
@@ -104,7 +157,11 @@ const Chat = (props: ChatProps) => {
   useEffect(() => {
     handleScroll();
     void getAndUpdateTheme();
-  }, [messages, handleScroll, getAndUpdateTheme]);
+    void getChat();
+    return () => {
+      void saveChat(messages);
+    }
+  }, [handleScroll, getAndUpdateTheme, getChat, saveChat]);
 
   const stream = async (input: string) => {
     const newUserMessage: ChatCompletionRequestMessage = {
@@ -196,10 +253,12 @@ const Chat = (props: ChatProps) => {
             const last =
               prevMessages[prevMessages.length - 1] ||
               createMessage('', 'assistant');
-            return [
+
+            const ret = [
               ...prevMessages.slice(0, -1),
               { ...last, content: last.content + text }
             ];
+            return ret;
           });
         }
         handleScroll();
@@ -223,6 +282,7 @@ const Chat = (props: ChatProps) => {
     // const textInput = input;
     setInput('');
     await stream(input);
+    // if user, update messages for user chat room
   }
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {

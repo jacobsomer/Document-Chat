@@ -12,7 +12,7 @@ export default function Login(props: { chatURL: string }) {
     if (user) {
       window.location.href = '/chat';
     }
-    console.log(props.chatURL)
+    console.log(props.chatURL);
   }, [props.chatURL, user]);
 
   return (
