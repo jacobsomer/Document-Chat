@@ -67,7 +67,7 @@ const Home: NextPage = () => {
                 About
               </div>
               <div>
-                <Login chatURL="" />
+                <Login chatURL="https://www.chatboba.com/chat/" />
               </div>
             </div>
           )}
