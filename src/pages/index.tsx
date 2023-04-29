@@ -90,15 +90,10 @@ const Home: NextPage = () => {
           <div className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
             <p className="mt-12 text-4xl text-base-content">
               Chat with
-              <b className="display-inline font-bold text-primary">
-                {' '}
-                Docs
-              </b>,{' '}
-              <b className="display-inline font-bold text-primary">
-                Youtube Videos
+              {" "}
+              <b className="display-inline bg-gradient-to-r from-primary to-secondary bg-clip-text font-extrabold text-transparent">
+                Docs,Youtube Videos, and More
               </b>
-              , and
-              <b className="display-inline font-bold text-primary"> More</b>
             </p>
             <br />
             <br />
