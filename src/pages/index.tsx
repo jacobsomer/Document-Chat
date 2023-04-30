@@ -132,15 +132,15 @@ const Home: NextPage = () => {
             <Image
               src="/addMedia.svg"
               alt="Chat Boba Logo"
-              width={400}
-              height={400}
+              width={800}
+              height={800}
             />
             <h3 className="mb-4 text-2xl font-bold">2. Chat</h3>
             <Image
               src="/chatexample.svg"
               alt="Chat Boba Logo"
-              width={400}
-              height={400}
+              width={800}
+              height={800}
             />
           </div>
         </div>
@@ -203,7 +203,7 @@ const Home: NextPage = () => {
                 Jacob Somer
               </a>{' '}
               and{' '}
-              <a className="link-hover" href="https://justin-liang.com/"  target="_blank">
+              <a className="link-hover" href="https://www.justinliang.me/"  target="_blank">
                 Justin Liang
               </a>
             </p>
