@@ -62,6 +62,7 @@ const Home: NextPage = () => {
                   width: '100px',
                   cursor: 'pointer'
                 }}
+                className='btn-ghost btn rounded-md px-4 py-2 text-base-content hover:bg-opacity-20 hover:bg-base-content'
                 onClick={executeScroll}
               >
                 About
@@ -84,39 +85,40 @@ const Home: NextPage = () => {
             {isMobile ? (
               <h1 className="text-xl font-bold text-base-content">ChatBoba</h1>
             ) : (
-              <h1 className="text-3xl font-bold text-base-content">ChatBoba</h1>
+              <h1 className="text-xl font-bold text-base-content">ChatBoba</h1>
             )}
           </div>
           <div className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
-            <p className="mt-12 text-4xl text-base-content">
+            <p className="mt-12 text-6xl text-base-content drop-shadow-[0_35px_35px_rgba(102,26,230,.5)]">
               Chat with
               {" "}
-              <b className="display-inline bg-gradient-to-r from-primary to-secondary bg-clip-text font-extrabold text-transparent">
+              <b className="display-inline bg-gradient-to-r from-primary to-secondary bg-clip-text font-extrabold text-transparent ">
                 Docs,Youtube Videos, and More
               </b>
             </p>
-            <br />
-            <br />
+            <p className='w-100 text-xl text-base-content'> 
+              Create a chat room with any data source. Connect your data sources and 10x your writing productivity. 
+            </p>
             <br />
             {isMobile ? (
               <button
                 type="button"
-                className="btn-ghost btn w-3/4  bg-primary text-primary-content hover:bg-primary-focus"
+                className="btn-ghost btn w-3/4  bg-primary text-primary-content hover:bg-primary-focus rounded-full"
                 onClick={() => {
                   void Router.push('/chat');
                 }}
               >
-                Get Started
+                Start Chatting For Free
               </button>
             ) : (
               <button
                 type="button"
-                className="btn-ghost btn w-1/2 bg-primary text-primary-content hover:bg-primary-focus"
+                className="btn-ghost btn w-1/2 bg-primary text-primary-content hover:bg-primary-focus rounded-full"
                 onClick={() => {
                   void Router.push('/chat');
                 }}
               >
-                Get Started
+                 Start Chatting For Free
               </button>
             )}
           </div>
