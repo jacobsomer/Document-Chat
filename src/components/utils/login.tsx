@@ -20,7 +20,7 @@ export default function Login(props: { chatURL: string }) {
       {isMobile ? (
         <label
           htmlFor="my-modal"
-          className="avatar btn rounded-md px-4 py-2 text-xl"
+          className="btn-ghost avatar btn rounded-md px-4 py-2 text-xl"
         >
           Login
         </label>
