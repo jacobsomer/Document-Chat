@@ -104,7 +104,7 @@ const Chat = (props: ChatProps) => {
         if (new_chat === null) {
           return;
         }
-        console.log(new_chat)
+        console.log(new_chat);
         setMessages(new_chat);
       } catch (err) {
         console.log(err);
@@ -160,7 +160,7 @@ const Chat = (props: ChatProps) => {
     void getChat();
     return () => {
       void saveChat(messages);
-    }
+    };
   }, [handleScroll, getAndUpdateTheme, getChat, saveChat]);
 
   const stream = async (input: string) => {
@@ -524,6 +524,7 @@ const Chat = (props: ChatProps) => {
                   <h1 className="text-3xl font-bold text-base-content">
                     ChatBoba
                   </h1>
+                  <div className="text-sm text-warning">Beta Release</div>
                 </div>
               </div>
               <div className="absolute right-12">

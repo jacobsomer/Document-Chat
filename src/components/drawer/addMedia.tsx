@@ -260,7 +260,6 @@ const AddMedia = (props: AddMediaProps) => {
                     <input
                       placeholder="ex. https://www.youtube.com/watch?v=qbIk7-JPB2c"
                       className="input-bordered input w-full"
-  
                       type="text"
                       value={input}
                       onInput={(e) =>
