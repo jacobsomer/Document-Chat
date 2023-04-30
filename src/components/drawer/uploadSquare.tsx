@@ -29,7 +29,7 @@ const UploadSquare: React.FC<UploadSquareProps> = ({ handleFileUpload }) => {
           id="upload-input"
           className={styles.uploadbutton}
           type="file"
-          accept=".txt,.pdf,.doc,.docx,.ppt,.pptx,.csv"
+          accept=".txt,.pdf,.doc,.docx,.ppt,.pptx,.csv,.png,.jpeg,.jpg"
           onChange={handleFileUpload}
         />
         <div className={styles.uploadtextcontainer}>
