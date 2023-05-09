@@ -247,7 +247,8 @@ export const DrawerContent = (props: DrawerProps) => {
           </div>
       </div>
       <div style ={{
-        width: width.toString() + 'px'
+        width: width.toString() + 'px',
+            overflow: 'hidden',
       }}
        className={"flex h-[100px] flex-col items-center justify-center"}>
         {user ? (
@@ -291,10 +292,7 @@ export const DrawerContent = (props: DrawerProps) => {
             </div>
           </div>
         ) : (
-          <div className="align-center relative flex h-fit text-xl text-base-content" style={{
-            maxWidth: width.toString() + 'px',
-            overflow: 'hidden',
-          }}>
+          <div className="align-center relative flex h-fit text-xl text-base-content">
             {props.currentChat.chatName}
           </div>
         )}
