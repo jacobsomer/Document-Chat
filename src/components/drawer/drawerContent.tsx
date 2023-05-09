@@ -2,7 +2,7 @@ import { useUser } from '@supabase/auth-helpers-react';
 import Account from './account';
 import AddMedia from '~/components/drawer/addMedia';
 import Login from '../utils/login';
-import { MouseEvent, SetStateAction, useEffect, useState } from 'react';
+import { type MouseEvent, useEffect, useState } from 'react';
 import { type DrawerProps } from '~/types/types';
 import { useRouter } from 'next/router';
 import ChatSettings from './chatSettings';
@@ -17,21 +17,12 @@ export const DrawerContent = (props: DrawerProps) => {
   const [toolTipString, setToolTipString] = useState('');
   const [width, setWidth] = useState(250)
   const [isDragging, setIsDragging] = useState(false);
-    const [mousePos, setMousePos] = useState({});
 
   const alternateChatLength = props.userChats?.map(
     (chat) => chat.chatId !== props.currentChat.chatId
   ).length;
 
   useEffect(() => {
-    if (!user && props.files.length == 0 && !props.alreadyClicked) {
-      // get element by id
-      const introModal = document.getElementById('introModal');
-      // if element exists, click it
-      if (introModal) {
-        introModal.click();
-      }
-    }
     const handleMouseMove = (event: { clientX: number; clientY: number; }) => {
       if (isDragging) {
           setWidth(Math.min(Math.max(event.clientX,0),800));
@@ -53,7 +44,7 @@ export const DrawerContent = (props: DrawerProps) => {
       );
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, props.alreadyClicked, props.files.length, props.userChats, user, width]);
+  }, [isDragging, props.files.length, props.userChats, user, width]);
 
   if (isMobile) {
     return (

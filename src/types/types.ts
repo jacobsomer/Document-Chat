@@ -33,7 +33,6 @@ export type DrawerProps = {
   currentChat: UserChat;
   userChats: UserChat[] | undefined;
   supabase: SupabaseClient<any, 'public', any>;
-  alreadyClicked: boolean;
   files: File[];
   handleClearSubmit: (e: React.MouseEvent<HTMLButtonElement>) => void;
   deleteFile: (docId: string) => Promise<void>;

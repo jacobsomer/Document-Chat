@@ -64,7 +64,6 @@ const Chat = (props: ChatProps) => {
   const [themeButtonIsHovered, setThemeButtonIsHovered] = useState(false);
   const [loadingText, setLoadingText] = useState('');
   const [drawerIsOpened, setDrawerIsOpened] = useState(false);
-  const [alreadyClicked, setAlreadyClicked] = useState(false);
   const router = useRouter();
   const user = useUser();
   const [count, setCount] = useState(0);
@@ -104,13 +103,12 @@ const Chat = (props: ChatProps) => {
         if (new_chat === null) {
           return;
         }
-        console.log(new_chat);
         setMessages(new_chat);
       } catch (err) {
         console.log(err);
       }
     }
-  }, [messages.length, props.currentChat.chatId, user]);
+  }, [count, props.currentChat.chatId, user]);
 
   const saveChat = useCallback(
     async (ret: ChatCompletionRequestMessage[]) => {
@@ -129,7 +127,9 @@ const Chat = (props: ChatProps) => {
 
   const getAndUpdateTheme = useCallback(async () => {
     if (!user) {
-      setTheme('light');
+      if (theme === 'none') {
+        setTheme('light');
+      }
       return;
     }
     // userTheme: userId, theme
@@ -152,7 +152,7 @@ const Chat = (props: ChatProps) => {
       const theme = data[0] as { theme: 'light' | 'dark' };
       setTheme(theme.theme);
     }
-  }, [user]);
+  }, [theme, user]);
 
   useEffect(() => {
     handleScroll();
@@ -161,7 +161,7 @@ const Chat = (props: ChatProps) => {
     return () => {
       void saveChat(messages);
     };
-  }, [handleScroll, getAndUpdateTheme, getChat, saveChat]);
+  }, [handleScroll, getAndUpdateTheme, getChat, saveChat, messages]);
 
   const stream = async (input: string) => {
     const newUserMessage: ChatCompletionRequestMessage = {
@@ -363,7 +363,6 @@ const Chat = (props: ChatProps) => {
                   createNewChat={props.createNewChat}
                   deleteChat={props.deleteChat}
                   renameChat={props.renameChat}
-                  alreadyClicked={alreadyClicked}
                 />
               )}
 
@@ -372,7 +371,6 @@ const Chat = (props: ChatProps) => {
                   className="btn-ghostfixed btn-circle btn-lg btn bottom-4 right-4 z-50"
                   onClick={() => {
                     setDrawerIsOpened(!drawerIsOpened);
-                    setAlreadyClicked(true);
                   }}
                 >
                   <GiHamburgerMenu />
@@ -507,7 +505,6 @@ const Chat = (props: ChatProps) => {
               createNewChat={props.createNewChat}
               deleteChat={props.deleteChat}
               renameChat={props.renameChat}
-              alreadyClicked={alreadyClicked}
             />
             <div className="flex h-screen w-full flex-col gap-4 bg-base-100 p-8">
               <div className="flex items-center justify-center gap-x-2">
