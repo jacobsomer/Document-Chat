@@ -108,7 +108,9 @@ const Home: NextPage = () => {
                   void Router.push('/chat');
                 }}
               >
-                {user?.id !== null  ? 'Start Chatting' : 'Start Chatting For Free'}
+                {user?.id !== null
+                  ? 'Start Chatting'
+                  : 'Start Chatting For Free'}
               </button>
             ) : (
               <button
@@ -118,7 +120,9 @@ const Home: NextPage = () => {
                   void Router.push('/chat');
                 }}
               >
-                {user?.id !== null ? 'Start Chatting' : 'Start Chatting For Free'}
+                {user?.id !== null
+                  ? 'Start Chatting'
+                  : 'Start Chatting For Free'}
               </button>
             )}
           </div>
@@ -199,11 +203,19 @@ const Home: NextPage = () => {
           <div>
             <p>
               Made with ❤️ by{' '}
-              <a className="link-hover" href="https://jacobsomer.com"  target="_blank">
+              <a
+                className="link-hover"
+                href="https://jacobsomer.com"
+                target="_blank"
+              >
                 Jacob Somer
               </a>{' '}
               and{' '}
-              <a className="link-hover" href="https://www.justinliang.me/"  target="_blank">
+              <a
+                className="link-hover"
+                href="https://www.justinliang.me/"
+                target="_blank"
+              >
                 Justin Liang
               </a>
             </p>

@@ -221,7 +221,7 @@ const AddMedia = (props: AddMediaProps) => {
 
           <UploadSquare handleFileUpload={handleFileUpload} />
           <br />
-           <div className="divider lg:divider-horizontal">OR</div> 
+          <div className="divider lg:divider-horizontal">OR</div>
           <div>
             <form className="flex w-full max-w-xl flex-col gap-2 py-4">
               {isMobile ? (

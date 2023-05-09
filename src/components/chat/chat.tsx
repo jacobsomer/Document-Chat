@@ -152,7 +152,7 @@ const Chat = (props: ChatProps) => {
       const theme = data[0] as { theme: 'light' | 'dark' };
       setTheme(theme.theme);
     }
-  }, [ user]);
+  }, [user]);
 
   useEffect(() => {
     handleScroll();

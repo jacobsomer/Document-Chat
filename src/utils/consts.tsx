@@ -5,5 +5,5 @@ export const supportedExtensions = [
   'docx',
   'ppt',
   'pptx',
-  'csv',
+  'csv'
 ];

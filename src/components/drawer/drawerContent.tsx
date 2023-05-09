@@ -15,7 +15,7 @@ export const DrawerContent = (props: DrawerProps) => {
   const user = useUser();
   const router = useRouter();
   const [toolTipString, setToolTipString] = useState('');
-  const [width, setWidth] = useState(250)
+  const [width, setWidth] = useState(250);
   const [isDragging, setIsDragging] = useState(false);
 
   const alternateChatLength = props.userChats?.map(
@@ -23,9 +23,9 @@ export const DrawerContent = (props: DrawerProps) => {
   ).length;
 
   useEffect(() => {
-    const handleMouseMove = (event: { clientX: number; clientY: number; }) => {
+    const handleMouseMove = (event: { clientX: number; clientY: number }) => {
       if (isDragging) {
-          setWidth(Math.min(Math.max(event.clientX,0),800));
+        setWidth(Math.min(Math.max(event.clientX, 0), 800));
       }
     };
 
@@ -33,15 +33,11 @@ export const DrawerContent = (props: DrawerProps) => {
       setIsDragging(false);
     };
 
-
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
 
     return () => {
-      window.removeEventListener(
-        'mousemove',
-        handleMouseMove
-      );
+      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging, props.files.length, props.userChats, user, width]);
@@ -222,35 +218,47 @@ export const DrawerContent = (props: DrawerProps) => {
   };
 
   return (
-    <div className={"relative flex h-[100vh] flex-col bg-[hsl(var(--b3))] text-[hsl(var(--bc))]"}
-      style ={{
+    <div
+      className={
+        'relative flex h-[100vh] flex-col bg-[hsl(var(--b3))] text-[hsl(var(--bc))]'
+      }
+      style={{
         width: width.toString() + 'px'
       }}
     >
-      <div style={{
-        zIndex: "1",
-        marginLeft: "10px",
-        top:'50%',
-        transform: 'translateY(-50%)',
-        left: width.toString() + 'px',
-        cursor: 'ew-resize',
-      }}
-       onMouseMove={(e) => {
-        if (e.buttons === 1) {
-          handleDrag(e);
-        }
-      }}
-
-      className={`absolute h-[80vh] w-[24px] bg-[${isDragging ? "hsl(var(--b3))" : "hsl(var(--b1))"}] rounded-full hover:bg-[hsl(var(--b3))]`}>
-        <div className={'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'}>
+      <div
+        style={{
+          zIndex: '1',
+          marginLeft: '10px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          left: width.toString() + 'px',
+          cursor: 'ew-resize'
+        }}
+        onMouseMove={(e) => {
+          if (e.buttons === 1) {
+            handleDrag(e);
+          }
+        }}
+        className={`absolute h-[80vh] w-[24px] bg-[${
+          isDragging ? 'hsl(var(--b3))' : 'hsl(var(--b1))'
+        }] rounded-full hover:bg-[hsl(var(--b3))]`}
+      >
+        <div
+          className={
+            'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform'
+          }
+        >
           <HiChevronRight className={'h-6 w-6 text-[hsl(var(--bc))]'} />
-          </div>
+        </div>
       </div>
-      <div style ={{
-        width: width.toString() + 'px',
-            overflow: Number(width.toString())<250? 'hidden': 'visible',
-      }}
-       className={"flex h-[100px] flex-col items-center justify-center"}>
+      <div
+        style={{
+          width: width.toString() + 'px',
+          overflow: Number(width.toString()) < 250 ? 'hidden' : 'visible'
+        }}
+        className={'flex h-[100px] flex-col items-center justify-center'}
+      >
         {user ? (
           <div className="flex w-[100%] items-center justify-center px-4">
             <div
@@ -316,10 +324,10 @@ export const DrawerContent = (props: DrawerProps) => {
           color: 'hsl(var(--bc))',
           fontSize: 'large',
           maxWidth: width.toString() + 'px',
-          overflow: 'hidden',
+          overflow: 'hidden'
         }}
       >
-      <div className="divider">My Files</div> 
+        <div className="divider">My Files</div>
         {props.files.length === 0 ? (
           <>
             <div className="text-sm text-base-content">No files yet!</div>

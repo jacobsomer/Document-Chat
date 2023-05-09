@@ -311,14 +311,12 @@ const ChatRoom = () => {
           deleteChat={deleteChat}
           renameChat={renameChat}
         />
-      ): 
-      
-      // is loading
-      <h3 className="flex flex-col items-center justify-center h-screen">
-        Loading...
-      </h3>
-    }
-
+      ) : (
+        // is loading
+        <h3 className="flex h-screen flex-col items-center justify-center">
+          Loading...
+        </h3>
+      )}
     </>
   );
 };
