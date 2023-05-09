@@ -298,7 +298,7 @@ const ChatRoom = () => {
 
   return (
     <>
-      {currentChat && files && finishedLoading && (
+      {currentChat && files && finishedLoading ? (
         <Chat
           currentChat={currentChat}
           userId={user?.id}
@@ -311,7 +311,14 @@ const ChatRoom = () => {
           deleteChat={deleteChat}
           renameChat={renameChat}
         />
-      )}
+      ): 
+      
+      // is loading
+      <h3 className="flex flex-col items-center justify-center h-screen">
+        Loading...
+      </h3>
+    }
+
     </>
   );
 };
