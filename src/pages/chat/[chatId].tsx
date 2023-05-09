@@ -60,9 +60,8 @@ const ChatRoom = () => {
         }
 
       }
-      
     },
-    [user]
+    [router, user]
   );
 
   useEffect(() => {
