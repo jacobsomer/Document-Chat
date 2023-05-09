@@ -13,15 +13,6 @@
   font-size: large;
 }
 
-/* style= {
-    {
-    width: '250px',
-      height: '100vh',
-      backgroundColor: 'hsl(var(--b3))',
-      padding: '10px'
-  }
-} */
-
 /* Hide scrollbar for Chrome, Safari and Opera */
 .filesContainer::-webkit-scrollbar {
   display: none;
@@ -29,7 +20,7 @@
 
 .fileItem {
   position: relative;
-  width: 200px;
+  width: 80%;
   color: hsl(var(--pc));
   background-color: hsl(var(--b1));
   margin: 8px;

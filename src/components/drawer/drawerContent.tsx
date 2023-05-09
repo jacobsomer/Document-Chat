@@ -2,11 +2,11 @@ import { useUser } from '@supabase/auth-helpers-react';
 import Account from './account';
 import AddMedia from '~/components/drawer/addMedia';
 import Login from '../utils/login';
-import { useEffect, useState } from 'react';
+import { MouseEvent, SetStateAction, useEffect, useState } from 'react';
 import { type DrawerProps } from '~/types/types';
 import { useRouter } from 'next/router';
 import ChatSettings from './chatSettings';
-import { HiSelector } from 'react-icons/hi';
+import { HiChevronRight, HiSelector } from 'react-icons/hi';
 import FileComponent from './fileComponent';
 import IntroModal from '../chat/introModal';
 import { isMobile } from 'react-device-detect';
@@ -15,6 +15,9 @@ export const DrawerContent = (props: DrawerProps) => {
   const user = useUser();
   const router = useRouter();
   const [toolTipString, setToolTipString] = useState('');
+  const [width, setWidth] = useState(250)
+  const [isDragging, setIsDragging] = useState(false);
+    const [mousePos, setMousePos] = useState({});
 
   const alternateChatLength = props.userChats?.map(
     (chat) => chat.chatId !== props.currentChat.chatId
@@ -29,7 +32,28 @@ export const DrawerContent = (props: DrawerProps) => {
         introModal.click();
       }
     }
-  }, [props.alreadyClicked, props.files.length, props.userChats, user]);
+    const handleMouseMove = (event: { clientX: number; clientY: number; }) => {
+      if (isDragging) {
+          setWidth(Math.min(Math.max(event.clientX,0),800));
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener(
+        'mousemove',
+        handleMouseMove
+      );
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, props.alreadyClicked, props.files.length, props.userChats, user, width]);
 
   if (isMobile) {
     return (
@@ -198,9 +222,43 @@ export const DrawerContent = (props: DrawerProps) => {
     );
   }
 
+  const handleDrag = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+    const newWidth = width + e.movementX;
+    if (newWidth >= 0 && newWidth <= 800) {
+      setWidth(newWidth);
+      setIsDragging(true);
+    }
+  };
+
   return (
-    <div className="relative flex h-[100vh] w-[250px] flex-col bg-[hsl(var(--b3))] text-[hsl(var(--bc))]">
-      <div className="flex h-[100px] w-[250px] flex-col items-center justify-center">
+    <div className={"relative flex h-[100vh] flex-col bg-[hsl(var(--b3))] text-[hsl(var(--bc))]"}
+      style ={{
+        width: width.toString() + 'px'
+      }}
+    >
+      <div style={{
+        zIndex: "1000",
+        marginLeft: "10px",
+        top:'50%',
+        transform: 'translateY(-50%)',
+        left: width.toString() + 'px',
+        cursor: 'ew-resize',
+      }}
+       onMouseMove={(e) => {
+        if (e.buttons === 1) {
+          handleDrag(e);
+        }
+      }}
+
+      className={`absolute h-[80vh] w-[24px] bg-[${isDragging ? "hsl(var(--b3))" : "hsl(var(--b1))"}] rounded-full hover:bg-[hsl(var(--b3))]`}>
+        <div className={'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'}>
+          <HiChevronRight className={'h-6 w-6 text-[hsl(var(--bc))]'} />
+          </div>
+      </div>
+      <div style ={{
+        width: width.toString() + 'px'
+      }}
+       className={"flex h-[100px] flex-col items-center justify-center"}>
         {user ? (
           <div className="flex w-[100%] items-center justify-center px-4">
             <div
@@ -242,7 +300,10 @@ export const DrawerContent = (props: DrawerProps) => {
             </div>
           </div>
         ) : (
-          <div className="align-center relative flex h-fit text-xl text-base-content">
+          <div className="align-center relative flex h-fit text-xl text-base-content" style={{
+            maxWidth: width.toString() + 'px',
+            overflow: 'hidden',
+          }}>
             {props.currentChat.chatName}
           </div>
         )}
@@ -264,11 +325,12 @@ export const DrawerContent = (props: DrawerProps) => {
           msOverflowStyle: 'none',
           scrollbarWidth: 'none',
           color: 'hsl(var(--bc))',
-          fontSize: 'large'
+          fontSize: 'large',
+          maxWidth: width.toString() + 'px',
+          overflow: 'hidden',
         }}
       >
-        <div className="my-2 w-20 border-t-2 border-black"></div>
-
+      <div className="divider">My Files</div> 
         {props.files.length === 0 ? (
           <>
             <div className="text-sm text-base-content">No files yet!</div>
