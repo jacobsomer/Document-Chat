@@ -248,7 +248,7 @@ export const DrawerContent = (props: DrawerProps) => {
       </div>
       <div style ={{
         width: width.toString() + 'px',
-            overflow: 'hidden',
+            overflow: Number(width.toString())<250? 'hidden': 'visible',
       }}
        className={"flex h-[100px] flex-col items-center justify-center"}>
         {user ? (
