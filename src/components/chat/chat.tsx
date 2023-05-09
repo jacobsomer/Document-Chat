@@ -152,7 +152,7 @@ const Chat = (props: ChatProps) => {
       const theme = data[0] as { theme: 'light' | 'dark' };
       setTheme(theme.theme);
     }
-  }, [theme, user]);
+  }, [ user]);
 
   useEffect(() => {
     handleScroll();
@@ -161,7 +161,7 @@ const Chat = (props: ChatProps) => {
     return () => {
       void saveChat(messages);
     };
-  }, [handleScroll, getAndUpdateTheme, getChat, saveChat, messages]);
+  }, [handleScroll, getChat, saveChat, messages]);
 
   const stream = async (input: string) => {
     const newUserMessage: ChatCompletionRequestMessage = {
