@@ -126,7 +126,7 @@ const ChatRoom = () => {
       await getAndUpdateUserChats(chatId, user.id);
       setFinishedLoading(true);
     },
-    [router, user]
+    [currentChat, getAndUpdateFilesForChat, router, user]
   );
 
   useEffect(() => {
