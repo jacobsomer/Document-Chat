@@ -237,7 +237,7 @@ export const DrawerContent = (props: DrawerProps) => {
       }}
     >
       <div style={{
-        zIndex: "1000",
+        zIndex: "1",
         marginLeft: "10px",
         top:'50%',
         transform: 'translateY(-50%)',
