@@ -19,114 +19,50 @@ const ChatRoom = () => {
   const [userChats, setUserChats] = useState<UserChat[] | undefined>(undefined);
   const [finishedLoading, setFinishedLoading] = useState(false);
 
-  const getAndUpdateFilesForChat = useCallback(
-    async (chatId: string) => {
-      const { data, error } = await supabase
-        .from('chats')
-        .select('*')
-        .eq('chatId', chatId);
-      if (error) {
-        console.log(error);
-        return;
-      }
-
-      const files_: File[] = [];
-      let name = '';
-      for (const file of data) {
-        const chat = file as ChatFile;
-        if (!currentChat && name === '') {
-          name = chat.docName;
-          setCurrentChat({
-            chatId: chatId,
-            chatName: chat.docName || 'New Chat'
-          });
-        }
-        const docId = chat.docId;
-        const { data, error } = await supabase
-          .from('userdocuments')
-          .select('url, docId, docName, body, embedding')
-          .eq('docId', docId);
-        if (error) {
-          console.log(error);
-          return;
-        }
-        for (const file1 of data) {
-          const file2 = file1 as File;
-          if (files_.find((file) => file.docId == file2.docId)) {
-            continue;
-          }
-          files_.push(file2);
-        }
-      }
-      setFiles(files_);
-    },
-    [currentChat]
-  );
-
-  const getAndUpdateUserChats = async (chatId: string, userId: string) => {
-    const { data, error } = await supabase
-      .from('userChats')
-      .select('*')
-      .eq('userId', userId);
-    if (error) {
-      console.log(error);
-      return;
+    type ChatRoomProps = {
+      currentChat: UserChat,
+      files: File[],
+      userChats: UserChat[]
     }
-    const chat = data.find((chat) => chat.chatId == chatId);
-    if (chat) {
-      setCurrentChat(chat as UserChat);
-    } else {
-      const names = data.map((chat) => chat.chatName as string);
-      let chatName = 'New Chat';
-      let i = 1;
-      while (names.includes(chatName)) {
-        chatName = 'New Chat ' + String(i);
-        i++;
-      }
-      setCurrentChat({
-        chatId: chatId,
-        chatName: chatName
-      });
-      const { error: error1 } = await supabase.from('userChats').upsert({
-        chatId: chatId,
-        userId: userId,
-        chatName: chatName
-      });
-      if (error1) {
-        console.log(error1);
-      }
-    }
-    const chats: UserChat[] = [];
-    for (const chat of data) {
-      chats.push(chat as UserChat);
-    }
-    setUserChats(chats);
-  };
 
   const updateChat = useCallback(
     async (chatId: string) => {
-      if (!chatId || chatId.length != 36) {
-        await router.push('/');
-        return;
+      setFinishedLoading(false);
+      let userId: string | undefined;
+      if (user) {
+        userId = user.id;
       }
-
-      if (!user) {
-        if (!currentChat) {
-          setCurrentChat({
-            chatId: chatId,
-            chatName: 'New Chat'
-          });
+      const url = '/api/chats/getchat';
+      const res = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({
+          chatId: chatId,
+          userId: userId
+        }),
+        headers: {
+          'Content-Type': 'application/json'
         }
-        await getAndUpdateFilesForChat(chatId);
+      });
+      // if res.status is 200, then we have a chat
+      if (res.status == 200) {  
+        const data = await res.json() as ChatRoomProps;
+        setCurrentChat(data.currentChat);
+        setFiles(data.files);
+        setUserChats(data.userChats);
         setFinishedLoading(true);
-        return;
       }
-      // sets the files in the chat room if there are any
-      await getAndUpdateFilesForChat(chatId);
-      await getAndUpdateUserChats(chatId, user.id);
-      setFinishedLoading(true);
+      else{
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const data = await res.json();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (data.message=="Invalid userId"){
+          void router.push('/chat/' + v4());
+        }
+
+      }
+      
     },
-    [currentChat, getAndUpdateFilesForChat, router, user]
+    [user]
   );
 
   useEffect(() => {
@@ -173,8 +109,7 @@ const ChatRoom = () => {
     if (error) {
       console.log(error);
     }
-
-    await getAndUpdateFilesForChat(currentChat.chatId);
+    setFiles(files.filter((file) => file.docId != docId));
   };
 
   const createNewChat = async () => {

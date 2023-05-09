@@ -7,15 +7,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 );
 
-// const [currentChat, setCurrentChat] = useState<UserChat | null>(null);
-//  const [files, setFiles] = useState<File[]>([]);
-//  const [userChats, setUserChats] = useState<UserChat[] | undefined>(undefined);
-//  we need to get the chatId from the query params
-//  we need to get the userId from the query params
-//  we need to get the chat from the database
-//  we need to get the userChats from the database
-//  we need to get the files from the database for the given chatId
-
 type Query = {
   chatId: string;
   userId: string | undefined;
@@ -25,14 +16,39 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { chatId, userId } = req.query as Query;
-
+  const { chatId, userId } = req.body as Query;
   if (!chatId || chatId.length !== 36) {
     res.status(400).json({ message: 'Invalid chatId' });
     return;
   }
 
   try {
+    if (userId && userId.length !== 36) {
+      res.status(400).json({ message: 'Invalid userId' });
+      return;
+    }
+    // if chatID belongs to user, make sure userID matches the one in the database
+    const { data: chatUsersData, error: chatUsersError } = await supabase
+      .from('userChats')
+      .select('*')
+      .eq('chatId', chatId);
+    
+    if (chatUsersError) {
+      throw chatUsersError;
+    }
+  
+    if (chatUsersData.length > 0 && !userId) {
+      res.status(400).json({ message: 'Invalid userId' });
+      return;
+    }
+    
+    if (chatUsersData.length > 0 && userId) {
+      const chatUser = chatUsersData.find((chat) => chat.userId === userId);
+      if (!chatUser) {
+        res.status(400).json({ message: 'Invalid userId' });
+        return;
+      }
+    }
 
     const { data: chatData, error: chatError } = await supabase
       .from('chats')
