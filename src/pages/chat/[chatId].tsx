@@ -32,7 +32,7 @@ const ChatRoom = () => {
       if (user) {
         userId = user.id;
       }
-      const url = '/api/chats/getchat';
+      const url = '/api/chats/get';
       const res = await fetch(url, {
         method: 'POST',
         body: JSON.stringify({
@@ -78,84 +78,44 @@ const ChatRoom = () => {
   }, [router, updateChat, user]);
 
   const deleteFile = async (docId: string) => {
-    if (!currentChat) {
-      return;
-    }
+  if (!currentChat) {
+    return;
+  }
 
-    const { error: error1 } = await supabase
-      .from('chats')
-      .delete()
-      .eq('docId', docId);
+  const response = await fetch(`/api/chats/deletefile?docId=${docId}`, {
+    method: 'DELETE'
+  });
 
-    if (error1) {
-      console.log(error1);
-    }
+  if (!response.ok) {
+    const error = await response.json() as { message: string };
+    console.log(error.message);
+    return;
+  }
 
-    const { data, error } = await supabase
-      .from('chats')
-      .select('*')
-      .eq('docId', docId);
-
-    if (data?.length == 0) {
-      const { error } = await supabase
-        .from('userdocuments')
-        .delete()
-        .eq('docId', docId);
-      if (error) {
-        console.log(error);
-      }
-    }
-    if (error) {
-      console.log(error);
-    }
-    setFiles(files.filter((file) => file.docId != docId));
-  };
+  setFiles(files.filter((file) => file.docId != docId));
+};
 
   const createNewChat = async () => {
-    if (!user || !currentChat) {
-      return;
-    }
+  if (!user || !currentChat) {
+    return;
+  }
 
-    // if the current chat is empty, do nothing
-    const { data: data1, error: error2 } = await supabase
-      .from('chats')
-      .select('*')
-      .eq('chatId', currentChat.chatId);
-    if (error2) {
-      console.log(error2);
-      return;
-    }
-    if (data1?.length == 0) {
-      return;
-    }
+  const res = await fetch('/api/createNewChat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ user, currentChat })
+  });
+  if (!res.ok) {
+    const error = await res.json() as { message: string };
+    console.log(error.message);
+    return;
+  }
+  const { chatId } = await res.json() as { chatId: string };
+  await router.push('/chat/' + chatId);
+};
 
-    const { data, error } = await supabase
-      .from('userChats')
-      .select('*')
-      .eq('userId', user.id);
-    if (error) {
-      console.log(error);
-      return;
-    }
-    const names = data.map((chat) => chat.chatName as string);
-    let chatName = 'New Chat';
-    let i = 1;
-    while (names.includes(chatName)) {
-      chatName = 'New Chat ' + String(i);
-      i++;
-    }
-    const newChatID = v4();
-
-    const { error: error1 } = await supabase
-      .from('userChats')
-      .insert({ userId: user.id, chatId: newChatID, chatName: chatName });
-
-    if (error1) {
-      console.log(error1);
-      return;
-    }
-    await router.push('/chat/' + newChatID);
-  };
 
   const deleteChat = async () => {
     if (!user || !userChats || !currentChat) {
