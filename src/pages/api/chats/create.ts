@@ -8,11 +8,14 @@ const supabase = createClient(
 );
 
 type Query = {
-    userId: string;
-    chatId: string;
+  userId: string;
+  chatId: string;
 };
-        
-const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+
+const handler: NextApiHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
   const { userId, chatId } = req.body as Query;
 
   // if the current chat is empty, do nothing
@@ -50,7 +53,7 @@ const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse
 
   const { error: error1 } = await supabase
     .from('userChats')
-    .insert({ userId:  userId, chatId: newChatID, chatName: chatName });
+    .insert({ userId: userId, chatId: newChatID, chatName: chatName });
 
   if (error1) {
     console.log(error1);

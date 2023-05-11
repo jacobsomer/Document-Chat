@@ -7,11 +7,13 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 );
 
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method === 'DELETE') {
     const { docId } = req.query;
-    
+
     const { error: error1 } = await supabase
       .from('chats')
       .delete()
@@ -35,7 +37,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       if (error) {
         console.log(error);
-        return res.status(500).json({ message: 'Error deleting user document' });
+        return res
+          .status(500)
+          .json({ message: 'Error deleting user document' });
       }
     }
 

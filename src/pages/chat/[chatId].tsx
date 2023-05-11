@@ -6,11 +6,6 @@ import { createClient } from '@supabase/supabase-js';
 import { type ChatFile, type UserChat, type File } from '~/types/types';
 import { v4 } from 'uuid';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
-
 const ChatRoom = () => {
   const user = useUser();
   const [currentChat, setCurrentChat] = useState<UserChat | null>(null);
@@ -19,11 +14,11 @@ const ChatRoom = () => {
   const [userChats, setUserChats] = useState<UserChat[] | undefined>(undefined);
   const [finishedLoading, setFinishedLoading] = useState(false);
 
-    type ChatRoomProps = {
-      currentChat: UserChat,
-      files: File[],
-      userChats: UserChat[]
-    }
+  type ChatRoomProps = {
+    currentChat: UserChat;
+    files: File[];
+    userChats: UserChat[];
+  };
 
   const updateChat = useCallback(
     async (chatId: string) => {
@@ -44,21 +39,19 @@ const ChatRoom = () => {
         }
       });
       // if res.status is 200, then we have a chat
-      if (res.status == 200) {  
-        const data = await res.json() as ChatRoomProps;
+      if (res.status == 200) {
+        const data = (await res.json()) as ChatRoomProps;
         setCurrentChat(data.currentChat);
         setFiles(data.files);
         setUserChats(data.userChats);
         setFinishedLoading(true);
-      }
-      else{
+      } else {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const data = await res.json();
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        if (data.message=="Invalid userId"){
+        if (data.message == 'Invalid userId') {
           void router.push('/chat/' + v4());
         }
-
       }
     },
     [router, user]
@@ -78,47 +71,46 @@ const ChatRoom = () => {
   }, [router, updateChat, user]);
 
   const deleteFile = async (docId: string) => {
-  if (!currentChat) {
-    return;
-  }
+    if (!currentChat) {
+      return;
+    }
 
-  const response = await fetch(`/api/chats/deletefile?docId=${docId}`, {
-    method: 'DELETE'
-  });
+    const response = await fetch(`/api/chats/deletefile?docId=${docId}`, {
+      method: 'DELETE'
+    });
 
-  if (!response.ok) {
-    const error = await response.json() as { message: string };
-    console.log(error.message);
-    return;
-  }
+    if (!response.ok) {
+      const error = (await response.json()) as { message: string };
+      console.log(error.message);
+      return;
+    }
 
-  setFiles(files.filter((file) => file.docId != docId));
-};
+    setFiles(files.filter((file) => file.docId != docId));
+  };
 
   const createNewChat = async () => {
-  if (!user || !currentChat) {
-    return;
-  }
+    if (!user || !currentChat) {
+      return;
+    }
 
-  const userId = user.id;
-  const chatId = currentChat.chatId;
+    const userId = user.id;
+    const chatId = currentChat.chatId;
 
-  const res = await fetch('/api/createNewChat', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ userId, chatId })
-  });
-  if (!res.ok) {
-    const error = await res.json() as { message: string };
-    console.log(error.message);
-    return;
-  }
-  const { newChatID } = await res.json() as { newChatID: string };
-  await router.push('/chat/' + newChatID);
-};
-
+    const res = await fetch('/api/chats/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ userId, chatId })
+    });
+    if (!res.ok) {
+      const error = (await res.json()) as { message: string };
+      console.log(error.message);
+      return;
+    }
+    const { newChatID } = (await res.json()) as { newChatID: string };
+    await router.push('/chat/' + newChatID);
+  };
 
   const deleteChat = async () => {
     if (!user || !userChats || !currentChat) {
@@ -128,47 +120,23 @@ const ChatRoom = () => {
       alert('You cannot delete your last chat');
       return;
     }
-    const { error } = await supabase
-      .from('userChats')
-      .delete()
-      .eq('chatId', currentChat.chatId);
 
-    if (error) {
-      console.log(error);
-      return;
-    }
+    const res = await fetch('/api/chats/delete', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ chatId: currentChat.chatId })
+    });
 
-    // get the files in the chat
-    const { data, error: error1 } = await supabase
-      .from('chats')
-      .select('*')
-      .eq('chatId', currentChat.chatId);
-
-    if (error1) {
-      console.log(error1);
-      return;
-    }
-
-    // delete the files in the chat
-    for (const file of data) {
-      const docId = file.docId as string;
-      await deleteFile(docId);
-    }
-    // delete the chat
-    const { error: error2 } = await supabase
-      .from('chats')
-      .delete()
-      .eq('chatId', currentChat.chatId);
-
-    if (error2) {
-      console.log(error2);
-      return;
-    }
-
-    // redirect to another chat that is not the one being deleted
-    const newChat = userChats.find((chat) => chat.chatId != currentChat.chatId);
-    if (newChat) {
-      void router.push('/chat/' + newChat.chatId);
+    if (!res.ok) {
+      // redirect to another chat that is not the one being deleted
+      const newChat = userChats.find(
+        (chat) => chat.chatId != currentChat.chatId
+      );
+      if (newChat) {
+        void router.push('/chat/' + newChat.chatId);
+      }
     }
   };
 
@@ -177,20 +145,20 @@ const ChatRoom = () => {
       return;
     }
 
-    const { error } = await supabase
-      .from('userChats')
-      .update({ chatName: newName })
-      .eq('chatId', currentChat.chatId);
-
-    if (error) {
-      console.log(error.message);
-      return;
-    }
-
-    setCurrentChat({
-      chatId: currentChat.chatId,
-      chatName: newName
+    const res = await fetch('/api/chats/rename', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ chatId: currentChat.chatId, newName })
     });
+
+    if (!res.ok) {
+      setCurrentChat({
+        chatId: currentChat.chatId,
+        chatName: newName
+      });
+    }
   };
 
   return (

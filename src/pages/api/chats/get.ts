@@ -32,16 +32,16 @@ export default async function handler(
       .from('userChats')
       .select('*')
       .eq('chatId', chatId);
-    
+
     if (chatUsersError) {
       throw chatUsersError;
     }
-  
+
     if (chatUsersData.length > 0 && !userId) {
       res.status(400).json({ message: 'Invalid userId' });
       return;
     }
-    
+
     if (chatUsersData.length > 0 && userId) {
       const chatUser = chatUsersData.find((chat) => chat.userId === userId);
       if (!chatUser) {

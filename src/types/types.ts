@@ -32,7 +32,6 @@ export type AddMediaProps = {
 export type DrawerProps = {
   currentChat: UserChat;
   userChats: UserChat[] | undefined;
-  supabase: SupabaseClient<any, 'public', any>;
   files: File[];
   handleClearSubmit: (e: React.MouseEvent<HTMLButtonElement>) => void;
   deleteFile: (docId: string) => Promise<void>;
@@ -46,7 +45,6 @@ export type ChatProps =  {
   currentChat: UserChat;
    userChats: UserChat[] | undefined;
   userId: string | undefined;
-  supabase: SupabaseClient<any, 'public', any>;
   files: File[];
   deleteFile: (docId: string) => Promise<void>;
   updateFiles: (chatId: string) => Promise<void>;

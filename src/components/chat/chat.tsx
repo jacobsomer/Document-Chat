@@ -17,6 +17,7 @@ import { isMobile } from 'react-device-detect';
 import { Mukta } from 'next/font/google';
 import Image from 'next/image';
 import Head from 'next/head';
+import { set } from 'zod';
 
 const mukta = Mukta({
   weight: '500',
@@ -302,18 +303,27 @@ const Chat = (props: ChatProps) => {
   }
 
   const setUserTheme = async (theme: 'light' | 'dark') => {
-    setTheme(theme);
     if (!user) {
+      setTheme(theme);
       return;
     }
-    const { error } = await supabase
-      .from('userTheme')
-      .update({ theme: theme })
-      .eq('userId', user.id);
-    if (error) {
-      console.log(error);
-      return;
+
+    const response = await fetch('api/chats/setTheme', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId: user.id,
+        theme: theme
+      })
+    });
+    if (!response.ok) {
+      console.error(response.statusText);
     }
+    
+    setTheme(theme);
+    
   };
 
   if (isMobile) {
@@ -354,7 +364,6 @@ const Chat = (props: ChatProps) => {
               {drawerIsOpened || (
                 <DrawerContent
                   handleClearSubmit={handleClearSubmit}
-                  supabase={props.supabase}
                   files={props.files}
                   deleteFile={props.deleteFile}
                   updateFiles={props.updateFiles}
@@ -496,7 +505,6 @@ const Chat = (props: ChatProps) => {
           <div className="z-0 flex flex-1 flex-row">
             <DrawerContent
               handleClearSubmit={handleClearSubmit}
-              supabase={props.supabase}
               files={props.files}
               deleteFile={props.deleteFile}
               updateFiles={props.updateFiles}
