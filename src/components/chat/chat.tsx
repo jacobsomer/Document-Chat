@@ -51,11 +51,6 @@ const createMessage = (
   };
 };
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
-
 const Chat = (props: ChatProps) => {
   const ref = useRef<HTMLParagraphElement | null>(null);
   const [messages, setMessages] =
@@ -85,30 +80,27 @@ const Chat = (props: ChatProps) => {
     }
     setCount(count + 1);
 
-    const { data, error } = await supabase
-      .from('userChats')
-      .select('*')
-      .eq('userId', user.id)
-      .eq('chatId', props.currentChat.chatId);
-    if (error) {
-      console.log(error);
+    const res = await fetch(`/api/chats/getChat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId: user.id,
+        chatId: props.currentChat.chatId
+      })
+    });
+
+    if (!res.ok) {
+      console.error(`Failed to retrieve chat: ${res.status}`);
       return;
     }
-    if (data.length === 0) {
+
+    const new_chat = (await res.json()) as ChatCompletionRequestMessage[];
+    if (new_chat === null) {
       return;
-    } else if (data.length === 1) {
-      try {
-        const new_chat = JSON.parse(
-          data[0]?.conversation as string
-        ) as ChatCompletionRequestMessage[];
-        if (new_chat === null) {
-          return;
-        }
-        setMessages(new_chat);
-      } catch (err) {
-        console.log(err);
-      }
     }
+    setMessages(new_chat);
   }, [count, props.currentChat.chatId, user]);
 
   const saveChat = useCallback(
@@ -117,11 +109,21 @@ const Chat = (props: ChatProps) => {
         return;
       }
 
-      await supabase
-        .from('userChats')
-        .update({ conversation: JSON.stringify(ret) })
-        .eq('userId', user.id)
-        .eq('chatId', props.currentChat.chatId);
+      const conversation = JSON.stringify(ret);
+
+      try {
+        await fetch('/api/saveChat', {
+          method: 'POST',
+          body: JSON.stringify({
+            userId: user.id,
+            chatId: props.currentChat.chatId,
+            conversation
+          }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+      } catch (error) {
+        console.error(error);
+      }
     },
     [user, props.currentChat.chatId]
   );
@@ -134,7 +136,7 @@ const Chat = (props: ChatProps) => {
       return;
     }
 
-    const apiUrl = "/api/theme/getAndUpdateTheme"
+    const apiUrl = '/api/theme/getAndUpdateTheme';
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -144,8 +146,11 @@ const Chat = (props: ChatProps) => {
         userId: user.id
       })
     });
-    const resp = await response.json() as { message: string | undefined, theme: string | undefined };
-  
+    const resp = (await response.json()) as {
+      message: string | undefined;
+      theme: string | undefined;
+    };
+
     if (resp.message) {
       console.log(resp.message);
       return;
@@ -321,9 +326,8 @@ const Chat = (props: ChatProps) => {
     if (!response.ok) {
       console.error(response.statusText);
     }
-    
+
     setTheme(theme);
-    
   };
 
   if (isMobile) {

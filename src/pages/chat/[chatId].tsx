@@ -2,8 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Chat from '~/components/chat/chat';
 import { useUser } from '@supabase/auth-helpers-react';
 import { useRouter } from 'next/router';
-import { createClient } from '@supabase/supabase-js';
-import { type ChatFile, type UserChat, type File } from '~/types/types';
+import { type UserChat, type File } from '~/types/types';
 import { v4 } from 'uuid';
 
 const ChatRoom = () => {
@@ -167,7 +166,6 @@ const ChatRoom = () => {
         <Chat
           currentChat={currentChat}
           userId={user?.id}
-          supabase={supabase}
           deleteFile={deleteFile}
           updateFiles={updateChat}
           files={files}

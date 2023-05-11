@@ -7,13 +7,14 @@ const supabase = createClient(
 );
 
 type Query = {
-    userId: string;
-    theme: string;
+  userId: string;
+  theme: string;
 };
 
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { userId, theme } = req.body as Query;
 
   if (!userId || !theme) {
