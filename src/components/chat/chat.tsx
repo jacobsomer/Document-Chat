@@ -133,27 +133,27 @@ const Chat = (props: ChatProps) => {
       }
       return;
     }
-    // userTheme: userId, theme
-    const { data, error } = await supabase
-      .from('userTheme')
-      .select('*')
-      .eq('userId', user?.id);
-    if (error) {
-      console.log(error);
+
+    const apiUrl = "/api/theme/getAndUpdateTheme"
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId: user.id
+      })
+    });
+    const resp = await response.json() as { message: string | undefined, theme: string | undefined };
+  
+    if (resp.message) {
+      console.log(resp.message);
       return;
     }
-    if (data.length === 0) {
-      await supabase.from('userTheme').insert({
-        userId: user.id,
-        theme: 'light'
-      });
-      setTheme('light');
-      return;
-    } else if (data.length == 1) {
-      const theme = data[0] as { theme: 'light' | 'dark' };
-      setTheme(theme.theme);
+    if (resp.theme) {
+      setTheme(resp.theme as 'light' | 'dark');
     }
-  }, [user]);
+  }, [user, theme]);
 
   useEffect(() => {
     handleScroll();
@@ -162,7 +162,7 @@ const Chat = (props: ChatProps) => {
     return () => {
       void saveChat(messages);
     };
-  }, [handleScroll, getChat, saveChat, messages]);
+  }, [handleScroll, getChat, saveChat, messages, getAndUpdateTheme]);
 
   const stream = async (input: string) => {
     const newUserMessage: ChatCompletionRequestMessage = {
