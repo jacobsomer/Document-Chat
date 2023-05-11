@@ -100,20 +100,23 @@ const ChatRoom = () => {
     return;
   }
 
+  const userId = user.id;
+  const chatId = currentChat.chatId;
+
   const res = await fetch('/api/createNewChat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ user, currentChat })
+    body: JSON.stringify({ userId, chatId })
   });
   if (!res.ok) {
     const error = await res.json() as { message: string };
     console.log(error.message);
     return;
   }
-  const { chatId } = await res.json() as { chatId: string };
-  await router.push('/chat/' + chatId);
+  const { newChatID } = await res.json() as { newChatID: string };
+  await router.push('/chat/' + newChatID);
 };
 
 

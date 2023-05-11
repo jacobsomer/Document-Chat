@@ -57,7 +57,7 @@ const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse
     res.status(500).json({ message: 'Failed to create new chat' });
     return;
   }
-  res.status(200).json({ chatId: newChatID });
+  res.status(200).json({ newChatID: newChatID });
 };
 
 export default handler;
