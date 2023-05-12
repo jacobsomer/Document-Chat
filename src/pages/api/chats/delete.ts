@@ -14,8 +14,8 @@ export default async function deleteChatHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== 'DELETE') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
   }
 
   const { chatId } = req.body as Query;
@@ -27,7 +27,7 @@ export default async function deleteChatHandler(
 
   if (error) {
     console.log(error);
-    return res.status(500).json({ error: 'Failed to delete chat' });
+    return res.status(500).json({ message: 'Failed to delete chat' });
   }
 
   // get the files in the chat
@@ -38,7 +38,7 @@ export default async function deleteChatHandler(
 
   if (error1) {
     console.log(error1);
-    return res.status(500).json({ error: 'Failed to delete chat files' });
+    return res.status(500).json({ message: 'Failed to delete chat files' });
   }
 
   // delete the files in the chat
@@ -48,7 +48,7 @@ export default async function deleteChatHandler(
 
     if (error) {
       console.log(error);
-      return res.status(500).json({ error: 'Failed to delete chat files' });
+      return res.status(500).json({ message: 'Failed to delete chat files' });
     }
 
     const { data, error: error2 } = await supabase
@@ -64,13 +64,13 @@ export default async function deleteChatHandler(
 
       if (error) {
         console.log(error);
-        return res.status(500).json({ error: 'Failed to delete chat files' });
+        return res.status(500).json({ message: 'Failed to delete chat files' });
       }
     }
 
     if (error2) {
       console.log(error2);
-      return res.status(500).json({ error: 'Failed to delete chat files' });
+      return res.status(500).json({ message: 'Failed to delete chat files' });
     }
   }
 
@@ -82,7 +82,7 @@ export default async function deleteChatHandler(
 
   if (error2) {
     console.log(error2);
-    return res.status(500).json({ error: 'Failed to delete chat' });
+    return res.status(500).json({ message: 'Failed to delete chat' });
   }
 
   return res.status(200).json({ message: 'Chat deleted successfully' });

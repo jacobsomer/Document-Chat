@@ -38,12 +38,18 @@ export default function Account(props: AccountProps) {
               <button
                 onClick={() => {
                   void props.renameChat(newChatName);
+                   // close modal
+                  const modal = document.getElementById('renameclose');
+                  if (modal) {
+                    modal.click();
+                  }
+
                 }}
                 className="btn-primary btn"
               >
                 Rename
               </button>
-              <label htmlFor="my-modal-rename" className="btn-secondary btn">
+              <label htmlFor="my-modal-rename" className="btn-secondary btn" id="renameclose">
                 Cancel
               </label>
             </div>

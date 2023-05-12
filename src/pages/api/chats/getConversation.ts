@@ -17,7 +17,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { userId, chatId } = req.query as Query;
+  const { userId, chatId } = req.body as Query;
 
   try {
     const { data, error } = await supabase

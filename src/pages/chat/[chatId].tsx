@@ -74,8 +74,12 @@ const ChatRoom = () => {
       return;
     }
 
-    const response = await fetch(`/api/chats/deletefile?docId=${docId}`, {
-      method: 'DELETE'
+    const response = await fetch(`/api/chats/deletefile`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ docId: docId })
     });
 
     if (!response.ok) {
@@ -121,14 +125,22 @@ const ChatRoom = () => {
     }
 
     const res = await fetch('/api/chats/delete', {
-      method: 'DELETE',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ chatId: currentChat.chatId })
+      body: JSON.stringify(
+        { chatId: currentChat.chatId }
+        )
     });
 
     if (!res.ok) {
+      const error = (await res.json()) as { message: string };
+      console.log(error.message);
+      return;
+    }
+
+
       // redirect to another chat that is not the one being deleted
       const newChat = userChats.find(
         (chat) => chat.chatId != currentChat.chatId
@@ -136,7 +148,7 @@ const ChatRoom = () => {
       if (newChat) {
         void router.push('/chat/' + newChat.chatId);
       }
-    }
+    
   };
 
   const renameChat = async (newName: string) => {
@@ -158,6 +170,7 @@ const ChatRoom = () => {
         chatName: newName
       });
     }
+    void updateChat(currentChat.chatId);
   };
 
   return (

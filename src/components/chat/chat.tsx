@@ -78,7 +78,7 @@ const Chat = (props: ChatProps) => {
     setCount(count + 1);
 
     try {
-      const res = await fetch(`/api/chats/getChat`, {
+      const res = await fetch(`/api/chats/getConversation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -88,9 +88,10 @@ const Chat = (props: ChatProps) => {
           chatId: props.currentChat.chatId
         })
       });
-
+      
       if (!res.ok) {
-        console.error(`Failed to retrieve chat: ${res.status}`);
+        const response = await res.json() as { message: string };
+        console.error(response.message); 
         return;
       }
       const new_chat = (await res.json()) as ChatCompletionRequestMessage[];
@@ -112,7 +113,7 @@ const Chat = (props: ChatProps) => {
       const conversation = JSON.stringify(ret);
 
       try {
-        await fetch('/api/chats/saveChat', {
+        await fetch('/api/chats/save', {
           method: 'POST',
           body: JSON.stringify({
             userId: user.id,
@@ -164,18 +165,13 @@ const Chat = (props: ChatProps) => {
     handleScroll();
     void getAndUpdateTheme();
     void getChat();
+    void saveChat(messages);
     return () => {
       void saveChat(messages);
     };
   }, [handleScroll, getChat, saveChat, messages, getAndUpdateTheme]);
 
-  const stream = async (input: string) => {
-    const newUserMessage: ChatCompletionRequestMessage = {
-      content: input,
-      role: 'user'
-    };
-
-    const getDataSources = async (prompt: string): Promise<SearchResponse> => {
+   const getDataSources = async (prompt: string): Promise<SearchResponse> => {
       // set chat to repeated loading state ...
       setLoadingText('Loading ...');
 
@@ -197,6 +193,14 @@ const Chat = (props: ChatProps) => {
       const data = (await response.json()) as SearchResponse;
       return data;
     };
+
+  const stream = async (input: string) => {
+    const newUserMessage: ChatCompletionRequestMessage = {
+      content: input,
+      role: 'user'
+    };
+
+   
     let dataSources: string[] = [];
     if (props.files.length != 0) {
       dataSources = (await getDataSources(input)).body.slice(0, 3);
@@ -207,6 +211,8 @@ const Chat = (props: ChatProps) => {
       dataSources: dataSources,
       model: model
     };
+
+
 
     const response = await fetch('/api/stream', {
       method: 'POST',
@@ -313,7 +319,7 @@ const Chat = (props: ChatProps) => {
       return;
     }
 
-    const response = await fetch('api/chats/setTheme', {
+    const response = await fetch('/api/theme/setTheme', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

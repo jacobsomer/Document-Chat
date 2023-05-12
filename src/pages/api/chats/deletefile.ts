@@ -7,12 +7,15 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 );
 
+type Query = {
+  docId: string;
+};
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === 'DELETE') {
-    const { docId } = req.query;
+  if (req.method === 'POST') {
+    const { docId } = req.body as Query;
 
     const { error: error1 } = await supabase
       .from('chats')
