@@ -12,6 +12,7 @@ const cleanFileName = (fileName: string) => {
   // replace any characters that are not letters, numbers, dashes, spaces, or underscores with an underscore
   return fileName.replace(/[^a-zA-Z0-9-_]/g, '_');
 };
+
 const AddMedia = (props: AddMediaProps) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -30,6 +31,10 @@ const AddMedia = (props: AddMediaProps) => {
     }, 4000);
   };
 
+  type LocalExtensions = 'csv' | 'docx' | 'pdf' | 'txt';
+
+  const langChainExtensions = ['csv', 'docx', 'pdf', 'txt'];
+
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -39,8 +44,10 @@ const AddMedia = (props: AddMediaProps) => {
       setLoadingForAWhile(true);
     }, 10000);
     const file = event.target.files?.[0];
+
     if (file) {
       const extension = file.name.split('.').pop();
+
       if (!extension || !supportedExtensions.includes(extension)) {
         setErrorMessage(
           'FileType is not one of: ' + supportedExtensions.toString()
@@ -48,10 +55,31 @@ const AddMedia = (props: AddMediaProps) => {
         removeErrorMessageAfter4Seconds();
         return;
       }
+       if (langChainExtensions.includes(extension)) {
+        const url = 'api/upload/handleFileUpload';
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch(url, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json() as { message: string };
+        if (data.message){
+          setErrorMessage(data.message);
+          removeErrorMessageAfter4Seconds();
+        }
+        else {
+          await props.updateFiles(props.chatId);
+        }
+        return;
+      }
+
       // get file name
       const name = file.name.split('.').slice(0, -1).join('.');
 
       const cleaned_name = cleanFileName(name);
+
+     
 
       const { data, error } = await supabase.storage
         .from('media')

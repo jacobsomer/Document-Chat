@@ -24,7 +24,7 @@ export default async function handler(
 
   try {
     if (userId && userId.length !== 36) {
-      res.status(400).json({ message: 'Invalid userId'});
+      res.status(400).json({ message: 'Invalid userId' });
       return;
     }
 
@@ -35,7 +35,9 @@ export default async function handler(
       .eq('chatId', chatId);
 
     if (chatUsersError) {
-      res.status(500).json({ message: 'An error occurred while retrieving chat.' });
+      res
+        .status(500)
+        .json({ message: 'An error occurred while retrieving chat.' });
       return;
     }
 
@@ -58,7 +60,9 @@ export default async function handler(
       .eq('chatId', chatId);
 
     if (chatError) {
-      res.status(500).json({ message: 'An error occurred while retrieving chat.' });
+      res
+        .status(500)
+        .json({ message: 'An error occurred while retrieving chat.' });
       return;
     }
 

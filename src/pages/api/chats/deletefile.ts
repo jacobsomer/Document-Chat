@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 import { type NextApiRequest, type NextApiResponse } from 'next';
-import { type ChatFile, type File, type UserChat } from '~/types/types';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',

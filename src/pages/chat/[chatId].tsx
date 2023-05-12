@@ -28,7 +28,7 @@ const ChatRoom = () => {
           method: 'POST',
           body: JSON.stringify({
             chatId: chatId,
-            userId: user? user.id : undefined
+            userId: user ? user.id : undefined
           }),
           headers: {
             'Content-Type': 'application/json'
@@ -129,9 +129,7 @@ const ChatRoom = () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(
-        { chatId: currentChat.chatId }
-        )
+      body: JSON.stringify({ chatId: currentChat.chatId })
     });
 
     if (!res.ok) {
@@ -140,15 +138,11 @@ const ChatRoom = () => {
       return;
     }
 
-
-      // redirect to another chat that is not the one being deleted
-      const newChat = userChats.find(
-        (chat) => chat.chatId != currentChat.chatId
-      );
-      if (newChat) {
-        void router.push('/chat/' + newChat.chatId);
-      }
-    
+    // redirect to another chat that is not the one being deleted
+    const newChat = userChats.find((chat) => chat.chatId != currentChat.chatId);
+    if (newChat) {
+      void router.push('/chat/' + newChat.chatId);
+    }
   };
 
   const renameChat = async (newName: string) => {

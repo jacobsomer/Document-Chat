@@ -88,10 +88,10 @@ const Chat = (props: ChatProps) => {
           chatId: props.currentChat.chatId
         })
       });
-      
+
       if (!res.ok) {
-        const response = await res.json() as { message: string };
-        console.error(response.message); 
+        const response = (await res.json()) as { message: string };
+        console.error(response.message);
         return;
       }
       const new_chat = (await res.json()) as ChatCompletionRequestMessage[];
@@ -171,28 +171,28 @@ const Chat = (props: ChatProps) => {
     };
   }, [handleScroll, getChat, saveChat, messages, getAndUpdateTheme]);
 
-   const getDataSources = async (prompt: string): Promise<SearchResponse> => {
-      // set chat to repeated loading state ...
-      setLoadingText('Loading ...');
+  const getDataSources = async (prompt: string): Promise<SearchResponse> => {
+    // set chat to repeated loading state ...
+    setLoadingText('Loading ...');
 
-      const url =
-        'https://docuchat-embeddings-search-fhpwesohfa-ue.a.run.app/searchChatRoom';
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          query: prompt,
-          chatId: props.currentChat.chatId
-        })
-      });
-      if (!response.ok) {
-        console.error(response.statusText);
-      }
-      const data = (await response.json()) as SearchResponse;
-      return data;
-    };
+    const url =
+      'https://docuchat-embeddings-search-fhpwesohfa-ue.a.run.app/searchChatRoom';
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        query: prompt,
+        chatId: props.currentChat.chatId
+      })
+    });
+    if (!response.ok) {
+      console.error(response.statusText);
+    }
+    const data = (await response.json()) as SearchResponse;
+    return data;
+  };
 
   const stream = async (input: string) => {
     const newUserMessage: ChatCompletionRequestMessage = {
@@ -200,7 +200,6 @@ const Chat = (props: ChatProps) => {
       role: 'user'
     };
 
-   
     let dataSources: string[] = [];
     if (props.files.length != 0) {
       dataSources = (await getDataSources(input)).body.slice(0, 3);
@@ -213,8 +212,6 @@ const Chat = (props: ChatProps) => {
       dataSources: dataSources,
       model: model
     };
-
-
 
     const response = await fetch('/api/stream', {
       method: 'POST',
