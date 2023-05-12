@@ -27,7 +27,7 @@ const ChatRoom = () => {
         userId = user.id;
       }
       const url = '/api/chats/get';
-      try{
+      try {
         const res = await fetch(url, {
           method: 'POST',
           body: JSON.stringify({
@@ -46,21 +46,18 @@ const ChatRoom = () => {
           setFinishedLoading(true);
         } else {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const data = await res.json() as { message: string };
+          const data = (await res.json()) as { message: string };
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           if (data.message == 'Invalid userId') {
             // void router.push('/chat/' + v4());
           }
-          
-          console.log(data.message)
+          console.log(data.message);
         }
-      }
-      catch(err){ 
+      } catch (err) {
         console.log(err);
-      
       }
     },
-    [router, user]
+    [user]
   );
 
   useEffect(() => {

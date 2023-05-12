@@ -80,27 +80,30 @@ const Chat = (props: ChatProps) => {
     }
     setCount(count + 1);
 
-    const res = await fetch(`/api/chats/getChat`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        userId: user.id,
-        chatId: props.currentChat.chatId
-      })
-    });
+    try {
+      const res = await fetch(`/api/chats/getChat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          chatId: props.currentChat.chatId
+        })
+      });
 
-    if (!res.ok) {
-      console.error(`Failed to retrieve chat: ${res.status}`);
-      return;
+      if (!res.ok) {
+        console.error(`Failed to retrieve chat: ${res.status}`);
+        return;
+      }
+      const new_chat = (await res.json()) as ChatCompletionRequestMessage[];
+      if (new_chat === null) {
+        return;
+      }
+      setMessages(new_chat);
+    } catch (error) {
+      console.error(error);
     }
-
-    const new_chat = (await res.json()) as ChatCompletionRequestMessage[];
-    if (new_chat === null) {
-      return;
-    }
-    setMessages(new_chat);
   }, [count, props.currentChat.chatId, user]);
 
   const saveChat = useCallback(
