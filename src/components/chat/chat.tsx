@@ -112,7 +112,7 @@ const Chat = (props: ChatProps) => {
       const conversation = JSON.stringify(ret);
 
       try {
-        await fetch('/api/saveChat', {
+        await fetch('/api/chats/saveChat', {
           method: 'POST',
           body: JSON.stringify({
             userId: user.id,

@@ -1,4 +1,4 @@
-// pages/api/saveChat.js
+// pages/api/chats/saveChat.js
 import { createClient } from '@supabase/supabase-js';
 import { type NextApiRequest, type NextApiResponse } from 'next';
 
