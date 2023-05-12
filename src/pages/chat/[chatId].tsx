@@ -52,6 +52,7 @@ const ChatRoom = () => {
             // void router.push('/chat/' + v4());
           }
           
+          console.log(data.message)
         }
       }
       catch(err){ 
