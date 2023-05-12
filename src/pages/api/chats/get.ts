@@ -24,9 +24,10 @@ export default async function handler(
 
   try {
     if (userId && userId.length !== 36) {
-      res.status(400).json({ message: 'Invalid userId1'+userId });
+      res.status(400).json({ message: 'Invalid userId'});
       return;
     }
+
     // if chatID belongs to user, make sure userID matches the one in the database
     const { data: chatUsersData, error: chatUsersError } = await supabase
       .from('userChats')
@@ -34,11 +35,12 @@ export default async function handler(
       .eq('chatId', chatId);
 
     if (chatUsersError) {
-      throw chatUsersError;
+      res.status(500).json({ message: 'An error occurred while retrieving chat.' });
+      return;
     }
 
     if (chatUsersData.length > 0 && !userId) {
-      res.status(400).json({ message: 'Invalid userId2' });
+      res.status(200).json({ message: 'No Chats Available' });
       return;
     }
 
@@ -56,7 +58,8 @@ export default async function handler(
       .eq('chatId', chatId);
 
     if (chatError) {
-      throw chatError;
+      res.status(500).json({ message: 'An error occurred while retrieving chat.' });
+      return;
     }
 
     const files: File[] = [];

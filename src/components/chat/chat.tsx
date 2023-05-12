@@ -1,4 +1,3 @@
-// import type { Message } from "@prisma/client";
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type {
   ChatCompletionRequestMessage,
@@ -10,14 +9,12 @@ import DrawerContent from '~/components/drawer/drawerContent';
 import { type SearchResponse, type ChatProps } from '~/types/types';
 import { MdOutlineDarkMode } from 'react-icons/md';
 import { useRouter } from 'next/router';
-import { createClient } from '@supabase/supabase-js';
 import { useUser } from '@supabase/auth-helpers-react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { isMobile } from 'react-device-detect';
 import { Mukta } from 'next/font/google';
 import Image from 'next/image';
 import Head from 'next/head';
-import { set } from 'zod';
 
 const mukta = Mukta({
   weight: '500',

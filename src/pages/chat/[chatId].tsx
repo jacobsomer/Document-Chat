@@ -22,17 +22,13 @@ const ChatRoom = () => {
   const updateChat = useCallback(
     async (chatId: string) => {
       setFinishedLoading(false);
-      let userId: string | undefined;
-      if (user) {
-        userId = user.id;
-      }
       const url = '/api/chats/get';
       try {
         const res = await fetch(url, {
           method: 'POST',
           body: JSON.stringify({
             chatId: chatId,
-            userId: userId
+            userId: user? user.id : undefined
           }),
           headers: {
             'Content-Type': 'application/json'
