@@ -24,7 +24,7 @@ export default async function handler(
 
   try {
     if (userId && userId.length !== 36) {
-      res.status(400).json({ message: 'Invalid userId' });
+      res.status(400).json({ message: 'Invalid userId1'+userId });
       return;
     }
     // if chatID belongs to user, make sure userID matches the one in the database
@@ -38,14 +38,14 @@ export default async function handler(
     }
 
     if (chatUsersData.length > 0 && !userId) {
-      res.status(400).json({ message: 'Invalid userId' });
+      res.status(400).json({ message: 'Invalid userId2' });
       return;
     }
 
     if (chatUsersData.length > 0 && userId) {
       const chatUser = chatUsersData.find((chat) => chat.userId === userId);
       if (!chatUser) {
-        res.status(400).json({ message: 'Invalid userId' });
+        res.status(400).json({ message: 'Invalid userId3' + userId });
         return;
       }
     }
