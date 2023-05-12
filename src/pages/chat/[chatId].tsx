@@ -27,30 +27,36 @@ const ChatRoom = () => {
         userId = user.id;
       }
       const url = '/api/chats/get';
-      const res = await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({
-          chatId: chatId,
-          userId: userId
-        }),
-        headers: {
-          'Content-Type': 'application/json'
+      try{
+        const res = await fetch(url, {
+          method: 'POST',
+          body: JSON.stringify({
+            chatId: chatId,
+            userId: userId
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (res.status == 200) {
+          const data = (await res.json()) as ChatRoomProps;
+          setCurrentChat(data.currentChat);
+          setFiles(data.files);
+          setUserChats(data.userChats);
+          setFinishedLoading(true);
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          const data = await res.json() as { message: string };
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          if (data.message == 'Invalid userId') {
+            // void router.push('/chat/' + v4());
+          }
+          
         }
-      });
-      // if res.status is 200, then we have a chat
-      if (res.status == 200) {
-        const data = (await res.json()) as ChatRoomProps;
-        setCurrentChat(data.currentChat);
-        setFiles(data.files);
-        setUserChats(data.userChats);
-        setFinishedLoading(true);
-      } else {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const data = await res.json();
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        if (data.message == 'Invalid userId') {
-          void router.push('/chat/' + v4());
-        }
+      }
+      catch(err){ 
+        console.log(err);
+      
       }
     },
     [router, user]
