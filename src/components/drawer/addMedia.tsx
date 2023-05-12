@@ -55,31 +55,26 @@ const AddMedia = (props: AddMediaProps) => {
         removeErrorMessageAfter4Seconds();
         return;
       }
-       if (langChainExtensions.includes(extension)) {
-        const url = 'api/upload/handleFileUpload';
-        const formData = new FormData();
-        formData.append('file', file);
-        const res = await fetch(url, {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json() as { message: string };
-        if (data.message){
-          setErrorMessage(data.message);
-          removeErrorMessageAfter4Seconds();
-        }
-        else {
-          await props.updateFiles(props.chatId);
-        }
-        return;
-      }
-
+      
       // get file name
       const name = file.name.split('.').slice(0, -1).join('.');
 
       const cleaned_name = cleanFileName(name);
 
-     
+
+      if (extension === 'pdf' || extension === 'txt' || extension === 'docx' || extension === 'csv') {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await fetch('/api/upload/hadnleFileUpload', {
+          method: 'POST',
+          body: formData
+        });
+        const resp = await response.json() as { message: string };
+        if (resp.message) {
+          console.log(resp.message);
+          return;
+        }
+      }
 
       const { data, error } = await supabase.storage
         .from('media')
