@@ -1,31 +1,25 @@
 import { createClient } from '@supabase/supabase-js';
 import { type NextApiRequest, type NextApiResponse } from 'next';
-<<<<<<< HEAD
 import { IncomingForm } from 'formidable';
 // you might want to use regular 'fs' and not a promise one
 import { promises as fs } from 'fs';
-=======
-import { IncomingForm } from 'formidable'
-// you might want to use regular 'fs' and not a promise one
-import { promises as fs } from 'fs'
->>>>>>> a997fd5 (current progress)
 import { CSVLoader } from 'langchain/document_loaders/fs/csv';
 import { TextLoader } from 'langchain/document_loaders/fs/text';
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
 import { DocxLoader } from 'langchain/document_loaders/fs/docx';
-<<<<<<< HEAD
-=======
 import { v4 } from 'uuid';
->>>>>>> a997fd5 (current progress)
+import type PersistentFile from 'formidable/PersistentFile';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+
+const embeddings = new OpenAIEmbeddings({
+  openAIApiKey: process.env.OPENAI_API_KEY // In Node.js defaults to process.env.OPENAI_API_KEY
+});
 
 // first we need to disable the default body parser
 export const config = {
   api: {
-<<<<<<< HEAD
     bodyParser: false
-=======
-    bodyParser: false,
->>>>>>> a997fd5 (current progress)
   }
 };
 
@@ -34,32 +28,45 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 );
 
-type Query = {
-  body: string;
-  embedding: string;
-  docId: string;
-  docName: string;
+
+const cleanFileName = (fileName: string) => {
+  // replace any characters that are not letters, numbers, dashes, spaces, or underscores with an underscore
+  return fileName.replace(/[^a-zA-Z0-9-_]/g, '_');
 };
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const chatId = req.query.chatId as string;
 
   const data = await new Promise((resolve, reject) => {
-    const form = new IncomingForm()
-    
-    form.parse(req, (err, fields, files) => {
-      if (err) return reject(err)
-      resolve({ fields, files })
-    })
-  })
+    const form = new IncomingForm();
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  const filePath = data?.files?.nameOfTheInput.path as string;
-  const extension = filePath.split('.').pop();
-    const newDocId = v4();
-    let loader;
+    form.parse(req, (err, fields, files) => {
+      if (err) return reject(err);
+      resolve({ fields, files });
+    });
+  });
+
+  const data1 = data as { files: any };
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const fileData = data1.files?.file[0] as PersistentFile;
+  const filePath = fileData.toJSON().filepath;
+  const ogFileName = fileData.toJSON().originalFilename as string;
+  const extension = ogFileName.split('.').pop();
+
+  if (!extension) {
+    res.status(400).json({ message: 'Invalid file extension' });
+    return;
+  }
+
+  // get file name
+  const name = ogFileName.split('.').slice(0, -1).join('.');
+  const cleaned_name = cleanFileName(name);
+  const newDocId = v4();
+  let loader;
+  try {
     if (extension === 'csv') {
       loader = new CSVLoader(filePath);
     } else if (extension === 'docx') {
@@ -69,34 +76,49 @@ export default async function handler(
     } else if (extension === 'txt') {
       loader = new TextLoader(filePath);
     }
+  } catch (err) {
+    // do nothing and test for loader
+    res.status(400).json({ message: 'Loader Error' });
+  }
 
-    if (!loader) {
-      res.status(500).json({ message: 'Error uploading file' });
-     return;
+  if (!loader) {
+    res.status(400).json({ message: 'Invalid file extension' });
+  } else {
+    try {
+      const url = `https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/userFiles/${chatId}/${cleaned_name}.${extension}`;
+      const docs = await loader.load();
+      const splitter = new RecursiveCharacterTextSplitter({
+        chunkSize: 4000,
+        chunkOverlap: 200,
+      });
+
+      const docOutput = await splitter.splitDocuments(docs);
+      const arr: string[] = [];
+      for (let i = 0; i < docOutput.length; i++) {
+        const doc = docOutput[i];
+        arr.push(`${doc?.pageContent ?? ''}`);
+      }
+
+      const docEmbeddings = await embeddings.embedDocuments(arr);
+     
+    const insertPromises = docEmbeddings.map(async (embedding, i) => {
+      await supabase.from('userdocuments').insert({
+        url: url,
+        body: arr[i],
+        embedding: embedding,
+        docId: newDocId,
+        docName: cleaned_name
+      });
+    });
+    await Promise.all(insertPromises);
+      await supabase.from('chats').insert({
+        chatId: chatId,
+        docId: newDocId
+      });
+
+      res.status(200).json({ message: 'File uploaded successfully' });
+    } catch (err) {
+      res.status(400).json({ message: 'Unknown Error' });
     }
-
-    const docs = await loader.load();
-
-    res.status(200).json({ message: 'File uploaded successfully' });
-
-  
-
-  // // upload embeddings
-  // const { body, embedding, docId, docName } = req.body as Query;
-  // const { error } = await supabase.from('userdocuments').insert({
-  //   url: '',
-  //   body: body,
-  //   embedding: embedding,
-  //   docId: docId,
-  //   docName: docName
-  // });
-  // if (error) {
-  //   console.log(error);
-  //   return res.status(500).json({ message: 'Error uploading file' });
-  // }
-  // return res.status(200).json({ message: 'File uploaded successfully' });
-<<<<<<< HEAD
-=======
-
->>>>>>> a997fd5 (current progress)
+  }
 }

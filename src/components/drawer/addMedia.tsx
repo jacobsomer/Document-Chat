@@ -55,23 +55,50 @@ const AddMedia = (props: AddMediaProps) => {
         removeErrorMessageAfter4Seconds();
         return;
       }
-      
+
       // get file name
       const name = file.name.split('.').slice(0, -1).join('.');
 
       const cleaned_name = cleanFileName(name);
-
-
-      if (extension === 'pdf' || extension === 'txt' || extension === 'docx' || extension === 'csv') {
+      if (
+        extension === 'pdf' ||
+        extension === 'txt' ||
+        extension === 'docx' ||
+        extension === 'csv'
+      ) {
         const formData = new FormData();
         formData.append('file', file);
-        const response = await fetch('/api/upload/hadnleFileUpload', {
-          method: 'POST',
-          body: formData
-        });
-        const resp = await response.json() as { message: string };
-        if (resp.message) {
-          console.log(resp.message);
+        const response = await fetch(
+          '/api/upload/handleFileUpload' + '?chatId=' + props.chatId,
+          {
+            method: 'POST',
+            body: formData
+          }
+        );
+        const resp = (await response.json()) as { message: string };
+        if (resp.message === 'File uploaded successfully') {
+          
+          await props.updateFiles(props.chatId);
+          void supabase.storage
+            .from('media')
+            .upload(
+              `userFiles/${props.chatId}/${cleaned_name}.${extension}`,
+              file,
+              {
+                cacheControl: '3600',
+                upsert: false
+              }
+            );
+          const closeModal = document.getElementById('closeModal');
+          if (closeModal) {
+            closeModal.click();
+          }
+          setLoading(false);
+          setLoadingForAWhile(false);
+          return;
+        } else {
+          setLoading(false);
+          setLoadingForAWhile(false);
           return;
         }
       }
@@ -126,6 +153,10 @@ const AddMedia = (props: AddMediaProps) => {
       // upload file to supabase storage
       setLoading(false);
       setLoadingForAWhile(false);
+      const closeModal = document.getElementById('closeModal');
+      if (closeModal) {
+        closeModal.click();
+      }
     }
   };
 
@@ -224,6 +255,7 @@ const AddMedia = (props: AddMediaProps) => {
               <label
                 htmlFor="my-modal-2"
                 className="btn-circle btn-lg btn absolute right-2 top-2 text-3xl"
+                id="closeModal"
               >
                 ✕
               </label>
@@ -235,6 +267,7 @@ const AddMedia = (props: AddMediaProps) => {
               <label
                 htmlFor="my-modal-2"
                 className="btn-sm btn-circle btn absolute right-2 top-2"
+                 id="closeModal"
               >
                 ✕
               </label>
@@ -244,7 +277,7 @@ const AddMedia = (props: AddMediaProps) => {
 
           <UploadSquare handleFileUpload={handleFileUpload} />
           <br />
-          <div className="divider lg:divider-horizontal">OR</div>
+          <div className="divider">OR</div>
           <div>
             <form className="flex w-full max-w-xl flex-col gap-2 py-4">
               {isMobile ? (

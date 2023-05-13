@@ -35,6 +35,7 @@
     "marked": "^4.2.12",
     "next": "^13.2.1",
     "openai": "^3.2.1",
+    "path": "^0.12.7",
     "pdf-parse": "^1.1.1",
     "react": "18.2.0",
     "react-device-detect": "^2.2.3",

@@ -19,6 +19,41 @@ const ChatRoom = () => {
     userChats: UserChat[];
   };
 
+  const passiveUpdateChat = useCallback(
+    async (chatId: string) => {
+      const url = '/api/chats/get';
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          body: JSON.stringify({
+            chatId: chatId,
+            userId: user ? user.id : undefined
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (res.status == 200) {
+          const data = (await res.json()) as ChatRoomProps;
+          setCurrentChat(data.currentChat);
+          setFiles(data.files);
+          setUserChats(data.userChats);
+          setFinishedLoading(true);
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          const data = (await res.json()) as { message: string };
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          if (data.message == 'Invalid userId') {
+            // void router.push('/chat/' + v4());
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [user]
+  );
+
   const updateChat = useCallback(
     async (chatId: string) => {
       setFinishedLoading(false);
@@ -47,7 +82,6 @@ const ChatRoom = () => {
           if (data.message == 'Invalid userId') {
             // void router.push('/chat/' + v4());
           }
-          console.log(data.message);
         }
       } catch (err) {
         console.log(err);
@@ -174,7 +208,7 @@ const ChatRoom = () => {
           currentChat={currentChat}
           userId={user?.id}
           deleteFile={deleteFile}
-          updateFiles={updateChat}
+          updateFiles={passiveUpdateChat}
           files={files}
           createNewChat={createNewChat}
           userChats={userChats}
