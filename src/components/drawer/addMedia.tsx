@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import UploadSquare from './uploadSquare';
-import { supportedExtensions } from '~/utils/consts';
+import { supportedExtensions, unstructuredExtensions } from '~/utils/consts';
 import { createClient } from '@supabase/supabase-js';
 import { FiUpload } from 'react-icons/fi';
 import { handleObjectUpload } from '~/utils/handleUpload';
@@ -12,6 +12,7 @@ const cleanFileName = (fileName: string) => {
   // replace any characters that are not letters, numbers, dashes, spaces, or underscores with an underscore
   return fileName.replace(/[^a-zA-Z0-9-_]/g, '_');
 };
+
 
 const AddMedia = (props: AddMediaProps) => {
   const [loading, setLoading] = useState(false);
@@ -30,10 +31,6 @@ const AddMedia = (props: AddMediaProps) => {
       setErrorMessage('');
     }, 4000);
   };
-
-  type LocalExtensions = 'csv' | 'docx' | 'pdf' | 'txt';
-
-  const langChainExtensions = ['csv', 'docx', 'pdf', 'txt'];
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -64,12 +61,19 @@ const AddMedia = (props: AddMediaProps) => {
         extension === 'pdf' ||
         extension === 'txt' ||
         extension === 'docx' ||
-        extension === 'csv'
+        extension === 'csv' ||
+        unstructuredExtensions.includes(extension)
       ) {
         const formData = new FormData();
         formData.append('file', file);
         const response = await fetch(
-          '/api/upload/handleFileUpload' + '?chatId=' + props.chatId,
+          '/api/upload/handleFileUpload' +
+            '?chatId=' +
+            props.chatId +
+            '&name=' +
+            cleaned_name +
+            '&extension=' +
+            extension,
           {
             method: 'POST',
             body: formData
@@ -77,7 +81,6 @@ const AddMedia = (props: AddMediaProps) => {
         );
         const resp = (await response.json()) as { message: string };
         if (resp.message === 'File uploaded successfully') {
-          
           await props.updateFiles(props.chatId);
           void supabase.storage
             .from('media')
@@ -97,65 +100,78 @@ const AddMedia = (props: AddMediaProps) => {
           setLoadingForAWhile(false);
           return;
         } else {
+          console.log(resp.message);
           setLoading(false);
           setLoadingForAWhile(false);
           return;
         }
-      }
-
-      const { data, error } = await supabase.storage
-        .from('media')
-        .upload(
-          `userFiles/${props.chatId}/${cleaned_name}.${extension}`,
-          file,
-          {
-            cacheControl: '3600',
-            upsert: false
-          }
-        );
-      if (error && !error.message.includes('The resource already exists')) {
-        setErrorMessage(error.message);
-        removeErrorMessageAfter4Seconds();
-        return;
-      }
-      let url = '';
-      if (data) {
-        url = data.path;
       } else {
-        url = `userFiles/${props.chatId}/${cleaned_name}.${extension}`;
-      }
-      const baseStorageUrl =
-        'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
-      url = baseStorageUrl + url;
-      const newDocId = v4();
-      const { docId: docId, error: error1 } = await handleObjectUpload(
-        url,
-        newDocId
-      );
-      if (error1) {
-        setErrorMessage(error1);
-        removeErrorMessageAfter4Seconds();
-        return;
-      }
-      const { error: insertError } = await supabase.from('chats').insert({
-        chatId: props.chatId,
-        docId: docId
-      });
-
-      if (insertError) {
-        setErrorMessage(insertError.message);
-        removeErrorMessageAfter4Seconds();
-        return;
-      }
-
-      await props.updateFiles(props.chatId);
-
-      // upload file to supabase storage
-      setLoading(false);
-      setLoadingForAWhile(false);
-      const closeModal = document.getElementById('closeModal');
-      if (closeModal) {
-        closeModal.click();
+        const { data, error } = await supabase.storage
+          .from('media')
+          .upload(
+            `userFiles/${props.chatId}/${cleaned_name}.${extension}`,
+            file,
+            {
+              cacheControl: '3600',
+              upsert: false
+            }
+          );
+        if (error && !error.message.includes('The resource already exists')) {
+          setErrorMessage(error.message);
+          removeErrorMessageAfter4Seconds();
+           setLoading(false);
+          setLoadingForAWhile(false);
+          return;
+        }
+        let url = '';
+        if (data) {
+          url = data.path;
+        } else {
+          url = `userFiles/${props.chatId}/${cleaned_name}.${extension}`;
+        }
+        const baseStorageUrl =
+          'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
+        url = baseStorageUrl + url;
+        const newDocId = v4();
+        const apiURL =
+          '/api/upload/getEmbeddingsForText?chatId=' +
+          props.chatId +
+          '&name=' +
+          cleaned_name +
+          '&url=' +
+          url +
+          '&newDocId=' +
+          newDocId;
+        const response = await fetch(apiURL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ url: url })
+        });
+        if (!response.ok) {
+          console.log(((await response.json())));
+          setErrorMessage('Error with API');
+          removeErrorMessageAfter4Seconds();
+           setLoading(false);
+          setLoadingForAWhile(false);
+          return;
+        }
+        const resp = (await response.json()) as { message: string };
+        if (resp.message === 'File uploaded successfully') {
+          await props.updateFiles(props.chatId);
+          const closeModal = document.getElementById('closeModal');
+          if (closeModal) {
+            closeModal.click();
+          }
+          setLoading(false);
+          setLoadingForAWhile(false);
+          return;
+        } else {
+          setLoading(false);
+          setLoadingForAWhile(false);
+          return;
+        }
       }
     }
   };
@@ -267,14 +283,13 @@ const AddMedia = (props: AddMediaProps) => {
               <label
                 htmlFor="my-modal-2"
                 className="btn-sm btn-circle btn absolute right-2 top-2"
-                 id="closeModal"
+                id="closeModal"
               >
                 ✕
               </label>
               <h3 className="font-base-content text-lg">Add Data</h3>
             </>
           )}
-
           <UploadSquare handleFileUpload={handleFileUpload} />
           <br />
           <div className="divider">OR</div>
@@ -309,7 +324,6 @@ const AddMedia = (props: AddMediaProps) => {
               ) : (
                 <>
                   <p>Enter URL </p>
-
                   <div className="flex gap-x-4">
                     <input
                       placeholder="ex. https://www.youtube.com/watch?v=qbIk7-JPB2c"

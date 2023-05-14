@@ -205,13 +205,13 @@ const Chat = (props: ChatProps) => {
       dataSources = (await getDataSources(input)).body.slice(0, 3);
     }
 
-    console.log(dataSources);
-
     const completionRequestBody: CompletionRequest = {
       messages: messages.concat([newUserMessage]),
       dataSources: dataSources,
       model: model
     };
+
+    console.log(completionRequestBody);
 
     const response = await fetch('/api/stream', {
       method: 'POST',
