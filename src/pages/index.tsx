@@ -52,7 +52,7 @@ const Home: NextPage = () => {
       </Head>
       <main data-theme="light" style={mukta.style}>
         <div className="flex min-h-screen flex-col justify-center from-primary">
-          {!user && (
+          
             <div className="absolute right-0 top-0 flex flex-row p-4">
               <div
                 style={{
@@ -67,11 +67,13 @@ const Home: NextPage = () => {
               >
                 About
               </div>
+              {!user && (
               <div>
                 <Login chatURL="https://www.chatboba.com/chat/" />
               </div>
+               )}
             </div>
-          )}
+         
           <div
             className="absolute left-0 top-0 flex cursor-pointer flex-row items-center justify-center p-4"
             onClick={() => void Router.push('/')}

@@ -9,12 +9,12 @@ export default function Login(props: { chatURL: string }) {
   const user = useUser();
 
   useEffect(() => {
-    if (user) {
-      window.location.href = '/chat';
-    }
-    console.log(props.chatURL);
-  }, [props.chatURL, user]);
 
+    console.log(props.chatURL)
+  }, [props.chatURL, user]);
+  if (user) {
+    return null;
+  }
   return (
     <>
       {isMobile ? (
@@ -51,7 +51,7 @@ export default function Login(props: { chatURL: string }) {
               }
             }}
             providers={['google']}
-            redirectTo={props.chatURL || 'https://www.chatboba.com/chat/'}
+            redirectTo={props.chatURL}
           />
         </label>
       </label>
