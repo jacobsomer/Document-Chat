@@ -19,7 +19,7 @@ const ChatRoom = () => {
     userChats: UserChat[];
   };
 
-  const passiveUpdateChat = useCallback(
+  const updateFiles = useCallback(
     async (chatId: string) => {
       const url = '/api/chats/get';
       try {
@@ -35,10 +35,7 @@ const ChatRoom = () => {
         });
         if (res.status == 200) {
           const data = (await res.json()) as ChatRoomProps;
-          setCurrentChat(data.currentChat);
           setFiles(data.files);
-          setUserChats(data.userChats);
-          setFinishedLoading(true);
         } else {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const data = (await res.json()) as { message: string };
@@ -208,7 +205,7 @@ const ChatRoom = () => {
           currentChat={currentChat}
           userId={user?.id}
           deleteFile={deleteFile}
-          updateFiles={passiveUpdateChat}
+          updateFiles={updateFiles}
           files={files}
           createNewChat={createNewChat}
           userChats={userChats}
