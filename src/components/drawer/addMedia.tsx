@@ -13,7 +13,6 @@ const cleanFileName = (fileName: string) => {
   return fileName.replace(/[^a-zA-Z0-9-_]/g, '_');
 };
 
-
 const AddMedia = (props: AddMediaProps) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -119,7 +118,7 @@ const AddMedia = (props: AddMediaProps) => {
         if (error && !error.message.includes('The resource already exists')) {
           setErrorMessage(error.message);
           removeErrorMessageAfter4Seconds();
-           setLoading(false);
+          setLoading(false);
           setLoadingForAWhile(false);
           return;
         }
@@ -152,7 +151,7 @@ const AddMedia = (props: AddMediaProps) => {
         if (!response.ok) {
           setErrorMessage('Error with API');
           removeErrorMessageAfter4Seconds();
-           setLoading(false);
+          setLoading(false);
           setLoadingForAWhile(false);
           return;
         }

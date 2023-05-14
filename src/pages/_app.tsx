@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { api } from '~/utils/api';
 import '~/styles/globals.css';
 import type { AppProps, AppType } from 'next/app';
 import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
@@ -21,4 +20,4 @@ const MyApp: AppType = ({ Component, pageProps }: AppProps) => {
   );
 };
 
-export default api.withTRPC(MyApp);
+export default MyApp;

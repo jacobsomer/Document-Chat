@@ -9,8 +9,7 @@ export default function Login(props: { chatURL: string }) {
   const user = useUser();
 
   useEffect(() => {
-
-    console.log(props.chatURL)
+    console.log(props.chatURL);
   }, [props.chatURL, user]);
   if (user) {
     return null;

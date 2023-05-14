@@ -11,7 +11,7 @@ import { v4 } from 'uuid';
 import type PersistentFile from 'formidable/PersistentFile';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { UnstructuredLoader } from 'langchain/document_loaders/fs/unstructured';
-import { JSONLoader } from "langchain/document_loaders/fs/json";
+import { JSONLoader } from 'langchain/document_loaders/fs/json';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 
 const embeddings = new OpenAIEmbeddings({

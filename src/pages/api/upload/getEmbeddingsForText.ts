@@ -15,13 +15,16 @@ const supabase = createClient(
 async function fetchEmbeddingForObject(url: string) {
   const options = {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({url})
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url })
   };
 
   try {
-    const response = await fetch('https://docuchat-doc-to-txt-fhpwesohfa-uc.a.run.app/createEmbeddingForObject', options);
-    const data = await response.json() as {text: string};
+    const response = await fetch(
+      'https://docuchat-doc-to-txt-fhpwesohfa-uc.a.run.app/createEmbeddingForObject',
+      options
+    );
+    const data = (await response.json()) as { text: string };
     return data.text;
   } catch (error) {
     console.error(error);
@@ -33,44 +36,42 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const chatId = req.query.chatId as string;
+  const name = req.query.name as string;
+  const url = req.query.url as string;
+  const newDocId = req.query.newDocId as string;
+  const splitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 4000,
+    chunkOverlap: 200
+  });
 
-    const chatId = req.query.chatId as string;
-    const name = req.query.name as string;
-    const url = req.query.url as string;
-    const newDocId = req.query.newDocId as string;
-    const splitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 4000,
-      chunkOverlap: 200
+  const text = await fetchEmbeddingForObject(url);
+  if (text === null) {
+    res.status(400).json({ message: 'Error' });
+    return;
+  }
+  const docOutput = await splitter.createDocuments([text]);
+  const arr: string[] = [];
+  for (let i = 0; i < docOutput.length; i++) {
+    const doc = docOutput[i];
+    arr.push(`${doc?.pageContent ?? ''}`);
+  }
+
+  const docEmbeddings = await embeddings.embedDocuments(arr);
+
+  const insertPromises = docEmbeddings.map(async (embedding, i) => {
+    await supabase.from('userdocuments').insert({
+      url: url,
+      body: arr[i],
+      embedding: embedding,
+      docId: newDocId,
+      docName: name
     });
-
-    const text = await fetchEmbeddingForObject(url);
-    if (text === null) {
-      res.status(400).json({ message: 'Error' });
-      return;
-    }
-    const docOutput = await splitter.createDocuments([text]);
-    const arr: string[] = [];
-    for (let i = 0; i < docOutput.length; i++) {
-      const doc = docOutput[i];
-      arr.push(`${doc?.pageContent ?? ''}`);
-    }
-
-    const docEmbeddings = await embeddings.embedDocuments(arr);
-
-    const insertPromises = docEmbeddings.map(async (embedding, i) => {
-      await supabase.from('userdocuments').insert({
-        url: url,
-        body: arr[i],
-        embedding: embedding,
-        docId: newDocId,
-        docName: name
-      });
-    });
-    await Promise.all(insertPromises);
-    await supabase.from('chats').insert({
-      chatId: chatId,
-      docId: newDocId
-    });
-    res.status(200).json({ message: 'success' });
- 
+  });
+  await Promise.all(insertPromises);
+  await supabase.from('chats').insert({
+    chatId: chatId,
+    docId: newDocId
+  });
+  res.status(200).json({ message: 'success' });
 }

@@ -52,28 +52,27 @@ const Home: NextPage = () => {
       </Head>
       <main data-theme="light" style={mukta.style}>
         <div className="flex min-h-screen flex-col justify-center from-primary">
-          
-            <div className="absolute right-0 top-0 flex flex-row p-4">
-              <div
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  display: 'flex',
-                  width: '100px',
-                  cursor: 'pointer'
-                }}
-                className="btn-ghost btn rounded-md px-4 py-2 text-base-content hover:bg-base-content hover:bg-opacity-20"
-                onClick={executeScroll}
-              >
-                About
-              </div>
-              {!user && (
+          <div className="absolute right-0 top-0 flex flex-row p-4">
+            <div
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                display: 'flex',
+                width: '100px',
+                cursor: 'pointer'
+              }}
+              className="btn-ghost btn rounded-md px-4 py-2 text-base-content hover:bg-base-content hover:bg-opacity-20"
+              onClick={executeScroll}
+            >
+              About
+            </div>
+            {!user && (
               <div>
                 <Login chatURL="https://www.chatboba.com/chat/" />
               </div>
-               )}
-            </div>
-         
+            )}
+          </div>
+
           <div
             className="absolute left-0 top-0 flex cursor-pointer flex-row items-center justify-center p-4"
             onClick={() => void Router.push('/')}
