@@ -150,7 +150,6 @@ const AddMedia = (props: AddMediaProps) => {
           body: JSON.stringify({ url: url })
         });
         if (!response.ok) {
-          console.log(((await response.json())));
           setErrorMessage('Error with API');
           removeErrorMessageAfter4Seconds();
            setLoading(false);
@@ -291,8 +290,7 @@ const AddMedia = (props: AddMediaProps) => {
             </>
           )}
           <UploadSquare handleFileUpload={handleFileUpload} />
-          <br />
-          <div className="divider">OR</div>
+          <div className="divider relative w-[100%]">OR</div>
           <div>
             <form className="flex w-full max-w-xl flex-col gap-2 py-4">
               {isMobile ? (
