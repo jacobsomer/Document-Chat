@@ -166,6 +166,12 @@ const Chat = (props: ChatProps) => {
     void getAndUpdateTheme();
     void getChat();
     void saveChat(messages);
+    if (isMobile){
+      const drawer = document.getElementById("drawer-button");
+      if (drawer) {
+        drawer.click();
+      }
+    }
     return () => {
       void saveChat(messages);
     };
@@ -390,6 +396,7 @@ const Chat = (props: ChatProps) => {
                   onClick={() => {
                     setDrawerIsOpened(!drawerIsOpened);
                   }}
+                  id = "drawer-button"
                 >
                   <GiHamburgerMenu />
                 </button>
