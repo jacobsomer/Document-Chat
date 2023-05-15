@@ -414,7 +414,7 @@ const Chat = (props: ChatProps) => {
                       ChatBoba
                     </h1>
                     <div className="text-5xl text-sm text-warning">
-                      Beta Release
+                      Beta Release 0.0.11
                     </div>
                   </div>
                 </div>
