@@ -262,10 +262,14 @@ export const DrawerContent = (props: DrawerProps) => {
         {user ? (
           <div className="flex w-[100%] items-center justify-center px-4">
             <div
+            style={{
+              zIndex: '999',
+              position: 'absolute',
+            }}
               className={'relative h-fit text-center text-xl text-base-content'}
             >
               {alternateChatLength && alternateChatLength > 1 ? (
-                <div className="dropdown-right dropdown">
+                <div  className="dropdown-right dropdown">
                   <label tabIndex={0} className="btn-ghost btn m-1 bg-base-100">
                     <HiSelector /> {props.currentChat.chatName}
                   </label>
