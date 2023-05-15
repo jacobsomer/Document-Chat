@@ -255,17 +255,13 @@ export const DrawerContent = (props: DrawerProps) => {
       <div
         style={{
           width: width.toString() + 'px',
-          overflow: Number(width.toString()) < 250 ? 'hidden' : 'visible'
+          overflow: Number(width.toString()) < 150 ? 'hidden' : 'visible'
         }}
         className={'flex h-[100px] flex-col items-center justify-center'}
       >
         {user ? (
           <div className="flex w-[100%] items-center justify-center px-4">
             <div
-            style={{
-              zIndex: '999',
-              position: 'absolute',
-            }}
               className={'relative h-fit text-center text-xl text-base-content'}
             >
               {alternateChatLength && alternateChatLength > 1 ? (
