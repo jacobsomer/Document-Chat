@@ -167,15 +167,12 @@ const Chat = (props: ChatProps) => {
     void getChat();
     void saveChat(messages);
     if (isMobile && drawerIsOpened){
-      const drawer = document.getElementById("drawer-button");
-      if (drawer) {
-        drawer.click();
-      }
+      setDrawerIsOpened(false);
     }
     return () => {
       void saveChat(messages);
     };
-  }, [handleScroll, getChat, saveChat, messages, getAndUpdateTheme]);
+  }, [handleScroll, getChat, saveChat, messages, getAndUpdateTheme, drawerIsOpened]);
 
   const getDataSources = async (prompt: string): Promise<SearchResponse> => {
     // set chat to repeated loading state ...
