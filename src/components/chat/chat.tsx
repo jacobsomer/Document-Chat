@@ -56,7 +56,7 @@ const Chat = (props: ChatProps) => {
   const [theme, setTheme] = useState<'light' | 'dark' | 'none'>('none');
   const [themeButtonIsHovered, setThemeButtonIsHovered] = useState(false);
   const [loadingText, setLoadingText] = useState('');
-  const [drawerIsOpened, setDrawerIsOpened] = useState(false);
+  const [drawerIsOpened, setDrawerIsOpened] = useState(true);
   const router = useRouter();
   const user = useUser();
   const [count, setCount] = useState(0);
@@ -166,7 +166,7 @@ const Chat = (props: ChatProps) => {
     void getAndUpdateTheme();
     void getChat();
     void saveChat(messages);
-    if (isMobile){
+    if (isMobile && drawerIsOpened){
       const drawer = document.getElementById("drawer-button");
       if (drawer) {
         drawer.click();
@@ -376,7 +376,7 @@ const Chat = (props: ChatProps) => {
         {theme !== 'none' && (
           <main data-theme={theme} style={mukta.style}>
             <div className="z-0 flex flex-1 flex-row">
-              {drawerIsOpened || (
+              {drawerIsOpened && (
                 <DrawerContent
                   handleClearSubmit={handleClearSubmit}
                   files={props.files}
