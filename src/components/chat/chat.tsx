@@ -414,7 +414,7 @@ const Chat = (props: ChatProps) => {
                       ChatBoba
                     </h1>
                     <div className="text-5xl text-sm text-warning">
-                      Beta Release 0.0.11
+                      Beta 0.0.11
                     </div>
                   </div>
                 </div>
@@ -544,7 +544,7 @@ const Chat = (props: ChatProps) => {
                   <h1 className="text-3xl font-bold text-base-content">
                     ChatBoba
                   </h1>
-                  <div className="text-sm text-warning">Beta Release</div>
+                  <div className="text-sm text-warning">Beta 0.0.11</div>
                 </div>
               </div>
               <div className="absolute right-12">
