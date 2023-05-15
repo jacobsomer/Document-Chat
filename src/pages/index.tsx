@@ -27,7 +27,7 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>ChatBoba</title>
-        <meta name="description" content="Chat with any data source" />
+        <meta name="description" content="ChatBoba - Chat with any Data Source!" />
         <link
           rel="apple-touch-icon"
           sizes="180x180"
