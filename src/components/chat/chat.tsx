@@ -57,6 +57,7 @@ const Chat = (props: ChatProps) => {
   const [themeButtonIsHovered, setThemeButtonIsHovered] = useState(false);
   const [loadingText, setLoadingText] = useState('');
   const [drawerIsOpened, setDrawerIsOpened] = useState(true);
+  const [drawerOpenedOneTime, setDrawerOpenedOneTime] = useState(false);
   const router = useRouter();
   const user = useUser();
   const [count, setCount] = useState(0);
@@ -166,8 +167,9 @@ const Chat = (props: ChatProps) => {
     void getAndUpdateTheme();
     void getChat();
     void saveChat(messages);
-    if (isMobile && drawerIsOpened){
+    if (isMobile && !drawerOpenedOneTime) {
       setDrawerIsOpened(false);
+      setDrawerOpenedOneTime(true);
     }
     return () => {
       void saveChat(messages);
