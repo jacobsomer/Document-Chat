@@ -196,6 +196,35 @@ const AddMedia = (props: AddMediaProps) => {
     setTimeout(() => {
       setLoadingForAWhile(true);
     }, 10000);
+
+    if (!input.includes('you')) {
+      const enpointURL = '/api/upload/handleUrlUpload';
+      const response = await fetch(enpointURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ url: input, chatId: props.chatId })
+      });
+      if (!response.ok) {
+        setErrorMessage('Error with API');
+        removeErrorMessageAfter4Seconds();
+        setLoading(false);
+        setLoadingForAWhile(false);
+        return;
+      }
+      const resp = (await response.json()) as { message: string };
+      if (resp.message === 'File uploaded successfully') {
+        await props.updateFiles(props.chatId);
+        const closeModal = document.getElementById('closeModal');
+        if (closeModal) {
+          closeModal.click();
+        }
+        setLoading(false);
+        setLoadingForAWhile(false);
+        return;
+      }
+    }
     // check if url is already in userdocuments
     const { data: userDocs, error: userDocsError } = await supabase
       .from('userdocuments')

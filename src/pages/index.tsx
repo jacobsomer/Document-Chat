@@ -4,15 +4,16 @@ import Head from 'next/head';
 import { useUser } from '@supabase/auth-helpers-react';
 import Login from '~/components/utils/login';
 import Image from 'next/image';
-import { Mukta } from 'next/font/google';
+import { Roboto } from 'next/font/google';
 import Router from 'next/router';
 import { useRef } from 'react';
 import { isMobile } from 'react-device-detect';
+import { HiChevronRight } from 'react-icons/hi';
 
-const mukta = Mukta({
+const mukta = Roboto({
   weight: '500',
   style: 'normal',
-  subsets: ['latin']
+  subsets: ['latin-ext']
 });
 
 const Home: NextPage = () => {
@@ -62,13 +63,26 @@ const Home: NextPage = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 display: 'flex',
-                width: '100px',
+                width: '80px',
                 cursor: 'pointer'
               }}
-              className="btn-ghost btn rounded-md px-4 py-2 text-base-content hover:bg-base-content hover:bg-opacity-20"
+              className="hover:text-primary"
               onClick={executeScroll}
             >
               About
+            </div>
+            <div
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                display: 'flex',
+                width: '80px',
+                cursor: 'pointer'
+              }}
+              className="hover:text-primary"
+              onClick={executeScroll}
+            >
+              Docs
             </div>
             {!user && (
               <div>
@@ -93,8 +107,8 @@ const Home: NextPage = () => {
               <h1 className="text-xl font-bold text-base-content">ChatBoba</h1>
             )}
           </div>
-          <div className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
-            <p className="mt-12 text-6xl text-base-content drop-shadow-[0_35px_35px_rgba(102,26,230,.5)]">
+          <div className="flex w-full flex-1 flex-col items-center px-20 pt-[100px] text-center">
+            <p className="text-width mt-12 max-w-[80%] text-5xl font-black text-base-content drop-shadow-[0_35px_35px_rgba(102,26,230,.5)]">
               Chat with{' '}
               <b className="display-inline bg-gradient-to-r from-primary to-secondary bg-clip-text font-extrabold text-transparent ">
                 Docs,Youtube Videos, and More
@@ -113,21 +127,21 @@ const Home: NextPage = () => {
                   void Router.push('/chat');
                 }}
               >
-                {user?.id !== null
-                  ? 'Start Chatting'
-                  : 'Start Chatting For Free'}
+                Start Chatting
               </button>
             ) : (
               <button
                 type="button"
-                className="btn-ghost btn w-1/2 rounded-full bg-primary text-primary-content hover:bg-primary-focus"
+                className="btn-ghost btn h-[60px] w-[400px] bg-primary text-[#fff] hover:bg-primary-focus"
                 onClick={() => {
                   void Router.push('/chat');
                 }}
               >
-                {user?.id !== null
-                  ? 'Start Chatting'
-                  : 'Start Chatting For Free'}
+                Start Chatting{' '}
+                <HiChevronRight
+                  className={'h-6 w-6 text-[hsl(var(--bc))]'}
+                  fill="#fff"
+                />
               </button>
             )}
           </div>
