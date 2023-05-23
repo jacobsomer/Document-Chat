@@ -44,7 +44,7 @@ export default async function handler(
         docId: docId
       });
       if (insertError) {
-        res.status(500).json({ error: insertError.message });
+        res.status(500).json({ message: insertError.message });
       } else {
         res.status(200).json({ message: 'Success' });
       }

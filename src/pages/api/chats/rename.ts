@@ -1,5 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from 'next';
-import {createClient} from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
 type Query = {
   newName: string;
@@ -12,7 +12,7 @@ export default async function handler(
 ) {
   // rename
   const { newName, chatId } = req.body as Query;
-   const supabase = req.headers.host?.includes('localhost')
+  const supabase = req.headers.host?.includes('localhost')
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''

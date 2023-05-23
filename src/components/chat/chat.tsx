@@ -15,6 +15,9 @@ import { isMobile } from 'react-device-detect';
 import { Mukta } from 'next/font/google';
 import Image from 'next/image';
 import Head from 'next/head';
+import { OpenAI } from 'langchain/llms/openai';
+import { PromptTemplate } from 'langchain/prompts';
+import { LLMChain } from 'langchain/chains';
 
 const mukta = Mukta({
   weight: '500',
@@ -22,7 +25,7 @@ const mukta = Mukta({
   subsets: ['latin']
 });
 
-const model: OaiModel = 'gpt-3.5-turbo';
+const model: OaiModel = 'gpt-4';
 
 const initMessages: ChatCompletionRequestMessage[] = [
   {
@@ -165,7 +168,6 @@ const Chat = (props: ChatProps) => {
     handleScroll();
     void getAndUpdateTheme();
     void getChat();
-    console.log("sadsa")
     void saveChat(messages);
     if (isMobile && !drawerOpenedOneTime) {
       setDrawerIsOpened(false);
@@ -178,7 +180,6 @@ const Chat = (props: ChatProps) => {
     handleScroll,
     getChat,
     saveChat,
-    messages,
     getAndUpdateTheme,
     drawerIsOpened,
     drawerOpenedOneTime
@@ -224,7 +225,6 @@ const Chat = (props: ChatProps) => {
       model: model
     };
 
-
     const response = await fetch('/api/stream', {
       method: 'POST',
       headers: {
@@ -251,7 +251,9 @@ const Chat = (props: ChatProps) => {
     while (!done) {
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
+
       const chunkValue = decoder.decode(value);
+
       try {
         const jsns = chunkValue.trim().split('\n\n');
         for (const jsn of jsns) {
@@ -272,6 +274,8 @@ const Chat = (props: ChatProps) => {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
           const text: string = data.choices[0].delta.content;
 
+          console.log(text);
+
           setMessages((prevMessages) => {
             const last =
               prevMessages[prevMessages.length - 1] ||
@@ -281,6 +285,10 @@ const Chat = (props: ChatProps) => {
               ...prevMessages.slice(0, -1),
               { ...last, content: last.content + text }
             ];
+
+            if (done) {
+              void saveChat(ret);
+            }
             return ret;
           });
         }

@@ -1,8 +1,7 @@
 // pages/api/chats/saveChat.js
 
 import { type NextApiRequest, type NextApiResponse } from 'next';
-import {createClient} from '@supabase/supabase-js'
-
+import { createClient } from '@supabase/supabase-js';
 
 type SaveChatBody = {
   userId: string;
@@ -15,7 +14,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { userId, chatId, conversation } = req.body as SaveChatBody;
- const supabase = req.headers.host?.includes('localhost')
+  const supabase = req.headers.host?.includes('localhost')
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
