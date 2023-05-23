@@ -13,7 +13,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { userId, chatId } = req.body as Query;
-  const supabase = req.url?.includes('localhost')
+  const supabase = req.headers.host?.includes('localhost')
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
@@ -22,7 +22,6 @@ export default async function handler(
         process.env.NEXT_PUBLIC_SUPABASE_URL || '',
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
       );
-
   try {
     const { data, error } = await supabase
       .from('userChats')

@@ -40,7 +40,7 @@ export default async function handler(
     chunkOverlap: 200
   });
 
-  const supabase = req.url?.includes('localhost')
+  const supabase = req.headers.host?.includes('localhost')
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''

@@ -12,7 +12,7 @@ export default async function deleteChatHandler(
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
-  const supabase = req.url?.includes('localhost')
+  const supabase = req.headers.host?.includes('localhost')
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''

@@ -89,6 +89,7 @@ const ChatRoom = () => {
 
   useEffect(() => {
     const chat_id = window.location.pathname.split('/')[2];
+    console.log("useEffect Running")
     if (!chat_id) {
       if (!user) {
         void router.push('/chat/' + v4());

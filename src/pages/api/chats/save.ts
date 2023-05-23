@@ -15,7 +15,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { userId, chatId, conversation } = req.body as SaveChatBody;
- const supabase = req.url?.includes('localhost')
+ const supabase = req.headers.host?.includes('localhost')
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''

@@ -92,7 +92,6 @@ const Chat = (props: ChatProps) => {
 
       if (!res.ok) {
         const response = (await res.json()) as { message: string };
-        console.error(response.message);
         return;
       }
       const new_chat = (await res.json()) as ChatCompletionRequestMessage[];
@@ -166,6 +165,7 @@ const Chat = (props: ChatProps) => {
     handleScroll();
     void getAndUpdateTheme();
     void getChat();
+    console.log("sadsa")
     void saveChat(messages);
     if (isMobile && !drawerOpenedOneTime) {
       setDrawerIsOpened(false);
@@ -224,7 +224,6 @@ const Chat = (props: ChatProps) => {
       model: model
     };
 
-    console.log(completionRequestBody);
 
     const response = await fetch('/api/stream', {
       method: 'POST',
