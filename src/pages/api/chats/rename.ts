@@ -1,10 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
 import { type NextApiRequest, type NextApiResponse } from 'next';
+import { ChatBobaClient } from '~/utils/ChatBobaClient';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
+const supabase = ChatBobaClient();
 
 type Query = {
   newName: string;

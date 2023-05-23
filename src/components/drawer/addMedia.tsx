@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import UploadSquare from './uploadSquare';
 import { supportedExtensions, unstructuredExtensions } from '~/utils/consts';
-import { createClient } from '@supabase/supabase-js';
+
 import { FiUpload } from 'react-icons/fi';
 import { handleObjectUpload } from '~/utils/handleUpload';
 import { v4 } from 'uuid';
 import { type AddMediaProps } from '~/types/types';
 import { isMobile } from 'react-device-detect';
+import { useRouter } from 'next/router';
+import { createClient } from '@supabase/supabase-js';
 
 const cleanFileName = (fileName: string) => {
   // replace any characters that are not letters, numbers, dashes, spaces, or underscores with an underscore
@@ -18,11 +20,22 @@ const AddMedia = (props: AddMediaProps) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [input, setInput] = useState('');
   const [loadingForAWhile, setLoadingForAWhile] = useState(false);
+  const router = useRouter();
+
+  const origin =
+    typeof window !== 'undefined' && window.location.origin
+      ? window.location.origin
+      : '';
   // Create a single supabase client for interacting with your database
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-  );
+  const supabase = origin.includes('localhost')
+    ? createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
+      )
+    : createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+      );
 
   const removeErrorMessageAfter4Seconds = () => {
     setLoading(false);

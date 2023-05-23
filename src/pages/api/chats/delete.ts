@@ -1,11 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { type NextApiRequest, type NextApiResponse } from 'next';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
-
 type Query = {
   chatId: string;
 };
@@ -17,6 +12,15 @@ export default async function deleteChatHandler(
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
+  const supabase = req.url?.includes('localhost')
+    ? createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
+      )
+    : createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+      );
 
   const { chatId } = req.body as Query;
 

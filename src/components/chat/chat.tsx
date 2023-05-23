@@ -174,7 +174,15 @@ const Chat = (props: ChatProps) => {
     return () => {
       void saveChat(messages);
     };
-  }, [handleScroll, getChat, saveChat, messages, getAndUpdateTheme, drawerIsOpened, drawerOpenedOneTime]);
+  }, [
+    handleScroll,
+    getChat,
+    saveChat,
+    messages,
+    getAndUpdateTheme,
+    drawerIsOpened,
+    drawerOpenedOneTime
+  ]);
 
   const getDataSources = async (prompt: string): Promise<SearchResponse> => {
     // set chat to repeated loading state ...
@@ -395,7 +403,7 @@ const Chat = (props: ChatProps) => {
                   onClick={() => {
                     setDrawerIsOpened(!drawerIsOpened);
                   }}
-                  id = "drawer-button"
+                  id="drawer-button"
                 >
                   <GiHamburgerMenu />
                 </button>

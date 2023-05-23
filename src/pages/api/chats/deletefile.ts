@@ -1,11 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { type NextApiRequest, type NextApiResponse } from 'next';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
-
 type Query = {
   docId: string;
 };
@@ -14,6 +9,16 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === 'POST') {
+    const supabase = req.url?.includes('localhost')
+      ? createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
+        )
+      : createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+        );
+
     const { docId } = req.body as Query;
 
     const { error: error1 } = await supabase

@@ -192,13 +192,7 @@ export const DrawerContent = (props: DrawerProps) => {
                   data-tip="Login to save this files and chats"
                   id="tooltip1"
                 >
-                  <Login
-                    chatURL={
-                      'https://www.chatboba.com/chat/' +
-                      props.currentChat.chatId +
-                      '/'
-                    }
-                  />
+                  <Login chatURL={'/chat/' + props.currentChat.chatId + '/'} />
                 </div>
                 <div className="h-10"></div>
               </>
@@ -265,7 +259,7 @@ export const DrawerContent = (props: DrawerProps) => {
               className={'relative h-fit text-center text-xl text-base-content'}
             >
               {alternateChatLength && alternateChatLength > 1 ? (
-                <div  className="dropdown-right dropdown">
+                <div className="dropdown-right dropdown">
                   <label tabIndex={0} className="btn-ghost btn m-1 bg-base-100">
                     <HiSelector /> {props.currentChat.chatName}
                   </label>
@@ -400,13 +394,7 @@ export const DrawerContent = (props: DrawerProps) => {
                 data-tip="Login to save this files and chats"
                 id="tooltip1"
               >
-                <Login
-                  chatURL={
-                    'https://www.chatboba.com/chat/' +
-                    props.currentChat.chatId +
-                    '/'
-                  }
-                />
+                <Login chatURL={'/chat/' + props.currentChat.chatId + '/'} />
               </div>
               <div className="h-10"></div>
             </>

@@ -1,16 +1,22 @@
 import { Auth } from '@supabase/auth-ui-react';
-import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
+import { useUser } from '@supabase/auth-helpers-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
+import { createClient } from '@supabase/supabase-js';
 
 export default function Login(props: { chatURL: string }) {
-  const supabaseClient = useSupabaseClient();
+  const origin =
+    typeof window !== 'undefined' && window.location.origin
+      ? window.location.origin
+      : '';
+
+  const supabaseClient = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  );
+
   const user = useUser();
 
-  useEffect(() => {
-    console.log(props.chatURL);
-  }, [props.chatURL, user]);
   if (user) {
     return null;
   }
@@ -50,7 +56,11 @@ export default function Login(props: { chatURL: string }) {
               }
             }}
             providers={['google']}
-            redirectTo={props.chatURL}
+            redirectTo={
+              origin !== 'http://localhost:3000'
+                ? 'https://www.chatboba.com' + props.chatURL
+                : 'http://localhost:3000' + props.chatURL
+            }
           />
         </label>
       </label>

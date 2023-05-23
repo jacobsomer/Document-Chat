@@ -1,11 +1,6 @@
 import { type NextApiRequest, type NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
-
 type Query = {
   userId: string;
 };
@@ -14,7 +9,15 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { userId } = req.body as Query;
-
+  const supabase = req.url?.includes('localhost')
+    ? createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
+      )
+    : createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+      );
   try {
     const { data, error } = await supabase
       .from('userTheme')

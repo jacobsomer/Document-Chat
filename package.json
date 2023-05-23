@@ -6,7 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "postinstall": "prisma generate",
-    "lint-fix": "npx stylelint '**/*.css' --fix && prettier --config .prettierrc 'src/components/**/*.tsx' --write && prettier --config .prettierrc 'src/pages/**/*.tsx' --write && prettier --config .prettierrc 'src/pages/**/*.ts' --write",
+    "lint-fix": "npx stylelint '**/*.css' --fix && prettier --config .prettierrc 'src/components/**/*.tsx' --write && prettier --config .prettierrc 'src/**/**/*.tsx' --write && prettier --config .prettierrc 'src/pages/**/*.ts' --write",
     "lint": "eslint . --ext .tsx",
     "start": "next start"
   },

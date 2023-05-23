@@ -1,11 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
-import { NextApiRequest, type NextApiHandler, NextApiResponse } from 'next';
+import {
+  type NextApiRequest,
+  type NextApiHandler,
+  type NextApiResponse
+} from 'next';
 import { v4 } from 'uuid';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
 
 type Query = {
   userId: string;
@@ -16,6 +15,16 @@ const handler: NextApiHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
+  const supabase = req.url?.includes('localhost')
+    ? createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
+      )
+    : createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+      );
+
   const { userId, chatId } = req.body as Query;
 
   // if the current chat is empty, do nothing

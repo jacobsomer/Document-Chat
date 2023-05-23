@@ -1,4 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
 import { type NextApiRequest, type NextApiResponse } from 'next';
 import { IncomingForm } from 'formidable';
 // you might want to use regular 'fs' and not a promise one
@@ -13,6 +12,7 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { UnstructuredLoader } from 'langchain/document_loaders/fs/unstructured';
 import { JSONLoader } from 'langchain/document_loaders/fs/json';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { createClient } from '@supabase/supabase-js';
 
 const embeddings = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY // In Node.js defaults to process.env.OPENAI_API_KEY
@@ -24,11 +24,6 @@ export const config = {
     bodyParser: false
   }
 };
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
 
 const unstructuredExtensions = [
   'md',
@@ -63,6 +58,16 @@ export default async function handler(
   const chatId = req.query.chatId as string;
   const name = req.query.name as string;
   const extension = req.query.extension as string;
+
+  const supabase = req.url?.includes('localhost')
+    ? createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
+      )
+    : createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+      );
 
   const data = await new Promise((resolve, reject) => {
     const form = new IncomingForm();

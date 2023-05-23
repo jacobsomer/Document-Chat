@@ -1,4 +1,5 @@
 import { type NextPage } from 'next';
+import { useEffect } from 'react';
 import Head from 'next/head';
 import { useUser } from '@supabase/auth-helpers-react';
 import Login from '~/components/utils/login';
@@ -19,15 +20,18 @@ const Home: NextPage = () => {
   const myRef = useRef<null | HTMLDivElement>(null);
   const executeScroll = () => {
     if (myRef.current) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       myRef.current.scrollIntoView();
     }
   };
+
   return (
     <>
       <Head>
         <title>ChatBoba</title>
-        <meta name="description" content="ChatBoba - Chat with any Data Source!" />
+        <meta
+          name="description"
+          content="ChatBoba - Chat with any Data Source!"
+        />
         <link
           rel="apple-touch-icon"
           sizes="180x180"
@@ -68,7 +72,7 @@ const Home: NextPage = () => {
             </div>
             {!user && (
               <div>
-                <Login chatURL="https://www.chatboba.com/chat/" />
+                <Login chatURL="/chat/" />
               </div>
             )}
           </div>

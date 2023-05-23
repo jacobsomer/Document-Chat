@@ -1,16 +1,11 @@
 import { type NextApiRequest, type NextApiResponse } from 'next';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
-import { createClient } from '@supabase/supabase-js';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { createClient } from '@supabase/supabase-js';
 
 const embeddings = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY // In Node.js defaults to process.env.OPENAI_API_KEY
 });
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
 
 async function fetchEmbeddingForObject(url: string) {
   const options = {
@@ -44,6 +39,16 @@ export default async function handler(
     chunkSize: 4000,
     chunkOverlap: 200
   });
+
+  const supabase = req.url?.includes('localhost')
+    ? createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
+      )
+    : createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+      );
 
   const text = await fetchEmbeddingForObject(url);
   if (text === null) {
