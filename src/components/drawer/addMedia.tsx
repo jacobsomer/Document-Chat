@@ -74,6 +74,7 @@ const AddMedia = (props: AddMediaProps) => {
         extension === 'txt' ||
         extension === 'docx' ||
         extension === 'csv' ||
+        extension === 'pptx' ||
         unstructuredExtensions.includes(extension)
       ) {
         const formData = new FormData();
@@ -118,71 +119,10 @@ const AddMedia = (props: AddMediaProps) => {
           return;
         }
       } else {
-        const { data, error } = await supabase.storage
-          .from('media')
-          .upload(
-            `userFiles/${props.chatId}/${cleaned_name}.${extension}`,
-            file,
-            {
-              cacheControl: '3600',
-              upsert: false
-            }
-          );
-        if (error && !error.message.includes('The resource already exists')) {
-          setErrorMessage(error.message);
-          removeErrorMessageAfter4Seconds();
-          setLoading(false);
-          setLoadingForAWhile(false);
-          return;
-        }
-        let url = '';
-        if (data) {
-          url = data.path;
-        } else {
-          url = `userFiles/${props.chatId}/${cleaned_name}.${extension}`;
-        }
-        const baseStorageUrl =
-          'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
-        url = baseStorageUrl + url;
-        const newDocId = v4();
-        const apiURL =
-          '/api/upload/getEmbeddingsForText?chatId=' +
-          props.chatId +
-          '&name=' +
-          cleaned_name +
-          '&url=' +
-          url +
-          '&newDocId=' +
-          newDocId;
-        const response = await fetch(apiURL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ url: url })
-        });
-        if (!response.ok) {
-          setErrorMessage('Error with API');
-          removeErrorMessageAfter4Seconds();
-          setLoading(false);
-          setLoadingForAWhile(false);
-          return;
-        }
-        const resp = (await response.json()) as { message: string };
-        if (resp.message === 'File uploaded successfully') {
-          await props.updateFiles(props.chatId);
-          const closeModal = document.getElementById('closeModal');
-          if (closeModal) {
-            closeModal.click();
-          }
-          setLoading(false);
-          setLoadingForAWhile(false);
-          return;
-        } else {
-          setLoading(false);
-          setLoadingForAWhile(false);
-          return;
-        }
+        setErrorMessage('Filetype not supported');
+        setLoading(false);
+        setLoadingForAWhile(false);
+        return;
       }
     }
   };

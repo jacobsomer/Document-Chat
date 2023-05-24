@@ -12,7 +12,7 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { UnstructuredLoader } from 'langchain/document_loaders/fs/unstructured';
 import { JSONLoader } from 'langchain/document_loaders/fs/json';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
-import { createClient } from '@supabase/supabase-js';
+import { SupabaseClient, createClient } from '@supabase/supabase-js';
 
 const embeddings = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY // In Node.js defaults to process.env.OPENAI_API_KEY
@@ -25,7 +25,7 @@ export const config = {
   }
 };
 
-const unstructuredExtensions = [
+const allowedExtenstions = [
   'md',
   'py',
   'js',
@@ -48,7 +48,16 @@ const unstructuredExtensions = [
   'env',
   'sh',
   'swift',
-  'kt'
+  'kt',
+  'ktm',
+  'pptx',
+  'ppt',
+  'xls',
+  'xlsx',
+  'doc',
+  'docx',
+  'pdf',
+  'txt'
 ];
 
 export default async function handler(
@@ -59,7 +68,15 @@ export default async function handler(
   const name = req.query.name as string;
   const extension = req.query.extension as string;
 
-  const supabase = req.headers.host?.includes('localhost')
+  if (!allowedExtenstions.includes(extension)) {
+    res.status(400).json({ message: 'Invalid file extension' });
+    return;
+  }
+
+
+  const isLocal = req.headers.host?.includes('localhost')
+  console.log('isLocal', isLocal)
+  const supabase = isLocal
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
@@ -79,13 +96,62 @@ export default async function handler(
   });
 
   const data1 = data as { files: any };
+
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const fileData = data1.files?.file[0] as PersistentFile;
   const filePath = fileData.toJSON().filepath;
 
-  if (!extension) {
-    res.status(400).json({ message: 'Invalid file extension' });
-    return;
+  if (extension === 'pptx' || extension === 'ppt' || extension === 'xls' || extension === 'xlsx' ||  extension === 'docx' ) {
+    // load file from filePath
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const file:File =  data1.files?.file[0]
+    console.log(file.size)
+    const { data, error } = await supabase.storage
+      .from('media')
+      .upload(`userFiles/${chatId}/${name}.${extension}`, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+    if (error && !error.message.includes('The resource already exists')) {
+      console.log(error.message);
+      res.status(400).json({ message: error.message});
+      return;
+    }
+    let url = '';
+    if (data) {
+      url = data.path;
+    } else {
+      url = `userFiles/${chatId}/${name}.${extension}`;
+    }
+    const baseStorageUrl =
+      'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
+    url = baseStorageUrl + url;
+    const newDocId = v4();
+    const apiURL = "http://localhost:3000/api/upload/getEmbeddingsForText/"
+    const response = await fetch(apiURL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ url: url,
+        chatId: chatId,
+        name: name,
+        newDocId: newDocId,
+        isLocal:  isLocal,
+       })
+    });
+    if (!response.ok) {
+      res.status(400).json({ message: 'File upload failed2' });
+      return;
+    }
+    const resp = (await response.json()) as { message: string };
+    if (resp.message === 'File uploaded successfully') {
+      res.status(200).json({ message: 'File uploaded successfully' });
+      return;
+    } else {
+      res.status(400).json({ message: 'File upload failed3' });
+      return;
+    }
   }
 
   const newDocId = v4();
@@ -101,10 +167,11 @@ export default async function handler(
       loader = new TextLoader(filePath);
     } else if (extension === 'json') {
       loader = new JSONLoader(filePath);
-    } else if (unstructuredExtensions.includes(extension)) {
+    } else if (allowedExtenstions.includes(extension)) {
       loader = new UnstructuredLoader(filePath);
     }
   } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     // do nothing and test for loader
     res.status(400).json({ message: 'Loader Error' });
   }

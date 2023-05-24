@@ -8,6 +8,7 @@ const embeddings = new OpenAIEmbeddings({
 });
 
 async function fetchEmbeddingForObject(url: string) {
+  console.log(url)
   const options = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -31,16 +32,20 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const chatId = req.query.chatId as string;
-  const name = req.query.name as string;
-  const url = req.query.url as string;
-  const newDocId = req.query.newDocId as string;
+  const {url, name, chatId, newDocId, isLocal} = req.body as {
+    url:string,
+    name:string,
+    chatId:string,
+    newDocId:string,
+    isLocal:boolean
+  };
+
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: 4000,
     chunkOverlap: 200
   });
 
-  const supabase = req.headers.host?.includes('localhost')
+  const supabase = isLocal
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
@@ -55,6 +60,7 @@ export default async function handler(
     res.status(400).json({ message: 'Error' });
     return;
   }
+
   const docOutput = await splitter.createDocuments([text]);
   const arr: string[] = [];
   for (let i = 0; i < docOutput.length; i++) {
