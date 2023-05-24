@@ -2,19 +2,23 @@ import { AiFillFileAdd } from 'react-icons/ai';
 import { BsFillCloudDownloadFill, BsFillTrashFill } from 'react-icons/bs';
 import styles from '~/styles/drawerStyles.module.css';
 import { useState } from 'react';
+import { url } from 'inspector';
 
 const FileComponent = (props: {
   name: string;
   url: string;
   deleteFile: (url: string) => Promise<void>;
+  size?: number;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [fileUploadMetadata, setFileUploadMetadata] = useState()
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       key={props.name}
       className={styles.fileItem}
+      id={props.url}
     >
       <AiFillFileAdd color="hsl(var(--s))" className={styles.fileIcon} />
       <div className="relative w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-base text-base-content">

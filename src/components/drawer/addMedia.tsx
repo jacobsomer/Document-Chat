@@ -55,6 +55,7 @@ const AddMedia = (props: AddMediaProps) => {
     const file = event.target.files?.[0];
 
     if (file) {
+      // Step 1: parse the file name and extension
       const extension = file.name.split('.').pop();
 
       if (!extension || !supportedExtensions.includes(extension)) {
@@ -67,8 +68,11 @@ const AddMedia = (props: AddMediaProps) => {
 
       // get file name
       const name = file.name.split('.').slice(0, -1).join('.');
-
       const cleaned_name = cleanFileName(name);
+
+
+      // Step 2: call the right logic per file extension type. Either we have a 
+      // relatively normal/unstructured/NLP extension supported by JS, or send it to the backend to handle. 
       if (
         extension === 'pdf' ||
         extension === 'txt' ||
