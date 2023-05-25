@@ -1,5 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from 'next';
-import { IncomingForm } from 'formidable';
+import formidable, { IncomingForm } from 'formidable';
 // you might want to use regular 'fs' and not a promise one
 import { promises as fs } from 'fs';
 import { CSVLoader } from 'langchain/document_loaders/fs/csv';
@@ -75,7 +75,7 @@ export default async function handler(
 
 
   const isLocal = req.headers.host?.includes('localhost')
-  console.log('isLocal', isLocal)
+
   const supabase = isLocal
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
@@ -89,7 +89,10 @@ export default async function handler(
   const data = await new Promise((resolve, reject) => {
     const form = new IncomingForm();
 
+
     form.parse(req, (err, fields, files) => {
+
+    console.log(typeof files)
       if (err) return reject(err);
       resolve({ fields, files });
     });
@@ -97,15 +100,19 @@ export default async function handler(
 
   const data1 = data as { files: any };
 
+
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const fileData = data1.files?.file[0] as PersistentFile;
   const filePath = fileData.toJSON().filepath;
+  console.log(fileData.toJSON())
 
   if (extension === 'pptx' || extension === 'ppt' || extension === 'xls' || extension === 'xlsx' ||  extension === 'docx' ) {
     // load file from filePath
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const file:File =  data1.files?.file[0]
     console.log(file.size)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    console.log(typeof data1.files?.file[0])
     const { data, error } = await supabase.storage
       .from('media')
       .upload(`userFiles/${chatId}/${name}.${extension}`, file, {
@@ -124,7 +131,7 @@ export default async function handler(
       url = `userFiles/${chatId}/${name}.${extension}`;
     }
     const baseStorageUrl =
-      'https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/';
+      (isLocal? 'https://eyoguhfgkfmjnjpcwblg.supabase.co' :'https://gsaywynqkowtwhnyrehr.supabase.co')+'/storage/v1/object/public/media/';
     url = baseStorageUrl + url;
     const newDocId = v4();
     const apiURL = "http://localhost:3000/api/upload/getEmbeddingsForText/"
