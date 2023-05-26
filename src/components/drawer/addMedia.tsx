@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import UploadSquare from './uploadSquare';
-import { supportedExtensions, unstructuredExtensions } from '~/utils/consts';
+import { supportedExtensions } from '~/utils/consts';
 
 import { FiUpload } from 'react-icons/fi';
 import { handleObjectUpload } from '~/utils/handleUpload';
@@ -20,14 +20,14 @@ const AddMedia = (props: AddMediaProps) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [input, setInput] = useState('');
   const [loadingForAWhile, setLoadingForAWhile] = useState(false);
-  const router = useRouter();
 
   const origin =
     typeof window !== 'undefined' && window.location.origin
       ? window.location.origin
       : '';
+  const isLocal = origin.includes('localhost');
   // Create a single supabase client for interacting with your database
-  const supabase = origin.includes('localhost')
+  const supabase = isLocal
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
@@ -42,6 +42,37 @@ const AddMedia = (props: AddMediaProps) => {
     setTimeout(() => {
       setErrorMessage('');
     }, 4000);
+  };
+
+  const uploadFile = async (
+    file: File,
+    name: string,
+    extension: string
+  ): Promise<string> => {
+    // upload file to supabase storage
+    const { data, error } = await supabase.storage
+      .from('media')
+      .upload(`userFiles/${props.chatId}/${name}.${extension}`, file, {
+        cacheControl: '3600',
+        upsert: true
+      });
+    if (error && !error.message.includes('The resource already exists')) {
+      console.log(error.message);
+      return 'Error';
+    }
+    let url = '';
+    if (data) {
+      url = data.path;
+    } else {
+      url = `userFiles/${props.chatId}/${name}.${extension}`;
+    }
+    const baseStorageUrl =
+      (isLocal
+        ? 'https://eyoguhfgkfmjnjpcwblg.supabase.co'
+        : 'https://gsaywynqkowtwhnyrehr.supabase.co') +
+      '/storage/v1/object/public/media/';
+    url = baseStorageUrl + url;
+    return url;
   };
 
   const handleFileUpload = async (
@@ -69,61 +100,48 @@ const AddMedia = (props: AddMediaProps) => {
       const name = file.name.split('.').slice(0, -1).join('.');
 
       const cleaned_name = cleanFileName(name);
-      if (
-        extension === 'pdf' ||
-        extension === 'txt' ||
-        extension === 'docx' ||
-        extension === 'csv' ||
-        extension === 'pptx' ||
-        unstructuredExtensions.includes(extension)
-      ) {
-        const formData = new FormData();
-        formData.append('file', file);
-        const response = await fetch(
-          '/api/upload/handleFileUpload' +
-            '?chatId=' +
-            props.chatId +
-            '&name=' +
-            cleaned_name +
-            '&extension=' +
-            extension,
-          {
-            method: 'POST',
-            body: formData
-          }
-        );
-        const resp = (await response.json()) as { message: string };
-        if (resp.message === 'File uploaded successfully') {
-          await props.updateFiles(props.chatId);
-          void supabase.storage
-            .from('media')
-            .upload(
-              `userFiles/${props.chatId}/${cleaned_name}.${extension}`,
-              file,
-              {
-                cacheControl: '3600',
-                upsert: false
-              }
-            );
-          const closeModal = document.getElementById('closeModal');
-          if (closeModal) {
-            closeModal.click();
-          }
-          setLoading(false);
-          setLoadingForAWhile(false);
-          return;
-        } else {
-          console.log(resp.message);
-          setLoading(false);
-          setLoadingForAWhile(false);
-          return;
-        }
-      } else {
-        setErrorMessage('Filetype not supported');
-        setLoading(false);
-        setLoadingForAWhile(false);
+
+      const url = await uploadFile(file, cleaned_name, extension);
+      if (url === 'Error') {
+        setErrorMessage('Error uploading file');
+        removeErrorMessageAfter4Seconds();
         return;
       }
+
+      const enpointURL = `/api/upload/handleFileUpload`;
+      let resp = null
+try{
+      const res = await fetch(enpointURL, {
+        method: 'POST',
+        body: JSON.stringify({
+          url: url,
+          chatId: props.chatId,
+          name: cleaned_name,
+          extension: extension
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      resp = (await res.json()) as { message: string };
+      if (resp.message=== "File uploaded successfully"){
+        void props.updateFiles(props.chatId);
+        const closeModal = document.getElementById('closeModal');
+        if (closeModal) {
+          closeModal.click();
+        }
+        setLoading(false);
+        setLoadingForAWhile(false);
+      }
+    } catch (e) {
+      console.log(e);
+      setErrorMessage('Error with API');
+      removeErrorMessageAfter4Seconds();
+      setLoading(false);
+      setLoadingForAWhile(false);
+      return;
+    }
     }
   };
 

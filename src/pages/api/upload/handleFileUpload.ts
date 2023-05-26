@@ -1,7 +1,6 @@
 import { type NextApiRequest, type NextApiResponse } from 'next';
-import formidable, { IncomingForm } from 'formidable';
+import { IncomingForm } from 'formidable';
 // you might want to use regular 'fs' and not a promise one
-import { promises as fs } from 'fs';
 import { CSVLoader } from 'langchain/document_loaders/fs/csv';
 import { TextLoader } from 'langchain/document_loaders/fs/text';
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
@@ -12,18 +11,12 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { UnstructuredLoader } from 'langchain/document_loaders/fs/unstructured';
 import { JSONLoader } from 'langchain/document_loaders/fs/json';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 
 const embeddings = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY // In Node.js defaults to process.env.OPENAI_API_KEY
 });
 
-// first we need to disable the default body parser
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};
 
 const allowedExtenstions = [
   'md',
@@ -60,21 +53,31 @@ const allowedExtenstions = [
   'txt'
 ];
 
+type FileUploadBody = {
+  chatId: string;
+  name: string;
+  extension: string;
+  url: string;
+};
+
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const chatId = req.query.chatId as string;
-  const name = req.query.name as string;
-  const extension = req.query.extension as string;
+  if (req.method !== 'POST') {
+    res.status(400).json({ message: 'Invalid method' });
+    return;
+  }
 
+  
+  const { url, chatId, name, extension } = req.body as FileUploadBody;
   if (!allowedExtenstions.includes(extension)) {
     res.status(400).json({ message: 'Invalid file extension' });
     return;
   }
 
-
-  const isLocal = req.headers.host?.includes('localhost')
+  const isLocal = req.headers.host?.includes('localhost');
 
   const supabase = isLocal
     ? createClient(
@@ -86,80 +89,52 @@ export default async function handler(
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
       );
 
-  const data = await new Promise((resolve, reject) => {
-    const form = new IncomingForm();
-
-
-    form.parse(req, (err, fields, files) => {
-
-    console.log(typeof files)
-      if (err) return reject(err);
-      resolve({ fields, files });
-    });
-  });
-
-  const data1 = data as { files: any };
-
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  const fileData = data1.files?.file[0] as PersistentFile;
-  const filePath = fileData.toJSON().filepath;
-  console.log(fileData.toJSON())
-
-  if (extension === 'pptx' || extension === 'ppt' || extension === 'xls' || extension === 'xlsx' ||  extension === 'docx' ) {
-    // load file from filePath
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const file:File =  data1.files?.file[0]
-    console.log(file.size)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    console.log(typeof data1.files?.file[0])
-    const { data, error } = await supabase.storage
-      .from('media')
-      .upload(`userFiles/${chatId}/${name}.${extension}`, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-    if (error && !error.message.includes('The resource already exists')) {
-      console.log(error.message);
-      res.status(400).json({ message: error.message});
-      return;
-    }
-    let url = '';
-    if (data) {
-      url = data.path;
-    } else {
-      url = `userFiles/${chatId}/${name}.${extension}`;
-    }
-    const baseStorageUrl =
-      (isLocal? 'https://eyoguhfgkfmjnjpcwblg.supabase.co' :'https://gsaywynqkowtwhnyrehr.supabase.co')+'/storage/v1/object/public/media/';
-    url = baseStorageUrl + url;
+  if (
+    extension === 'pptx' ||
+    extension === 'ppt' ||
+    extension === 'xls' ||
+    extension === 'xlsx' ||
+    extension === 'docx'
+  ) {
     const newDocId = v4();
-    const apiURL = "http://localhost:3000/api/upload/getEmbeddingsForText/"
+    const apiURL = 'http://localhost:3000/api/upload/getEmbeddingsForText/';
     const response = await fetch(apiURL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ url: url,
+      body: JSON.stringify({
+        url: url,
         chatId: chatId,
         name: name,
         newDocId: newDocId,
-        isLocal:  isLocal,
-       })
+        isLocal: isLocal
+      })
     });
     if (!response.ok) {
-      res.status(400).json({ message: 'File upload failed2' });
+      console.log(await response.json())
+      res.status(400).json({ message: 'File upload failed' });
       return;
     }
-    const resp = (await response.json()) as { message: string };
-    if (resp.message === 'File uploaded successfully') {
+    const resp = (await response.json()) as { message: string };     
+    if (resp.message === 'success') {
       res.status(200).json({ message: 'File uploaded successfully' });
       return;
     } else {
-      res.status(400).json({ message: 'File upload failed3' });
+      res.status(400).json({ message: 'File upload failed' });
       return;
     }
   }
+
+  // download file from url
+  const response = await fetch(url);
+  if (!response.ok) {
+    res.status(400).json({ message: 'File upload failed1' });
+    return;
+  }
+  const file = await response.blob();
+  const filePath = `./public/${name}`;
+  console.log("ok")
 
   const newDocId = v4();
   let loader;
@@ -187,7 +162,6 @@ export default async function handler(
     res.status(400).json({ message: 'Invalid file extension' });
   } else {
     try {
-      const url = `https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/userFiles/${chatId}/${name}.${extension}`;
       const docs = await loader.load();
       const splitter = new RecursiveCharacterTextSplitter({
         chunkSize: 4000,
