@@ -1,17 +1,18 @@
 import { type NextApiRequest, type NextApiResponse } from 'next';
-import { IncomingForm } from 'formidable';
 // you might want to use regular 'fs' and not a promise one
 import { CSVLoader } from 'langchain/document_loaders/fs/csv';
 import { TextLoader } from 'langchain/document_loaders/fs/text';
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
 import { DocxLoader } from 'langchain/document_loaders/fs/docx';
 import { v4 } from 'uuid';
-import type PersistentFile from 'formidable/PersistentFile';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { UnstructuredLoader } from 'langchain/document_loaders/fs/unstructured';
 import { JSONLoader } from 'langchain/document_loaders/fs/json';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { createClient } from '@supabase/supabase-js';
+import fs from 'fs';
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
+const get = require("async-get-file");
 
 const embeddings = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY // In Node.js defaults to process.env.OPENAI_API_KEY
@@ -97,7 +98,8 @@ export default async function handler(
     extension === 'docx'
   ) {
     const newDocId = v4();
-    const apiURL = 'http://localhost:3000/api/upload/getEmbeddingsForText/';
+    const baseURL = isLocal ? 'http://localhost:3000' : 'https://chatboba.com';
+    const apiURL = baseURL+'/api/upload/getEmbeddingsForText/';
     const response = await fetch(apiURL, {
       method: 'POST',
       headers: {
@@ -132,9 +134,15 @@ export default async function handler(
     res.status(400).json({ message: 'File upload failed1' });
     return;
   }
-  const file = await response.blob();
-  const filePath = `./public/${name}`;
-  console.log("ok")
+
+  const options = {
+    directory: "./tmp/",
+    filename: name+"."+extension
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  await get(url,options);
+
+  const filePath = `./tmp/${name}.${extension}`;
 
   const newDocId = v4();
   let loader;
@@ -159,6 +167,9 @@ export default async function handler(
   }
 
   if (!loader) {
+    // delete file
+    fs.unlinkSync(filePath);
+
     res.status(400).json({ message: 'Invalid file extension' });
   } else {
     try {
