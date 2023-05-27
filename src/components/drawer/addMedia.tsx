@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 import UploadSquare from './uploadSquare';
 import { supportedExtensions, unstructuredExtensions } from '~/utils/consts';
 
@@ -45,14 +45,10 @@ const AddMedia = (props: AddMediaProps) => {
     }, 4000);
   };
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+  const fileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    successCallback: () => Promise<void>, errorCallback: () => Promise<void>,
   ) => {
-    setLoading(true);
-    setLoadingForAWhile(false);
-    setTimeout(() => {
-      setLoadingForAWhile(true);
-    }, 10000);
     const file = event.target.files?.[0];
 
     if (file) {
@@ -64,6 +60,10 @@ const AddMedia = (props: AddMediaProps) => {
           'FileType is not one of: ' + supportedExtensions.toString()
         );
         removeErrorMessageAfter4Seconds();
+        const closeModal = document.getElementById('closeModal');
+        if (closeModal) {
+          closeModal.click();
+        }
         return;
       }
 
@@ -71,11 +71,6 @@ const AddMedia = (props: AddMediaProps) => {
       const name = file.name.split('.').slice(0, -1).join('.');
       const cleaned_name = cleanFileName(name);
 
-      props.updateFiletree({
-        url: "URL placeholder", // TODO: add URL
-        docId: "DocID placeholder", // TODO: add DocID
-        docName: name,
-      });
       // Step 2: call the right logic per file extension type. Either we have a 
       // relatively normal/unstructured/NLP extension supported by JS, or send it to the backend to handle. 
       if (
@@ -113,18 +108,10 @@ const AddMedia = (props: AddMediaProps) => {
                 upsert: false
               }
             );
-          const closeModal = document.getElementById('closeModal');
-          if (closeModal) {
-            closeModal.click();
-          }
-          setLoading(false);
-          setLoadingForAWhile(false);
-          return;
+            successCallback();
         } else {
           console.log(resp.message);
-          setLoading(false);
-          setLoadingForAWhile(false);
-          return;
+          await errorCallback();
         }
       } else {
         const { data, error } = await supabase.storage
@@ -140,8 +127,6 @@ const AddMedia = (props: AddMediaProps) => {
         if (error && !error.message.includes('The resource already exists')) {
           setErrorMessage(error.message);
           removeErrorMessageAfter4Seconds();
-          setLoading(false);
-          setLoadingForAWhile(false);
           return;
         }
         let url = '';
@@ -171,29 +156,43 @@ const AddMedia = (props: AddMediaProps) => {
           body: JSON.stringify({ url: url })
         });
         if (!response.ok) {
+          await errorCallback();
           setErrorMessage('Error with API');
           removeErrorMessageAfter4Seconds();
           setLoading(false);
           setLoadingForAWhile(false);
-          return;
         }
         const resp = (await response.json()) as { message: string };
         if (resp.message === 'File uploaded successfully') {
           await props.updateFiles(props.chatId);
-          const closeModal = document.getElementById('closeModal');
-          if (closeModal) {
-            closeModal.click();
-          }
-          setLoading(false);
-          setLoadingForAWhile(false);
-          return;
-        } else {
-          setLoading(false);
-          setLoadingForAWhile(false);
-          return;
         }
       }
+      return;
     }
+  }
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const successCallback = async () => { "placeholder" }; // TODO
+    const errorCallback = async () => { "placeholder" }; // TODO
+    
+
+    setLoading(true);
+    setLoadingForAWhile(false);
+    setTimeout(() => {
+      setLoadingForAWhile(true);
+    }, 10000);
+    
+    const closeModal = document.getElementById('closeModal');
+    if (closeModal) {
+      closeModal.click();
+    }
+    await fileUpload(event, successCallback, errorCallback);
+
+    setLoading(false);
+    setLoadingForAWhile(false);
+    return;
   };
 
   const handleUrlUpload = async (
@@ -310,7 +309,18 @@ const AddMedia = (props: AddMediaProps) => {
               <h3 className="font-base-content text-lg">Add Data</h3>
             </>
           )}
-          <UploadSquare handleFileUpload={handleFileUpload} />
+          <UploadSquare handleFileUpload={async (event: React.ChangeEvent<HTMLInputElement>) => {
+            console.log("hit: handleFileUpload called")
+            await props.updateFiletree({
+              url: "URL placeholder", // TODO
+              docId: "DocID placeholder", // TODO
+              docName: event.target.files?.[0] ? event.target.files?.[0].name : "upload error",
+            });
+            console.log("hit: updateFileTree called");
+            props.forceUpdateFiletree();
+            // TODO: call a force update on Sidebar
+            await handleFileUpload(event); 
+          }} />
           <div className="divider relative w-[100%]">OR</div>
           <div>
             <form className="flex w-full max-w-xl flex-col gap-2 py-4">

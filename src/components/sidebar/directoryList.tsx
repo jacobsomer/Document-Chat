@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FileTree from './filetree';
 import { FileEntry } from './fileEntry';
 import FileMetadata from './fileMetadata';
@@ -9,10 +9,12 @@ export const DirectoryList = (props: {
   depth: number;
   filetree?: FileTree;
 }) => {
+  const [counter, setCounter] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const clickHandler = async (e: any) => {
     setIsCollapsed(!isCollapsed);
   };
+
   if (props.filetree) {
     console.log(props.filetree?.children)
     console.log(props.filetree?.children.entries())
@@ -32,9 +34,7 @@ export const DirectoryList = (props: {
           );
         })}
         {props.filetree.files.map((fileMetadata: FileMetadata) => {
-          if (props.filetree) {
-            return <FileEntry metadata={fileMetadata} />;
-          }
+          return <FileEntry metadata={fileMetadata} />;
         })}
       </div>
     );

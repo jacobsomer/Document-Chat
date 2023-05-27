@@ -13,6 +13,14 @@ import { isMobile } from 'react-device-detect';
 import FileTree from '../sidebar/filetree';
 import { Sidebar } from '../sidebar/sidebar';
 
+//create your forceUpdate hook
+function useForceUpdate(){
+  const [value, setValue] = useState(0); // integer state
+  return () => setValue(value => value + 1); // update state to force render
+  // A function that increment 👆🏻 the previous state like here 
+  // is better than directly setting `setValue(value + 1)`
+}
+
 export const DrawerContent = (props: DrawerProps) => {
   const user = useUser();
   const router = useRouter();
@@ -25,8 +33,11 @@ export const DrawerContent = (props: DrawerProps) => {
     (chat) => chat.chatId !== props.currentChat.chatId
   ).length;
 
+  const forceUpdate = useForceUpdate();
+
   const updateFiletree = async (file: File, options?: any) => {
-    setFileTreeRoot(fileTreeRoot?.addFile(file, options))
+    setFileTreeRoot(fileTreeRoot.addFile(file, options))
+    console.log("filetreeroot updated")
   };
 
   useEffect(() => {
@@ -47,7 +58,7 @@ export const DrawerContent = (props: DrawerProps) => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, props.files.length, props.userChats, user, width]);
+  }, [isDragging, props.files.length, props.userChats, user, width, updateFiletree]);
 
   if (isMobile) {
     return (
@@ -162,6 +173,7 @@ export const DrawerContent = (props: DrawerProps) => {
                 <AddMedia
                   updateFiles={props.updateFiles}
                   updateFiletree={updateFiletree}
+                  forceUpdateFiletree={forceUpdate}
                   chatId={props.currentChat.chatId}
                   setToolTipString={setToolTipString}
                 />
@@ -179,6 +191,7 @@ export const DrawerContent = (props: DrawerProps) => {
                   <AddMedia
                     updateFiles={props.updateFiles}
                     updateFiletree={updateFiletree}
+                    forceUpdateFiletree={forceUpdate}
                     chatId={props.currentChat.chatId}
                     setToolTipString={setToolTipString}
                   />
@@ -361,6 +374,7 @@ export const DrawerContent = (props: DrawerProps) => {
               <AddMedia
                 updateFiles={props.updateFiles}
                 updateFiletree={updateFiletree}
+                forceUpdateFiletree={forceUpdate}
                 chatId={props.currentChat.chatId}
                 setToolTipString={setToolTipString}
               />
@@ -378,6 +392,7 @@ export const DrawerContent = (props: DrawerProps) => {
                 <AddMedia
                   updateFiles={props.updateFiles}
                   updateFiletree={updateFiletree}
+                  forceUpdateFiletree={forceUpdate}
                   chatId={props.currentChat.chatId}
                   setToolTipString={setToolTipString}
                 />

@@ -5,8 +5,11 @@ import { FileProgressDisplay } from '../drawer/fileProgressDisplay';
 
 // A component to show
 export const FileEntry = (props: { metadata: FileMetadata }) => {
+  console.log("hit: FileEntry called")
+  
   return (
     <div>
+      lmao
       <FileComponent
         name={props.metadata.docName}
         url={props.metadata.url}

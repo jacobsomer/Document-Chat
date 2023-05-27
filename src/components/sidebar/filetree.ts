@@ -15,11 +15,12 @@ export default class FileTree {
   }
 
   addFile(file: File, options?: any) {
+    console.log("hit: Filetree added file")
+    console.log(file.docName)
     const metadata: FileMetadata = new FileMetadata(file.docName, file.url);
     const names: string[] = file.docName.split("/");
     if (names.length == 1) {
       this.files.push(metadata);
-      return this;
 
     } else if (names.length > 1) {
       const dirName: string = names[0] ? names[0] : "formatting error";
@@ -33,7 +34,7 @@ export default class FileTree {
         docId: file.docId,
         url: file.url,
         docName: names.slice(1).join("/"),
-      });
+      });    
     }
     return this;
   }
