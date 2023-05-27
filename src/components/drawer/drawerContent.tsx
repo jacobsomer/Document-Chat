@@ -36,8 +36,7 @@ export const DrawerContent = (props: DrawerProps) => {
   const forceUpdate = useForceUpdate();
 
   const updateFiletree = async (file: File, options?: any) => {
-    setFileTreeRoot(fileTreeRoot.addFile(file, options))
-    console.log("filetreeroot updated")
+    return fileTreeRoot.addFile(file, options);
   };
 
   useEffect(() => {

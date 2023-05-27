@@ -14,6 +14,7 @@ export default class FileMetadata {
   }
 
   finishLoading() {
-    this.loading = true;
+    console.log("finished loading")
+    this.loading = false;
   }
 }

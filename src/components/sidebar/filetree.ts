@@ -36,6 +36,6 @@ export default class FileTree {
         docName: names.slice(1).join("/"),
       });    
     }
-    return this;
+    return metadata;
   }
 }

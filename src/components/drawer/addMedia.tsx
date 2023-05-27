@@ -10,6 +10,7 @@ import { type AddMediaProps } from '~/types/types';
 import { isMobile } from 'react-device-detect';
 import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
+import FileMetadata from '../sidebar/fileMetadata';
 
 const cleanFileName = (fileName: string) => {
   // replace any characters that are not letters, numbers, dashes, spaces, or underscores with an underscore
@@ -108,7 +109,7 @@ const AddMedia = (props: AddMediaProps) => {
                 upsert: false
               }
             );
-            successCallback();
+            await successCallback();
         } else {
           console.log(resp.message);
           await errorCallback();
@@ -161,12 +162,15 @@ const AddMedia = (props: AddMediaProps) => {
           removeErrorMessageAfter4Seconds();
           setLoading(false);
           setLoadingForAWhile(false);
+        } else {
+          await successCallback();
         }
         const resp = (await response.json()) as { message: string };
         if (resp.message === 'File uploaded successfully') {
           await props.updateFiles(props.chatId);
         }
       }
+      await successCallback();
       return;
     }
   }
@@ -174,9 +178,6 @@ const AddMedia = (props: AddMediaProps) => {
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const successCallback = async () => { "placeholder" }; // TODO
-    const errorCallback = async () => { "placeholder" }; // TODO
-    
 
     setLoading(true);
     setLoadingForAWhile(false);
@@ -188,7 +189,23 @@ const AddMedia = (props: AddMediaProps) => {
     if (closeModal) {
       closeModal.click();
     }
+    const metadata: FileMetadata = await props.updateFiletree({
+      url: "URL placeholder", // TODO
+      docId: "DocID placeholder", // TODO
+      docName: event.target.files?.[0] ? event.target.files?.[0].name : "upload error",
+    });
+    const successCallback = async () => { 
+      console.log("upload successful, metadata object mutated")
+      metadata.finishLoading(); 
+    }; // TODO
+    const errorCallback = async () => {
+      console.log("upload unsuccessful, metadata object mutated")
+      metadata.finishLoading(); 
+    }; // TODO
+
+    
     await fileUpload(event, successCallback, errorCallback);
+    console.log("file upload called");
 
     setLoading(false);
     setLoadingForAWhile(false);
@@ -311,11 +328,7 @@ const AddMedia = (props: AddMediaProps) => {
           )}
           <UploadSquare handleFileUpload={async (event: React.ChangeEvent<HTMLInputElement>) => {
             console.log("hit: handleFileUpload called")
-            await props.updateFiletree({
-              url: "URL placeholder", // TODO
-              docId: "DocID placeholder", // TODO
-              docName: event.target.files?.[0] ? event.target.files?.[0].name : "upload error",
-            });
+            
             console.log("hit: updateFileTree called");
             props.forceUpdateFiletree();
             // TODO: call a force update on Sidebar

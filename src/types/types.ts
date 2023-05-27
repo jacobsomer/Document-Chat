@@ -1,5 +1,6 @@
 import { type SupabaseClient } from '@supabase/supabase-js';
 import { type Dispatch, type SetStateAction } from 'react';
+import FileMetadata from '~/components/sidebar/fileMetadata';
 
 export type File = {
   url: string;
@@ -28,7 +29,7 @@ export type AddMediaProps = {
    chatId: string;
    forceUpdateFiletree: () => void;
   updateFiles:  (chatId: string) => Promise<void>;
-  updateFiletree: (file: File) => Promise<void>;
+  updateFiletree: (file: File) => Promise<FileMetadata>;
   setToolTipString: Dispatch<SetStateAction<string>>;
 }
 
