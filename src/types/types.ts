@@ -18,7 +18,7 @@ export type UserChat = {
   chatName: string;
 };
 
-export  type ChatFile = {
+export type ChatFile = {
     chatId: string;
     docId: string;
     docName: string;
@@ -27,8 +27,10 @@ export  type ChatFile = {
 export type AddMediaProps = {
    chatId: string;
   updateFiles:  (chatId: string) => Promise<void>;
+  updateFiletree: (file: File) => Promise<void>;
   setToolTipString: Dispatch<SetStateAction<string>>;
 }
+
 export type DrawerProps = {
   currentChat: UserChat;
   userChats: UserChat[] | undefined;

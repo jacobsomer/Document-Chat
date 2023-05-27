@@ -3,6 +3,7 @@ import UploadSquare from './uploadSquare';
 import { supportedExtensions, unstructuredExtensions } from '~/utils/consts';
 
 import { FiUpload } from 'react-icons/fi';
+import { File } from '~/types/types';
 import { handleObjectUpload } from '~/utils/handleUpload';
 import { v4 } from 'uuid';
 import { type AddMediaProps } from '~/types/types';
@@ -70,7 +71,11 @@ const AddMedia = (props: AddMediaProps) => {
       const name = file.name.split('.').slice(0, -1).join('.');
       const cleaned_name = cleanFileName(name);
 
-
+      props.updateFiletree({
+        url: "URL placeholder", // TODO: add URL
+        docId: "DocID placeholder", // TODO: add DocID
+        docName: name,
+      });
       // Step 2: call the right logic per file extension type. Either we have a 
       // relatively normal/unstructured/NLP extension supported by JS, or send it to the backend to handle. 
       if (

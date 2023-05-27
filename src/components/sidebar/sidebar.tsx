@@ -4,5 +4,9 @@ import { DirectoryList } from './directoryList';
 
 // A component to show
 export const Sidebar = (props: { fileTreeRoot: FileTree }) => {
-  return <DirectoryList depth={0} fileTree={props.fileTreeRoot} />;
+  return (
+    <div>
+      <DirectoryList depth={0} filetree={props.fileTreeRoot} />
+    </div>
+  );
 };

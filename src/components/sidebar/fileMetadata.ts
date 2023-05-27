@@ -1,14 +1,14 @@
 export default class FileMetadata {
   loading: boolean;
-  name: string;
+  docName: string;
   url: string;
   deleteFile: (url: string) => Promise<void>;
   size?: number;
 
-  constructor() {
-    this.loading = false;
-    this.name = '';
-    this.url = '';
+  constructor(docName: string, url: string) {
+    this.loading = true;
+    this.docName = docName;
+    this.url = url;
     this.deleteFile = async () => {};
     this.size = 0;
   }

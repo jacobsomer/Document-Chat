@@ -3,13 +3,15 @@ import Account from './account';
 import AddMedia from '~/components/drawer/addMedia';
 import Login from '../utils/login';
 import { type MouseEvent, useEffect, useState } from 'react';
-import { type DrawerProps } from '~/types/types';
+import { File, type DrawerProps } from '~/types/types';
 import { useRouter } from 'next/router';
 import ChatSettings from './chatSettings';
 import { HiChevronRight, HiSelector } from 'react-icons/hi';
 import FileComponent from './fileComponent';
 import IntroModal from '../chat/introModal';
 import { isMobile } from 'react-device-detect';
+import FileTree from '../sidebar/filetree';
+import { Sidebar } from '../sidebar/sidebar';
 
 export const DrawerContent = (props: DrawerProps) => {
   const user = useUser();
@@ -17,10 +19,15 @@ export const DrawerContent = (props: DrawerProps) => {
   const [toolTipString, setToolTipString] = useState('');
   const [width, setWidth] = useState(250);
   const [isDragging, setIsDragging] = useState(false);
+  const [fileTreeRoot, setFileTreeRoot] = useState(new FileTree("root"));
 
   const alternateChatLength = props.userChats?.map(
     (chat) => chat.chatId !== props.currentChat.chatId
   ).length;
+
+  const updateFiletree = async (file: File, options?: any) => {
+    setFileTreeRoot(fileTreeRoot?.addFile(file, options))
+  };
 
   useEffect(() => {
     const handleMouseMove = (event: { clientX: number; clientY: number }) => {
@@ -118,21 +125,6 @@ export const DrawerContent = (props: DrawerProps) => {
           }}
         >
           <div className="my-2 w-20 border-t-2 border-black"></div>
-
-          {props.files.length === 0 ? (
-            <>
-              <div className="text-3xl text-base-content">No files yet!</div>
-            </>
-          ) : (
-            props.files.map((file) => (
-              <FileComponent
-                key={file.docId}
-                url={file.url}
-                name={file.docName}
-                deleteFile={() => props.deleteFile(file.docId)}
-              />
-            ))
-          )}
         </div>
 
         <div
@@ -166,8 +158,10 @@ export const DrawerContent = (props: DrawerProps) => {
                   deleteChat={props.deleteChat}
                   renameChat={props.renameChat}
                 />
+                <Sidebar fileTreeRoot={fileTreeRoot}/>
                 <AddMedia
                   updateFiles={props.updateFiles}
+                  updateFiletree={updateFiletree}
                   chatId={props.currentChat.chatId}
                   setToolTipString={setToolTipString}
                 />
@@ -181,8 +175,10 @@ export const DrawerContent = (props: DrawerProps) => {
                   data-tip="Click me to add files"
                   id="tooltip1"
                 >
+                  <Sidebar fileTreeRoot={fileTreeRoot}/>
                   <AddMedia
                     updateFiles={props.updateFiles}
+                    updateFiletree={updateFiletree}
                     chatId={props.currentChat.chatId}
                     setToolTipString={setToolTipString}
                   />
@@ -327,14 +323,7 @@ export const DrawerContent = (props: DrawerProps) => {
             <div className="text-sm text-base-content">No files yet!</div>
           </>
         ) : (
-          props.files.map((file) => (
-            <FileComponent
-              key={file.docId}
-              url={file.url}
-              name={file.docName}
-              deleteFile={() => props.deleteFile(file.docId)}
-            />
-          ))
+          <></>
         )}
       </div>
 
@@ -368,8 +357,10 @@ export const DrawerContent = (props: DrawerProps) => {
                 deleteChat={props.deleteChat}
                 renameChat={props.renameChat}
               />
+              <Sidebar fileTreeRoot={fileTreeRoot}/>
               <AddMedia
                 updateFiles={props.updateFiles}
+                updateFiletree={updateFiletree}
                 chatId={props.currentChat.chatId}
                 setToolTipString={setToolTipString}
               />
@@ -383,8 +374,10 @@ export const DrawerContent = (props: DrawerProps) => {
                 data-tip="Click me to add files"
                 id="tooltip1"
               >
+                <Sidebar fileTreeRoot={fileTreeRoot}/>
                 <AddMedia
                   updateFiles={props.updateFiles}
+                  updateFiletree={updateFiletree}
                   chatId={props.currentChat.chatId}
                   setToolTipString={setToolTipString}
                 />

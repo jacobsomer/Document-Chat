@@ -8,7 +8,7 @@ export const FileEntry = (props: { metadata: FileMetadata }) => {
   return (
     <div>
       <FileComponent
-        name={props.metadata.name}
+        name={props.metadata.docName}
         url={props.metadata.url}
         deleteFile={async () => {}}
         size={props.metadata.size}
