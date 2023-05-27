@@ -109,39 +109,39 @@ const AddMedia = (props: AddMediaProps) => {
       }
 
       const enpointURL = `/api/upload/handleFileUpload`;
-      let resp = null
-try{
-      const res = await fetch(enpointURL, {
-        method: 'POST',
-        body: JSON.stringify({
-          url: url,
-          chatId: props.chatId,
-          name: cleaned_name,
-          extension: extension
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      let resp = null;
+      try {
+        const res = await fetch(enpointURL, {
+          method: 'POST',
+          body: JSON.stringify({
+            url: url,
+            chatId: props.chatId,
+            name: cleaned_name,
+            extension: extension
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
 
-      resp = (await res.json()) as { message: string };
-      if (resp.message=== "File uploaded successfully"){
-        void props.updateFiles(props.chatId);
-        const closeModal = document.getElementById('closeModal');
-        if (closeModal) {
-          closeModal.click();
+        resp = (await res.json()) as { message: string };
+        if (resp.message === 'File uploaded successfully') {
+          void props.updateFiles(props.chatId);
+          const closeModal = document.getElementById('closeModal');
+          if (closeModal) {
+            closeModal.click();
+          }
+          setLoading(false);
+          setLoadingForAWhile(false);
         }
+      } catch (e) {
+        console.log(e);
+        setErrorMessage('Error with API');
+        removeErrorMessageAfter4Seconds();
         setLoading(false);
         setLoadingForAWhile(false);
+        return;
       }
-    } catch (e) {
-      console.log(e);
-      setErrorMessage('Error with API');
-      removeErrorMessageAfter4Seconds();
-      setLoading(false);
-      setLoadingForAWhile(false);
-      return;
-    }
     }
   };
 
@@ -154,85 +154,32 @@ try{
     setTimeout(() => {
       setLoadingForAWhile(true);
     }, 10000);
-
-    if (!input.includes('you')) {
-      const enpointURL = '/api/upload/handleUrlUpload';
-      const response = await fetch(enpointURL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ url: input, chatId: props.chatId })
-      });
-      if (!response.ok) {
-        setErrorMessage('Error with API');
-        removeErrorMessageAfter4Seconds();
-        setLoading(false);
-        setLoadingForAWhile(false);
-        return;
-      }
-      const resp = (await response.json()) as { message: string };
-      if (resp.message === 'File uploaded successfully') {
-        await props.updateFiles(props.chatId);
-        const closeModal = document.getElementById('closeModal');
-        if (closeModal) {
-          closeModal.click();
-        }
-        setLoading(false);
-        setLoadingForAWhile(false);
-        return;
-      }
-    }
-    // check if url is already in userdocuments
-    const { data: userDocs, error: userDocsError } = await supabase
-      .from('userdocuments')
-      .select('*')
-      .eq('url', input);
-    if (userDocsError) {
-      setErrorMessage(userDocsError.message);
-      removeErrorMessageAfter4Seconds();
-    }
-    if (userDocs && userDocs.length > 0) {
-      if (userDocs[0]) {
-        const docId = userDocs[0].docId as string;
-        const { error: insertError } = await supabase.from('chats').insert({
-          chatId: props.chatId,
-          docId: docId
-        });
-        if (insertError) {
-          setErrorMessage(insertError.message);
-          removeErrorMessageAfter4Seconds();
-          return;
-        }
-        await props.updateFiles(props.chatId);
-        setLoading(false);
-        return;
-      }
-    }
-    const newDocId = v4();
-    const { docId: docId, error: error1 } = await handleObjectUpload(
-      input,
-      newDocId
-    );
-    if (error1) {
-      setErrorMessage(error1);
-      removeErrorMessageAfter4Seconds();
-      return;
-    }
-    const { error: insertError } = await supabase.from('chats').insert({
-      chatId: props.chatId,
-      docId: docId
+    const enpointURL = '/api/upload/handleUrlUpload';
+    const response = await fetch(enpointURL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ url: input, chatId: props.chatId })
     });
-    if (insertError) {
-      setErrorMessage(insertError.message);
+    if (!response.ok) {
+      setErrorMessage('Error with API');
       removeErrorMessageAfter4Seconds();
+      setLoading(false);
+      setLoadingForAWhile(false);
       return;
     }
-    await props.updateFiles(props.chatId);
-    setLoading(false);
-    setLoadingForAWhile(false);
-
-    return;
+    const resp = (await response.json()) as { message: string };
+    if (resp.message === 'File uploaded successfully') {
+      await props.updateFiles(props.chatId);
+      const closeModal = document.getElementById('closeModal');
+      if (closeModal) {
+        closeModal.click();
+      }
+      setLoading(false);
+      setLoadingForAWhile(false);
+      return;
+    }
   };
 
   return (
