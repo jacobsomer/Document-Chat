@@ -16,8 +16,6 @@ export const DirectoryList = (props: {
   };
 
   if (props.filetree) {
-    console.log(props.filetree?.children)
-    console.log(props.filetree?.children.entries())
 
     return (
       <div

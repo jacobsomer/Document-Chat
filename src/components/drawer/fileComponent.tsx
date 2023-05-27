@@ -13,7 +13,6 @@ const FileComponent = (props: {
   const [isHovered, setIsHovered] = useState(false);
   const [fileUploadMetadata, setFileUploadMetadata] = useState()
 
-  console.log("hit: FileComponent created");
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}

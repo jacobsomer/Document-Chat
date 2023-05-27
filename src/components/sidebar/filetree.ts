@@ -15,8 +15,6 @@ export default class FileTree {
   }
 
   addFile(file: File, options?: any) {
-    console.log("hit: Filetree added file")
-    console.log(file.docName)
     const metadata: FileMetadata = new FileMetadata(file.docName, file.url);
     const names: string[] = file.docName.split("/");
     if (names.length == 1) {

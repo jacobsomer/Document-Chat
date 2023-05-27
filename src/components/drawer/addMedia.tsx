@@ -205,8 +205,6 @@ const AddMedia = (props: AddMediaProps) => {
 
     
     await fileUpload(event, successCallback, errorCallback);
-    console.log("file upload called");
-
     setLoading(false);
     setLoadingForAWhile(false);
     return;
@@ -326,12 +324,8 @@ const AddMedia = (props: AddMediaProps) => {
               <h3 className="font-base-content text-lg">Add Data</h3>
             </>
           )}
-          <UploadSquare handleFileUpload={async (event: React.ChangeEvent<HTMLInputElement>) => {
-            console.log("hit: handleFileUpload called")
-            
-            console.log("hit: updateFileTree called");
+          <UploadSquare handleFileUpload={async (event: React.ChangeEvent<HTMLInputElement>) => {      
             props.forceUpdateFiletree();
-            // TODO: call a force update on Sidebar
             await handleFileUpload(event); 
           }} />
           <div className="divider relative w-[100%]">OR</div>

@@ -5,18 +5,17 @@ import { FileProgressDisplay } from '../drawer/fileProgressDisplay';
 
 // A component to show
 export const FileEntry = (props: { metadata: FileMetadata }) => {
-  console.log("hit: FileEntry called")
   
   return (
-    <div>
-      lmao
+    <div style={{
+      minWidth: 200,
+    }}>
       <FileComponent
-        name={props.metadata.docName}
+        name={props.metadata.docName + ": " + (props.metadata.loading ? "loading" : "finished")}
         url={props.metadata.url}
         deleteFile={async () => {}}
         size={props.metadata.size}
       />
-      <FileProgressDisplay loading={props.metadata.loading} />
     </div>
   );
 };
