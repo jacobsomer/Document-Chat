@@ -62,9 +62,9 @@ export default async function handler(
 
   const oaiRes = await createStream(messages, model);
 
-  const customReadable = oaiRes.data as ReadableStream
-  
-   return new Response(customReadable, {
-    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  const customReadable = oaiRes.data as ReadableStream;
+
+  return new Response(customReadable, {
+    headers: { 'Content-Type': 'text/html; charset=utf-8' }
   });
 }
