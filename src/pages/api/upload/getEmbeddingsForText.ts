@@ -44,7 +44,6 @@ export default async function handler(
     chunkOverlap: 200
   });
 
- 
   const supabase = isLocal
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
@@ -61,8 +60,6 @@ export default async function handler(
     return;
   }
 
-  
-
   const docOutput = await splitter.createDocuments([text]);
   const arr: string[] = [];
   for (let i = 0; i < docOutput.length; i++) {
@@ -72,18 +69,16 @@ export default async function handler(
 
   const docEmbeddings = await embeddings.embedDocuments(arr);
 
-  
-
   const insertPromises = docEmbeddings.map(async (embedding, i) => {
-    const {error} = await supabase.from('userdocuments').insert({
+    const { error } = await supabase.from('userdocuments').insert({
       url: url,
       body: arr[i],
       embedding: embedding,
       docId: newDocId,
-      docName: name,
+      docName: name
     });
     if (error) {
-      console.log(error)
+      console.log(error);
       res.status(500).json({ message: error.message });
     }
   });

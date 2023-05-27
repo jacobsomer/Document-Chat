@@ -11,48 +11,13 @@ import { JSONLoader } from 'langchain/document_loaders/fs/json';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
+import { supportedExtensions } from '~/utils/consts';
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
-const get = require("async-get-file");
+const get = require('async-get-file');
 
 const embeddings = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY // In Node.js defaults to process.env.OPENAI_API_KEY
 });
-
-
-const allowedExtenstions = [
-  'md',
-  'py',
-  'js',
-  'html',
-  'css',
-  'java',
-  'c',
-  'cpp',
-  'ts',
-  'tsx',
-  'jsx',
-  'json',
-  'xml',
-  'yaml',
-  'yml',
-  'sql',
-  'php',
-  'rb',
-  'go',
-  'env',
-  'sh',
-  'swift',
-  'kt',
-  'ktm',
-  'pptx',
-  'ppt',
-  'xls',
-  'xlsx',
-  'doc',
-  'docx',
-  'pdf',
-  'txt'
-];
 
 type FileUploadBody = {
   chatId: string;
@@ -60,7 +25,6 @@ type FileUploadBody = {
   extension: string;
   url: string;
 };
-
 
 export default async function handler(
   req: NextApiRequest,
@@ -71,9 +35,8 @@ export default async function handler(
     return;
   }
 
-  
   const { url, chatId, name, extension } = req.body as FileUploadBody;
-  if (!allowedExtenstions.includes(extension)) {
+  if (!supportedExtensions.includes(extension)) {
     res.status(400).json({ message: 'Invalid file extension' });
     return;
   }
@@ -99,7 +62,7 @@ export default async function handler(
   ) {
     const newDocId = v4();
     const baseURL = isLocal ? 'http://localhost:3000' : 'https://chatboba.com';
-    const apiURL = baseURL+'/api/upload/getEmbeddingsForText/';
+    const apiURL = baseURL + '/api/upload/getEmbeddingsForText/';
     const response = await fetch(apiURL, {
       method: 'POST',
       headers: {
@@ -114,11 +77,11 @@ export default async function handler(
       })
     });
     if (!response.ok) {
-      console.log(await response.json())
+      console.log(await response.json());
       res.status(400).json({ message: 'File upload failed' });
       return;
     }
-    const resp = (await response.json()) as { message: string };     
+    const resp = (await response.json()) as { message: string };
     if (resp.message === 'success') {
       res.status(200).json({ message: 'File uploaded successfully' });
       return;
@@ -136,11 +99,11 @@ export default async function handler(
   }
 
   const options = {
-    directory: "./tmp/",
-    filename: name+"."+extension
-  }
+    directory: './tmp/',
+    filename: name + '.' + extension
+  };
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  await get(url,options);
+  await get(url, options);
 
   const filePath = `./tmp/${name}.${extension}`;
 
@@ -157,7 +120,7 @@ export default async function handler(
       loader = new TextLoader(filePath);
     } else if (extension === 'json') {
       loader = new JSONLoader(filePath);
-    } else if (allowedExtenstions.includes(extension)) {
+    } else if (supportedExtensions.includes(extension)) {
       loader = new UnstructuredLoader(filePath);
     }
   } catch (err) {
