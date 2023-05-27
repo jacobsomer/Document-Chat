@@ -126,6 +126,8 @@ export default async function handler(
   } catch (err) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     // do nothing and test for loader
+    // delete tmp
+    fs.unlinkSync("./tmp");
     res.status(400).json({ message: 'Loader Error' });
   }
 
@@ -165,6 +167,7 @@ export default async function handler(
         chatId: chatId,
         docId: newDocId
       });
+      fs.unlinkSync("./tmp");
 
       res.status(200).json({ message: 'File uploaded successfully' });
     } catch (err) {
