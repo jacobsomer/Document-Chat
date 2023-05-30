@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import UploadSquare from './uploadSquare';
 import { supportedExtensions } from '~/utils/consts';
-
 import { FiUpload } from 'react-icons/fi';
-import { handleObjectUpload } from '~/utils/handleUpload';
-import { v4 } from 'uuid';
 import { type AddMediaProps } from '~/types/types';
 import { isMobile } from 'react-device-detect';
-import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
 
 const cleanFileName = (fileName: string) => {
@@ -41,6 +37,12 @@ const AddMedia = (props: AddMediaProps) => {
     setLoading(false);
     setTimeout(() => {
       setErrorMessage('');
+      setLoadingForAWhile(false);
+      setLoading(false);
+        const closeModal = document.getElementById('closeModal');
+          if (closeModal) {
+            closeModal.click();
+          }
     }, 4000);
   };
 
@@ -125,6 +127,7 @@ const AddMedia = (props: AddMediaProps) => {
         });
 
         resp = (await res.json()) as { message: string };
+  
         if (resp.message === 'File uploaded successfully') {
           void props.updateFiles(props.chatId);
           const closeModal = document.getElementById('closeModal');
