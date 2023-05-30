@@ -26,9 +26,9 @@ function addDataSources(
 }
 
 
-// export const config = {
-//   runtime: "edge",
-// };
+export const config = {
+  runtime: "edge",
+};
 
 
 export default async function POST(req: Request): Promise<Response> {
