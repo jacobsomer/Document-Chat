@@ -23,14 +23,16 @@ export default class FileTree {
 
     if (names.length == 1) {
       this.files.push(metadata);
-
+      // TODO: possible edge case of re-adding a file with the same name of a deleted one. Just
+      // ensure that the objects don't interfere and that isDeleted is fully implemented.
+      
     } else if (names.length > 1) {
       const dirName: string = names[0] ? names[0] : "formatting error";
       var directory: FileTree | undefined = this.childrenMap.get(dirName);
       if (!this.childrenMap.get(dirName)) {
         directory = new FileTree(dirName);
         this.children.push(directory);
-        this.childrenMap.set(dirName, directory);  
+        this.childrenMap.set(dirName, directory); 
       } 
       directory?.addFile({
         docId: file.docId,

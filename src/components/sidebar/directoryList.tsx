@@ -12,18 +12,19 @@ export const DirectoryList = (props: {
   const [counter, setCounter] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const clickHandler = async (e: any) => {
+    console.log("click");
     setIsCollapsed(!isCollapsed);
   };
 
   if (props.filetree) {
-
     return (
       <div
         style={{ marginLeft: DIRECTORY_LEVEL_OFFSET }}
         onMouseDown={clickHandler}
       >
         {props.filetree?.name}
-        {props.filetree?.children.map((filetree: FileTree) => {
+        {isCollapsed ? <>
+          {props.filetree?.children.map((filetree: FileTree) => {
           return (
             <DirectoryList
               depth={props.depth + 1}
@@ -34,6 +35,8 @@ export const DirectoryList = (props: {
         {props.filetree.files.map((fileMetadata: FileMetadata) => {
           return fileMetadata.isDeleted ? <></> : <FileEntry metadata={fileMetadata} />;
         })}
+        </> : <></>} 
+        
       </div>
     );
   } else {
