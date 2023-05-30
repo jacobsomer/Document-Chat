@@ -32,7 +32,7 @@ export const DirectoryList = (props: {
           );
         })}
         {props.filetree.files.map((fileMetadata: FileMetadata) => {
-          return fileMetadata.isDeleted ? <FileEntry metadata={fileMetadata} /> : <></>;
+          return fileMetadata.isDeleted ? <></> : <FileEntry metadata={fileMetadata} />;
         })}
       </div>
     );

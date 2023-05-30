@@ -40,4 +40,10 @@ export default class FileTree {
     }
     return metadata;
   }
+
+  reconstruct() {
+    // TODO: actually delete files that are marked with a DeleteFlag, it is better to wait for
+    // a bunch of these to batch-delete cron job style. This would also be an entry point to
+    // "reset" Langchain's embeddings after figuring out which files to delete.
+  }
 }
