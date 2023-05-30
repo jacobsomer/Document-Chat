@@ -15,10 +15,6 @@ import { isMobile } from 'react-device-detect';
 import { Mukta } from 'next/font/google';
 import Image from 'next/image';
 import Head from 'next/head';
-import { OpenAI } from "langchain/llms/openai";
-import { BufferMemory } from 'langchain/memory';
-import { ConversationChain } from 'langchain/chains';
-import { BaseChatMessageHistory } from 'langchain/dist/schema';
 
 const mukta = Mukta({
   weight: '500',
@@ -195,15 +191,13 @@ const Chat = (props: ChatProps) => {
       },
       body: JSON.stringify({
         query: prompt,
-        // chatId: props.currentChat.chatId
-        chatId: "c93d1a00-842e-4dd1-82f3-6bb7464efcdb"
+        chatId: props.currentChat.chatId
       })
     });
     if (!response.ok) {
       console.error(response.statusText);
     }
     const data = (await response.json()) as SearchResponse;
-    console.log(data);
     return data;
   };
 
@@ -224,8 +218,6 @@ const Chat = (props: ChatProps) => {
       dataSources: dataSources,
       model: model
     };
-
-    console.log(completionRequestBody);
 
     const response = await fetch('/api/stream', {
       method: 'POST',
@@ -316,6 +308,7 @@ const Chat = (props: ChatProps) => {
   function handleClearSubmit(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     setMessages(initMessages);
+    void saveChat(initMessages);
   }
 
   const setUserTheme = async (theme: 'light' | 'dark') => {
