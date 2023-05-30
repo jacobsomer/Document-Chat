@@ -64,6 +64,7 @@ export default async function handler(
     const baseURL = isLocal ? 'http://localhost:3000' : 'https://chatboba.com';
     console.log('baseURL', baseURL);
     const apiURL = baseURL + '/api/upload/getEmbeddingsForText/';
+    console.log('apiURL', apiURL);
     const response = await fetch(apiURL, {
       method: 'POST',
       headers: {
