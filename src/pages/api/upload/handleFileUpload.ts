@@ -65,6 +65,19 @@ export default async function handler(
     console.log('baseURL', baseURL);
     const apiURL = baseURL + '/api/upload/getEmbeddingsForText/';
     console.log('apiURL', apiURL);
+    console.log('req: ', JSON.stringify({
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        url: url,
+        chatId: chatId,
+        name: name,
+        newDocId: newDocId,
+        isLocal: isLocal
+      })
+    }));
     const response = await fetch(apiURL, {
       method: 'POST',
       headers: {
@@ -79,7 +92,9 @@ export default async function handler(
       })
     });
     if (!response.ok) {
-      console.log(await response.json());
+      console.log('response not ok');
+      console.log(response.status)
+
       res.status(400).json({ message: 'File upload failed' });
       return;
     }
