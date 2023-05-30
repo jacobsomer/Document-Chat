@@ -22,7 +22,7 @@ export const DirectoryList = (props: {
         style={{ marginLeft: DIRECTORY_LEVEL_OFFSET }}
         onMouseDown={clickHandler}
       >
-        {props.filetree?.name}
+        {props.filetree?.name + " (collapsed: " + (isCollapsed ? "no" : "yes") + ")"}
         {isCollapsed ? <>
           {props.filetree?.children.map((filetree: FileTree) => {
           return (
