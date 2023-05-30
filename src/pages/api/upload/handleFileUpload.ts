@@ -62,6 +62,7 @@ export default async function handler(
   ) {
     const newDocId = v4();
     const baseURL = isLocal ? 'http://localhost:3000' : 'https://chatboba.com';
+    console.log('baseURL', baseURL);
     const apiURL = baseURL + '/api/upload/getEmbeddingsForText/';
     const response = await fetch(apiURL, {
       method: 'POST',
@@ -81,6 +82,8 @@ export default async function handler(
       res.status(400).json({ message: 'File upload failed' });
       return;
     }
+
+     console.log(await response.json());
     const resp = (await response.json()) as { message: string };
     if (resp.message === 'success') {
       res.status(200).json({ message: 'File uploaded successfully' });
@@ -134,7 +137,6 @@ export default async function handler(
   if (!loader) {
     // delete file
     fs.unlinkSync(filePath);
-
     res.status(400).json({ message: 'Invalid file extension' });
   } else {
     try {
