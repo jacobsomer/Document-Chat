@@ -15,9 +15,10 @@ import { isMobile } from 'react-device-detect';
 import { Mukta } from 'next/font/google';
 import Image from 'next/image';
 import Head from 'next/head';
-import { OpenAI } from 'langchain/llms/openai';
-import { PromptTemplate } from 'langchain/prompts';
-import { LLMChain } from 'langchain/chains';
+import { OpenAI } from "langchain/llms/openai";
+import { BufferMemory } from 'langchain/memory';
+import { ConversationChain } from 'langchain/chains';
+import { BaseChatMessageHistory } from 'langchain/dist/schema';
 
 const mukta = Mukta({
   weight: '500',
@@ -25,7 +26,7 @@ const mukta = Mukta({
   subsets: ['latin']
 });
 
-const model: OaiModel = 'gpt-4';
+const model: OaiModel = 'gpt-3.5-turbo';
 
 const initMessages: ChatCompletionRequestMessage[] = [
   {
@@ -94,7 +95,6 @@ const Chat = (props: ChatProps) => {
       });
 
       if (!res.ok) {
-        const response = (await res.json()) as { message: string };
         return;
       }
       const new_chat = (await res.json()) as ChatCompletionRequestMessage[];
@@ -168,14 +168,11 @@ const Chat = (props: ChatProps) => {
     handleScroll();
     void getAndUpdateTheme();
     void getChat();
-    void saveChat(messages);
+
     if (isMobile && !drawerOpenedOneTime) {
       setDrawerIsOpened(false);
       setDrawerOpenedOneTime(true);
     }
-    return () => {
-      void saveChat(messages);
-    };
   }, [
     handleScroll,
     getChat,
@@ -198,16 +195,19 @@ const Chat = (props: ChatProps) => {
       },
       body: JSON.stringify({
         query: prompt,
-        chatId: props.currentChat.chatId
+        // chatId: props.currentChat.chatId
+        chatId: "c93d1a00-842e-4dd1-82f3-6bb7464efcdb"
       })
     });
     if (!response.ok) {
       console.error(response.statusText);
     }
     const data = (await response.json()) as SearchResponse;
+    console.log(data);
     return data;
   };
 
+  
   const stream = async (input: string) => {
     const newUserMessage: ChatCompletionRequestMessage = {
       content: input,
@@ -224,6 +224,8 @@ const Chat = (props: ChatProps) => {
       dataSources: dataSources,
       model: model
     };
+
+    console.log(completionRequestBody);
 
     const response = await fetch('/api/stream', {
       method: 'POST',
@@ -255,26 +257,9 @@ const Chat = (props: ChatProps) => {
       const chunkValue = decoder.decode(value);
 
       try {
-        const jsns = chunkValue.trim().split('\n\n');
+        const jsns = chunkValue
         for (const jsn of jsns) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          if (jsn.replace('data:', '').trim() === '[DONE]') {
-            done = true;
-            break;
-          }
-
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const data = JSON.parse(jsn.replace('data:', '').trim());
-
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-          if (!('content' in data.choices[0].delta)) {
-            continue;
-          }
-
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-          const text: string = data.choices[0].delta.content;
-
-          console.log(text);
+          const text: string = jsn
 
           setMessages((prevMessages) => {
             const last =
@@ -296,6 +281,7 @@ const Chat = (props: ChatProps) => {
       } catch (e) {
         console.log(e);
       }
+      void saveChat(messages);
     }
   };
 
@@ -426,7 +412,7 @@ const Chat = (props: ChatProps) => {
                       height={67}
                     />
                     <h1 className="text-3xl font-bold text-base-content">
-                      ChatBoba
+                      ChatBoba as
                     </h1>
                     <div className="text-5xl text-sm text-warning">
                       Beta 0.0.11
