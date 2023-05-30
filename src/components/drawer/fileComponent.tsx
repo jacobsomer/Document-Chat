@@ -11,7 +11,6 @@ const FileComponent = (props: {
   size?: number;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [fileUploadMetadata, setFileUploadMetadata] = useState()
 
   return (
     <div

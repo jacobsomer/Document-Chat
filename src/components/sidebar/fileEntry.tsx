@@ -13,7 +13,7 @@ export const FileEntry = (props: { metadata: FileMetadata }) => {
       <FileComponent
         name={props.metadata.docName + ": " + (props.metadata.loading ? "loading" : "finished")}
         url={props.metadata.url}
-        deleteFile={async () => {}}
+        deleteFile={async () => { props.metadata.deleteFile(); }}
         size={props.metadata.size}
       />
     </div>

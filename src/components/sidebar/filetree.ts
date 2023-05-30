@@ -1,22 +1,26 @@
 import { File } from '~/types/types';
 import FileMetadata from './fileMetadata';
+import formidable from 'formidable';
 
 export default class FileTree {
   name: string;
+  parent: FileTree | null;
   children: FileTree[];
   childrenMap: Map<string, FileTree>;
   files: FileMetadata[]; 
 
-  constructor(name: string) {
+  constructor(name: string, parent?: FileTree) {
     this.name = name;
+    this.parent = parent ? parent : null;
     this.children = new Array<FileTree>(); 
     this.childrenMap = new Map<string, FileTree>(); // TODO: look into hashmapping this?
     this.files = new Array<FileMetadata>(); 
   }
 
   addFile(file: File, options?: any) {
-    const metadata: FileMetadata = new FileMetadata(file.docName, file.url);
     const names: string[] = file.docName.split("/");
+    const metadata: FileMetadata = new FileMetadata(file.docName, file.url, this);
+
     if (names.length == 1) {
       this.files.push(metadata);
 

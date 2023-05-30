@@ -44,7 +44,6 @@ async function createStream(
       responseType: 'stream'
     }
   );
-
   return oaiRes;
 }
 
