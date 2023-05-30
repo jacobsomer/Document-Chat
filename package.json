@@ -31,6 +31,7 @@
     "cheerio": "^1.0.0-rc.12",
     "d3-dsv": "2",
     "daisyui": "^2.51.3",
+    "eventsource-parser": "^1.0.0",
     "formidable": "v3",
     "highlight.js": "^11.7.0",
     "langchain": "^0.0.75",
