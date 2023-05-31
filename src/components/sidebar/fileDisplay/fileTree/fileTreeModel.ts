@@ -1,5 +1,5 @@
 import { File } from '~/types/types';
-import FileMetadata from './fileMetadata';
+import FileMetadata from '../file/fileModel';
 import formidable from 'formidable';
 
 export default class FileTree {

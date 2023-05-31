@@ -1,4 +1,4 @@
-import FileTree from "./filetree";
+import FileTree from "../fileTree/fileTreeModel";
 
 export default class FileMetadata {
   loading: boolean;

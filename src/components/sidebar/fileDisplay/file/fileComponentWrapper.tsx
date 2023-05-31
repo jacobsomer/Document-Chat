@@ -1,7 +1,7 @@
 import React from 'react';
-import FileMetadata from './fileMetadata';
-import FileComponent from '../drawer/fileComponent';
-import { FileProgressDisplay } from '../drawer/fileProgressDisplay';
+import FileMetadata from './fileModel';
+import FileComponent from './fileComponent';
+import { FileProgressDisplay } from '../../../drawer/fileProgressDisplay';
 
 // A component to show
 export const FileEntry = (props: { 

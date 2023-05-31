@@ -9,7 +9,7 @@ import { v4 } from 'uuid';
 import { type AddMediaProps } from '~/types/types';
 import { isMobile } from 'react-device-detect';
 import { createClient } from '@supabase/supabase-js';
-import FileMetadata from '../sidebar/fileMetadata';
+import FileMetadata from '../sidebar/fileDisplay/file/fileModel';
 
 const cleanFileName = (fileName: string) => {
   // replace any characters that are not letters, numbers, dashes, spaces, or underscores with an underscore

@@ -7,11 +7,11 @@ import { File, type DrawerProps } from '~/types/types';
 import { useRouter } from 'next/router';
 import ChatSettings from './chatSettings';
 import { HiChevronRight, HiSelector } from 'react-icons/hi';
-import FileComponent from './fileComponent';
+import FileComponent from '../sidebar/fileDisplay/file/fileComponent';
 import IntroModal from '../chat/introModal';
 import { isMobile } from 'react-device-detect';
-import FileTree from '../sidebar/filetree';
-import { Sidebar } from '../sidebar/sidebar';
+import FileTree from '../sidebar/fileDisplay/fileTree/fileTreeModel';
+import { Sidebar } from '../sidebar/fileDisplay/fileDisplay';
 
 //create your forceUpdate hook
 function useForceUpdate() {

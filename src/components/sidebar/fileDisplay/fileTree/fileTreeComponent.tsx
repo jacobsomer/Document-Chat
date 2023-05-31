@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import FileTree from './filetree';
-import { FileEntry } from './fileEntry';
-import FileMetadata from './fileMetadata';
+import FileTree from './fileTreeModel';
+import { FileEntry } from '../file/fileComponentWrapper';
+import FileMetadata from '../file/fileModel';
 
 export const DIRECTORY_LEVEL_OFFSET = 20;
 
-export const DirectoryList = (props: {
+export const FileTreeComponent = (props: {
   depth: number;
   filetree?: FileTree;
   forceUpdateFiletree: () => void;
@@ -26,7 +26,7 @@ export const DirectoryList = (props: {
         {!isCollapsed ? <>
           {props.filetree?.children.map((filetree: FileTree) => {
           return (
-            <DirectoryList
+            <FileTreeComponent
               depth={props.depth + 1}
               filetree={filetree}
               forceUpdateFiletree={props.forceUpdateFiletree}

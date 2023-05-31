@@ -1,6 +1,6 @@
 import { type SupabaseClient } from '@supabase/supabase-js';
 import { type Dispatch, type SetStateAction } from 'react';
-import FileMetadata from '~/components/sidebar/fileMetadata';
+import FileMetadata from '~/components/sidebar/fileDisplay/file/fileModel';
 
 export type File = {
   url: string;
