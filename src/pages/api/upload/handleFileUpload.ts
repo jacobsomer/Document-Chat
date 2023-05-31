@@ -60,37 +60,47 @@ export default async function handler(
     extension === 'xlsx' ||
     extension === 'docx'
   ) {
-    const newDocId = v4();
-    const baseURL = isLocal ? 'http://localhost:3000' : 'https://chatboba.com';
-    console.log('baseURL', baseURL);
-    const apiURL = baseURL + '/api/upload/getEmbeddingsForText/';
-    console.log('apiURL', apiURL);
-    console.log('req: ', JSON.stringify({
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        url: url,
-        chatId: chatId,
-        name: name,
-        newDocId: newDocId,
-        isLocal: isLocal
-      })
-    }));
-    const response = await fetch(apiURL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        url: url,
-        chatId: chatId,
-        name: name,
-        newDocId: newDocId,
-        isLocal: isLocal
-      })
-    });
+    // const newDocId = v4();
+    // const baseURL = isLocal ? 'http://localhost:3000' : 'https://chatboba.com';
+    // console.log('baseURL', baseURL);
+    // const apiURL = baseURL + '/api/upload/getEmbeddingsForText/';
+    // console.log('apiURL', apiURL);
+    // console.log('req: ', JSON.stringify({
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify({
+    //     url: url,
+    //     chatId: chatId,
+    //     name: name,
+    //     newDocId: newDocId,
+    //     isLocal: isLocal
+    //   })
+    // }));
+    const options = {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: '{"url":"https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/userFiles/4fd4394e-ec8e-48af-b39f-e475132b6def/Group_3_-_Education_and_Ability__1_.pptx","chatId":"4fd4394e-ec8e-48af-b39f-e475132b6def","name":"Group_3_-_Education_and_Ability__1_","newDocId":"39d91a16-80d0-430c-8fd8-c749d4853719","isLocal":false}'
+};
+
+
+  const response = await fetch('https://chatboba.com/api/upload/getEmbeddingsForText/', options);
+  
+
+    // const response = await fetch(apiURL, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify({
+    //     url: url,
+    //     chatId: chatId,
+    //     name: name,
+    //     newDocId: newDocId,
+    //     isLocal: isLocal
+    //   })
+    // });
     if (!response.ok) {
       console.log('response not ok');
       console.log(response.status)
