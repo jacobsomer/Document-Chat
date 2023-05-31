@@ -26,8 +26,8 @@ export type ChatFile = {
   };
 
 export type AddMediaProps = {
-   chatId: string;
-   forceUpdateFiletree: () => void;
+  chatId: string;
+  forceUpdateFiletree: () => void;
   updateFiles:  (chatId: string) => Promise<void>;
   updateFiletree: (file: File) => Promise<FileMetadata>;
   setToolTipString: Dispatch<SetStateAction<string>>;

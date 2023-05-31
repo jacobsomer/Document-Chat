@@ -5,37 +5,43 @@ import { supportedExtensions } from '~/utils/consts';
 import { FiUpload } from 'react-icons/fi';
 import { type AddMediaProps } from '~/types/types';
 import { isMobile } from 'react-device-detect';
-import { createClient } from '@supabase/supabase-js';
 import FileMetadata from '../fileDisplay/file/fileModel';
 
-import { uploadFile } from '~/api/frontend/uploadFile';
-
-const cleanFileName = (fileName: string) => {
-  // replace any characters that are not letters, numbers, dashes, spaces, or underscores with an underscore
-  return fileName.replace(/[^a-zA-Z0-9-_]/g, '_');
-};
+import { uploadFile } from '~/apiEndpoints/frontend/uploadFile';
+import { uploadUrl } from '~/apiEndpoints/frontend/uploadUrl';
 
 const AddMedia = (props: AddMediaProps) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [input, setInput] = useState('');
   const [loadingForAWhile, setLoadingForAWhile] = useState(false);
- 
-const origin =
-    typeof window !== 'undefined' && window.location.origin
-      ? window.location.origin
-      : '';
-  const isLocal = origin.includes('localhost');
-  // Create a single supabase client for interacting with your database
-  const supabase = isLocal
-    ? createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
-      )
-    : createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-      );
+
+  // Call whenever the action to initiate an upload has begun
+  const resetLoadingStates = () => {
+    setLoading(true);
+    setLoadingForAWhile(false);
+    setTimeout(() => {
+      setLoadingForAWhile(true);
+    }, 10000);
+    const closeModal = document.getElementById('closeModal');
+    if (closeModal) {
+      closeModal.click();
+    }
+  };
+
+  // Call whenever a response has been received regarding an upload.
+  const terminateLoadingStates = async (
+    callback: () => Promise<void>,
+    errorMessage?: string
+  ) => {
+    await callback();
+    if (errorMessage) {
+      setErrorMessage(errorMessage);
+      removeErrorMessageAfter4Seconds();
+    }
+    setLoading(false);
+    setLoadingForAWhile(false);
+  };
 
   const removeErrorMessageAfter4Seconds = () => {
     setLoading(false);
@@ -44,155 +50,79 @@ const origin =
     }, 4000);
   };
 
-  const fileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-     successCallback: () => void, errorCallback: () => void,
-  ) => {
-    setLoading(true);
-    setLoadingForAWhile(false);
-    setTimeout(() => {
-      setLoadingForAWhile(true);
-    }, 10000);
-    const file = event.target.files?.[0];
-
-    if (file) {
-      const extension = file.name.split('.').pop();
-
-      if (!extension || !supportedExtensions.includes(extension)) {
-        setErrorMessage(
-          'FileType is not one of: ' + supportedExtensions.toString()
-        );
-        removeErrorMessageAfter4Seconds();
-        errorCallback();
-        return;
-      }
-
-      // get file name
-      const name = file.name.split('.').slice(0, -1).join('.');
-
-      const cleaned_name = cleanFileName(name);
-
-      const url = await uploadFile(props.chatId, file, cleaned_name, extension);
-      if (url === 'Error') {
-        setErrorMessage('Error uploading file');
-        removeErrorMessageAfter4Seconds();
-        errorCallback();
-        return;
-      }
-
-      const enpointURL = `/api/upload/handleFileUpload`;
-      let resp = null;
-      try {
-        const res = await fetch(enpointURL, {
-          method: 'POST',
-          body: JSON.stringify({
-            url: url,
-            chatId: props.chatId,
-            name: cleaned_name,
-            extension: extension
-          }),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        resp = (await res.json()) as { message: string };
-        if (resp.message === 'File uploaded successfully') {
-          void props.updateFiles(props.chatId);
-          const closeModal = document.getElementById('closeModal');
-          if (closeModal) {
-            closeModal.click();
-          }
-          successCallback();
-          setLoading(false);
-          setLoadingForAWhile(false);
-          return;
-        }
-      } catch (e) {
-        errorCallback();
-        setErrorMessage('Internal server error');
-        removeErrorMessageAfter4Seconds();
-        setLoading(false);
-        setLoadingForAWhile(false);
-        return;
-      }
-    }
-  };
-
-  const handleUrlUpload = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-     successCallback: () => Promise<void>, errorCallback: () => Promise<void>,
-  ): Promise<void> => {
-    event.preventDefault();
-    setLoading(true);
-    setLoadingForAWhile(false);
-    setTimeout(() => {
-      setLoadingForAWhile(true);
-    }, 10000);
-    const enpointURL = '/api/upload/handleUrlUpload';
-    const response = await fetch(enpointURL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ url: input, chatId: props.chatId })
-    });
-    if (!response.ok) {
-      await errorCallback();
-      setErrorMessage('Error with API');
-      removeErrorMessageAfter4Seconds();
-      setLoading(false);
-      setLoadingForAWhile(false);
-      return;
-    }
-    const resp = (await response.json()) as { message: string };
-    if (resp.message === 'File uploaded successfully') {
-      await props.updateFiles(props.chatId);
-      const closeModal = document.getElementById('closeModal');
-      if (closeModal) {
-        closeModal.click();
-      }
-      await successCallback();
-      setLoading(false);
-      setLoadingForAWhile(false);
-      return;
-    }
-    else{
-       await errorCallback();
-    }
-  };
-
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setLoading(true);
-    setLoadingForAWhile(false);
-    setTimeout(() => {
-      setLoadingForAWhile(true);
-    }, 10000);
-    
+    // Preemptively create new objects to map to components so that the upload is immediately reflected in the sidebar.
+    resetLoadingStates();
+    const metadata: FileMetadata = await props.updateFiletree({
+      url: 'URL placeholder',
+      docId: 'DocID placeholder',
+      docName: event.target.files?.[0]
+        ? event.target.files?.[0].name
+        : 'upload error'
+    });
+    const successCallback = async () => {
+      metadata.finishLoading();
+    };
+    const errorCallback = async () => {
+      console.log('upload unsuccessful');
+      metadata.finishLoading();
+    };
+
+    // Extract data from the event to pass into the API endpoint
+    const file = event.target.files?.[0];
+    if (file) {
+      await uploadFile({
+        file: file,
+        chatId: props.chatId,
+        updateFiles: props.updateFiles,
+        successCallback: async () => await terminateLoadingStates(successCallback),
+        validationErrorCallback: async () => await terminateLoadingStates(
+            errorCallback,
+            'FileType is not one of: ' + supportedExtensions.toString()
+          ),
+        clientErrorCallback: async () => await terminateLoadingStates(errorCallback, 'Error uploading file'),
+        serverErrorCallback: async () => await terminateLoadingStates(errorCallback, 'Internal server error')
+      });
+    }
+    terminateLoadingStates(async () => {});
+    return;
+  };
+
+  const handleUrlUpload = async (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    // Preemptively create new objects to map to components so that the upload is immediately reflected in the sidebar.
+    resetLoadingStates();
     const closeModal = document.getElementById('closeModal');
     if (closeModal) {
       closeModal.click();
     }
     const metadata: FileMetadata = await props.updateFiletree({
-      url: "URL placeholder", // TODO
-      docId: "DocID placeholder", // TODO
-      docName: event.target.files?.[0] ? event.target.files?.[0].name : "upload error",
+      url: 'URL placeholder',
+      docId: 'DocID placeholder',
+      docName: input
     });
-    const successCallback = () => { 
-      console.log("upload successful, metadata object mutated")
-      metadata.finishLoading(); 
-    }; // TODO
-    const errorCallback = () => {
-      console.log("upload unsuccessful, metadata object mutated")
-      metadata.finishLoading(); 
-    }; // TODO
+    const successCallback = async () => {
+      metadata.finishLoading();
+    };
+    const errorCallback = async () => {
+      console.log('upload unsuccessful');
+      metadata.finishLoading();
+    };
 
-    
-    await fileUpload(event, successCallback, errorCallback);
-    setLoading(false);
-    setLoadingForAWhile(false);
+    // Extract data from the event to pass into the API endpoint
+    event.preventDefault();
+    await uploadUrl({
+      input: input,
+      chatId: props.chatId,
+      updateFiles: props.updateFiles,
+      successCallback: async () => await terminateLoadingStates(successCallback),
+      clientErrorCallback: async () => await terminateLoadingStates(errorCallback, 'Error with API'),
+      serverErrorCallback: async () => await terminateLoadingStates(errorCallback, 'Internal server error')
+    });
+    terminateLoadingStates(async () => {});
     return;
   };
 
@@ -249,10 +179,14 @@ const origin =
               <h3 className="font-base-content text-lg">Add Data</h3>
             </>
           )}
-          <UploadSquare handleFileUpload={async (event: React.ChangeEvent<HTMLInputElement>) => {      
-            props.forceUpdateFiletree();
-            await handleFileUpload(event); 
-          }} />
+          <UploadSquare
+            handleFileUpload={async (
+              event: React.ChangeEvent<HTMLInputElement>
+            ) => {
+              props.forceUpdateFiletree();
+              await handleFileUpload(event);
+            }}
+          />
           <div className="divider relative w-[100%]">OR</div>
           <div>
             <form className="flex w-full max-w-xl flex-col gap-2 py-4">
