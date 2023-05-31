@@ -14,10 +14,10 @@ import FileTree from '../sidebar/filetree';
 import { Sidebar } from '../sidebar/sidebar';
 
 //create your forceUpdate hook
-function useForceUpdate(){
+function useForceUpdate() {
   const [value, setValue] = useState(0); // integer state
-  return () => setValue(value => value + 1); // update state to force render
-  // A function that increment 👆🏻 the previous state like here 
+  return () => setValue((value) => value + 1); // update state to force render
+  // A function that increment 👆🏻 the previous state like here
   // is better than directly setting `setValue(value + 1)`
 }
 
@@ -27,7 +27,7 @@ export const DrawerContent = (props: DrawerProps) => {
   const [toolTipString, setToolTipString] = useState('');
   const [width, setWidth] = useState(250);
   const [isDragging, setIsDragging] = useState(false);
-  const [fileTreeRoot, setFileTreeRoot] = useState(new FileTree("root"));
+  const [fileTreeRoot, setFileTreeRoot] = useState(new FileTree('root'));
 
   const alternateChatLength = props.userChats?.map(
     (chat) => chat.chatId !== props.currentChat.chatId
@@ -57,7 +57,14 @@ export const DrawerContent = (props: DrawerProps) => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, props.files.length, props.userChats, user, width, updateFiletree]);
+  }, [
+    isDragging,
+    props.files.length,
+    props.userChats,
+    user,
+    width,
+    updateFiletree
+  ]);
 
   if (isMobile) {
     return (
@@ -168,7 +175,10 @@ export const DrawerContent = (props: DrawerProps) => {
                   deleteChat={props.deleteChat}
                   renameChat={props.renameChat}
                 />
-                <Sidebar fileTreeRoot={fileTreeRoot}/>
+                <Sidebar
+                  fileTreeRoot={fileTreeRoot}
+                  forceUpdateFiletree={forceUpdate}
+                />
                 <AddMedia
                   updateFiles={props.updateFiles}
                   updateFiletree={updateFiletree}
@@ -186,7 +196,10 @@ export const DrawerContent = (props: DrawerProps) => {
                   data-tip="Click me to add files"
                   id="tooltip1"
                 >
-                  <Sidebar fileTreeRoot={fileTreeRoot}/>
+                  <Sidebar
+                    fileTreeRoot={fileTreeRoot}
+                    forceUpdateFiletree={forceUpdate}
+                  />
                   <AddMedia
                     updateFiles={props.updateFiles}
                     updateFiletree={updateFiletree}
@@ -369,7 +382,10 @@ export const DrawerContent = (props: DrawerProps) => {
                 deleteChat={props.deleteChat}
                 renameChat={props.renameChat}
               />
-              <Sidebar fileTreeRoot={fileTreeRoot}/>
+              <Sidebar
+                fileTreeRoot={fileTreeRoot}
+                forceUpdateFiletree={forceUpdate}
+              />
               <AddMedia
                 updateFiles={props.updateFiles}
                 updateFiletree={updateFiletree}
@@ -387,7 +403,10 @@ export const DrawerContent = (props: DrawerProps) => {
                 data-tip="Click me to add files"
                 id="tooltip1"
               >
-                <Sidebar fileTreeRoot={fileTreeRoot}/>
+                <Sidebar
+                  fileTreeRoot={fileTreeRoot}
+                  forceUpdateFiletree={forceUpdate}
+                />
                 <AddMedia
                   updateFiles={props.updateFiles}
                   updateFiletree={updateFiletree}

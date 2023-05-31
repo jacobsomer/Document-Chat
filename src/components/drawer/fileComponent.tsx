@@ -7,15 +7,23 @@ import { url } from 'inspector';
 const FileComponent = (props: {
   name: string;
   url: string;
-  deleteFile: (url: string) => Promise<void>;
+  deleteFile: () => void;
   size?: number;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const outerClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
+    void e.stopPropagation();
+  }
+
+  const innerClickHandler = (e: React.MouseEvent<SVGElement>) => {
+    void props.deleteFile();
+  }
 
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onMouseDown={(outerClickHandler)}
       key={props.name}
       className={styles.fileItem}
       id={props.url}
@@ -51,9 +59,7 @@ const FileComponent = (props: {
           <div className="absolute right-4 top-1/2 z-50 flex -translate-y-1/2 transform items-center justify-center">
             <div className="tooltip" data-tip="Delete">
               <BsFillTrashFill
-                onClick={() => {
-                  void props.deleteFile(props.url);
-                }}
+                onClick={innerClickHandler}
                 color="hsl(var(--s))"
                 className="w-10 cursor-pointer bg-base-100"
               />
