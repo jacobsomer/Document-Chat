@@ -1,15 +1,14 @@
-import { useReducer, useState } from 'react';
+import { useState } from 'react';
 import UploadSquare from './uploadSquare';
 import { supportedExtensions } from '~/utils/consts';
 
 import { FiUpload } from 'react-icons/fi';
-import { File as MediaFile } from '~/types/types';
-import { handleObjectUpload } from '~/utils/handleUpload';
-import { v4 } from 'uuid';
 import { type AddMediaProps } from '~/types/types';
 import { isMobile } from 'react-device-detect';
 import { createClient } from '@supabase/supabase-js';
-import FileMetadata from '../sidebar/fileDisplay/file/fileModel';
+import FileMetadata from '../fileDisplay/file/fileModel';
+
+import { uploadFile } from '~/api/frontend/uploadFile';
 
 const cleanFileName = (fileName: string) => {
   // replace any characters that are not letters, numbers, dashes, spaces, or underscores with an underscore
@@ -43,37 +42,6 @@ const origin =
     setTimeout(() => {
       setErrorMessage('');
     }, 4000);
-  };
-
-  const uploadFile = async (
-    file: File,
-    name: string,
-    extension: string
-  ): Promise<string> => {
-    // upload file to supabase storage
-    const { data, error } = await supabase.storage
-      .from('media')
-      .upload(`userFiles/${props.chatId}/${name}.${extension}`, file, {
-        cacheControl: '3600',
-        upsert: true
-      });
-    if (error && !error.message.includes('The resource already exists')) {
-      console.log(error.message);
-      return 'Error';
-    }
-    let url = '';
-    if (data) {
-      url = data.path;
-    } else {
-      url = `userFiles/${props.chatId}/${name}.${extension}`;
-    }
-    const baseStorageUrl =
-      (isLocal
-        ? 'https://eyoguhfgkfmjnjpcwblg.supabase.co'
-        : 'https://gsaywynqkowtwhnyrehr.supabase.co') +
-      '/storage/v1/object/public/media/';
-    url = baseStorageUrl + url;
-    return url;
   };
 
   const fileUpload = async (

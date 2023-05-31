@@ -5,7 +5,7 @@ import type {
 } from 'openai';
 import type { CompletionRequest, OaiModel } from '~/pages/api/stream';
 import { BotMessage, UserMessage } from '~/components/chat/message';
-import DrawerContent from '~/components/drawer/drawerContent';
+import DrawerContent from '~/components/sidebar/sidebar';
 import { type SearchResponse, type ChatProps } from '~/types/types';
 import { MdOutlineDarkMode } from 'react-icons/md';
 import { useRouter } from 'next/router';
