@@ -3,7 +3,7 @@ import FileTree from './fileTree/fileTreeModel';
 import { FileTreeComponent } from './fileTree/fileTreeComponent';
 
 // A component to show
-export const Sidebar = (props: { 
+export const FileDisplay = (props: { 
   fileTreeRoot: FileTree,
   forceUpdateFiletree: () => void,
 }) => {

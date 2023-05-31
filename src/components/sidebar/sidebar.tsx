@@ -7,11 +7,10 @@ import { File, type DrawerProps } from '~/types/types';
 import { useRouter } from 'next/router';
 import ChatSettings from './account/chatSettings';
 import { HiChevronRight, HiSelector } from 'react-icons/hi';
-import FileComponent from './fileDisplay/file/fileComponent';
 import IntroModal from '../chat/introModal';
 import { isMobile } from 'react-device-detect';
 import FileTree from './fileDisplay/fileTree/fileTreeModel';
-import { Sidebar } from './fileDisplay/fileDisplay';
+import { FileDisplay } from './fileDisplay/fileDisplay';
 
 //create your forceUpdate hook
 function useForceUpdate() {
@@ -21,7 +20,43 @@ function useForceUpdate() {
   // is better than directly setting `setValue(value + 1)`
 }
 
-export const DrawerContent = (props: DrawerProps) => {
+const getFileDisplayStyle = (length: number) => {
+  return {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    overflowY: length > 3 ? 'scroll' : undefined,
+    msOverflowStyle: 'none',
+    scrollbarWidth: 'none',
+    color: 'hsl(var(--bc))',
+    fontSize: 'large'
+  };
+};
+
+const outerFlexWrapper = {
+  height: '20%',
+  minHeight: '150px',
+  position: 'relative',
+  display: 'flex',
+  justifyContent: 'end',
+  alignItems: 'end',
+  padding: '10px'
+};
+
+const innerFlexWrapper = {
+  position: 'relative',
+  display: 'flex',
+  flex: '1',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%'
+};
+
+export const Sidebar = (props: DrawerProps) => {
   const user = useUser();
   const router = useRouter();
   const [toolTipString, setToolTipString] = useState('');
@@ -126,47 +161,16 @@ export const DrawerContent = (props: DrawerProps) => {
           // If user is not logged in, display intro modal
           !user && <IntroModal setToolTipString={setToolTipString} />
         }
-        <div
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            overflowY: props.files.length > 3 ? 'scroll' : undefined,
-            msOverflowStyle: 'none',
-            scrollbarWidth: 'none',
-            color: 'hsl(var(--bc))',
-            fontSize: 'large'
-          }}
-        >
-          <div className="my-2 w-20 border-t-2 border-black"></div>
+        <div style={getFileDisplayStyle(props.files.length)}>
+          <div className="my-2 w-20 border-t-2 border-black">
+          <FileDisplay
+                fileTreeRoot={fileTreeRoot}
+                forceUpdateFiletree={forceUpdate} />
+          </div>
         </div>
 
-        <div
-          style={{
-            height: '20%',
-            minHeight: '150px',
-            position: 'relative',
-            display: 'flex',
-            justifyContent: 'end',
-            alignItems: 'end',
-            padding: '10px'
-          }}
-        >
-          <div
-            style={{
-              position: 'relative',
-              display: 'flex',
-              flex: '1',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              marginBottom: '140px'
-            }}
-          >
+        <div style={outerFlexWrapper}>
+          <div style={{ ...innerFlexWrapper, marginBottom: '140px' }}>
             {user ? (
               <>
                 <ChatSettings
@@ -174,10 +178,6 @@ export const DrawerContent = (props: DrawerProps) => {
                   createNewChat={props.createNewChat}
                   deleteChat={props.deleteChat}
                   renameChat={props.renameChat}
-                />
-                <Sidebar
-                  fileTreeRoot={fileTreeRoot}
-                  forceUpdateFiletree={forceUpdate}
                 />
                 <AddMedia
                   updateFiles={props.updateFiles}
@@ -196,10 +196,6 @@ export const DrawerContent = (props: DrawerProps) => {
                   data-tip="Click me to add files"
                   id="tooltip1"
                 >
-                  <Sidebar
-                    fileTreeRoot={fileTreeRoot}
-                    forceUpdateFiletree={forceUpdate}
-                  />
                   <AddMedia
                     updateFiles={props.updateFiles}
                     updateFiletree={updateFiletree}
@@ -327,17 +323,7 @@ export const DrawerContent = (props: DrawerProps) => {
       }
       <div
         style={{
-          width: '100%',
-          height: '100%',
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          overflowY: props.files.length > 3 ? 'scroll' : undefined,
-          msOverflowStyle: 'none',
-          scrollbarWidth: 'none',
-          color: 'hsl(var(--bc))',
-          fontSize: 'large',
+          ...getFileDisplayStyle(props.files.length),
           maxWidth: width.toString() + 'px',
           overflow: 'hidden'
         }}
@@ -348,32 +334,14 @@ export const DrawerContent = (props: DrawerProps) => {
             <div className="text-sm text-base-content">No files yet!</div>
           </>
         ) : (
-          <></>
+          <FileDisplay
+                fileTreeRoot={fileTreeRoot}
+                forceUpdateFiletree={forceUpdate} />
         )}
       </div>
 
-      <div
-        style={{
-          height: '20%',
-          minHeight: '150px',
-          position: 'relative',
-          display: 'flex',
-          justifyContent: 'end',
-          alignItems: 'end',
-          padding: '10px'
-        }}
-      >
-        <div
-          style={{
-            position: 'relative',
-            display: 'flex',
-            flex: '1',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%'
-          }}
-        >
+      <div style={outerFlexWrapper}>
+        <div style={innerFlexWrapper}>
           {user ? (
             <>
               <ChatSettings
@@ -381,10 +349,6 @@ export const DrawerContent = (props: DrawerProps) => {
                 createNewChat={props.createNewChat}
                 deleteChat={props.deleteChat}
                 renameChat={props.renameChat}
-              />
-              <Sidebar
-                fileTreeRoot={fileTreeRoot}
-                forceUpdateFiletree={forceUpdate}
               />
               <AddMedia
                 updateFiles={props.updateFiles}
@@ -403,10 +367,6 @@ export const DrawerContent = (props: DrawerProps) => {
                 data-tip="Click me to add files"
                 id="tooltip1"
               >
-                <Sidebar
-                  fileTreeRoot={fileTreeRoot}
-                  forceUpdateFiletree={forceUpdate}
-                />
                 <AddMedia
                   updateFiles={props.updateFiles}
                   updateFiletree={updateFiletree}
@@ -431,4 +391,4 @@ export const DrawerContent = (props: DrawerProps) => {
   );
 };
 
-export default DrawerContent;
+export default Sidebar;

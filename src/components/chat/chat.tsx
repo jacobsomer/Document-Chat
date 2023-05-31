@@ -5,7 +5,7 @@ import type {
 } from 'openai';
 import type { CompletionRequest, OaiModel } from '~/pages/api/stream';
 import { BotMessage, UserMessage } from '~/components/chat/message';
-import DrawerContent from '~/components/sidebar/sidebar';
+import Sidebar from '~/components/sidebar/sidebar';
 import { type SearchResponse, type ChatProps } from '~/types/types';
 import { MdOutlineDarkMode } from 'react-icons/md';
 import { useRouter } from 'next/router';
@@ -391,7 +391,7 @@ const Chat = (props: ChatProps) => {
           <main data-theme={theme} style={mukta.style}>
             <div className="z-0 flex flex-1 flex-row">
               {drawerIsOpened && (
-                <DrawerContent
+                <Sidebar
                   handleClearSubmit={handleClearSubmit}
                   files={props.files}
                   deleteFile={props.deleteFile}
@@ -533,7 +533,7 @@ const Chat = (props: ChatProps) => {
       {theme !== 'none' && (
         <main data-theme={theme} style={mukta.style}>
           <div className="z-0 flex flex-1 flex-row">
-            <DrawerContent
+            <Sidebar
               handleClearSubmit={handleClearSubmit}
               files={props.files}
               deleteFile={props.deleteFile}
