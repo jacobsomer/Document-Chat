@@ -72,7 +72,7 @@ const origin =
 
       const cleaned_name = cleanFileName(name);
 
-      const url = await uploadFile(file, cleaned_name, extension);
+      const url = await uploadFile(props.chatId, file, cleaned_name, extension);
       if (url === 'Error') {
         setErrorMessage('Error uploading file');
         removeErrorMessageAfter4Seconds();
