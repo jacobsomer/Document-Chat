@@ -75,6 +75,7 @@ export default async function handler(
     catch (err) {
       res.status(400).json({ message: 'File upload failed' });
     }
+    return;
   }
 
   // download file from url
