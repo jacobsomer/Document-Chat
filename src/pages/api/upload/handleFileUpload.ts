@@ -1,65 +1,49 @@
 import { type NextApiRequest, type NextApiResponse } from 'next';
-import { IncomingForm } from 'formidable';
 // you might want to use regular 'fs' and not a promise one
-import { promises as fs } from 'fs';
 import { CSVLoader } from 'langchain/document_loaders/fs/csv';
 import { TextLoader } from 'langchain/document_loaders/fs/text';
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
 import { DocxLoader } from 'langchain/document_loaders/fs/docx';
 import { v4 } from 'uuid';
-import type PersistentFile from 'formidable/PersistentFile';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { UnstructuredLoader } from 'langchain/document_loaders/fs/unstructured';
 import { JSONLoader } from 'langchain/document_loaders/fs/json';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { createClient } from '@supabase/supabase-js';
+import fs from 'fs';
+import { supportedExtensions } from '~/utils/consts';
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
+const get = require('async-get-file');
 
 const embeddings = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY // In Node.js defaults to process.env.OPENAI_API_KEY
 });
 
-// first we need to disable the default body parser
-export const config = {
-  api: {
-    bodyParser: false
-  }
+type FileUploadBody = {
+  chatId: string;
+  name: string;
+  extension: string;
+  url: string;
 };
-
-const unstructuredExtensions = [
-  'md',
-  'py',
-  'js',
-  'html',
-  'css',
-  'java',
-  'c',
-  'cpp',
-  'ts',
-  'tsx',
-  'jsx',
-  'json',
-  'xml',
-  'yaml',
-  'yml',
-  'sql',
-  'php',
-  'rb',
-  'go',
-  'env',
-  'sh',
-  'swift',
-  'kt'
-];
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const chatId = req.query.chatId as string;
-  const name = req.query.name as string;
-  const extension = req.query.extension as string;
+  if (req.method !== 'POST') {
+    res.status(400).json({ message: 'Invalid method' });
+    return;
+  }
 
-  const supabase = req.headers.host?.includes('localhost')
+  const { url, chatId, name, extension } = req.body as FileUploadBody;
+  if (!supportedExtensions.includes(extension)) {
+    res.status(400).json({ message: 'Invalid file extension' });
+    return;
+  }
+
+  const isLocal = req.headers.host?.includes('localhost');
+
+  const supabase = isLocal
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
@@ -69,24 +53,59 @@ export default async function handler(
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
       );
 
-  const data = await new Promise((resolve, reject) => {
-    const form = new IncomingForm();
-
-    form.parse(req, (err, fields, files) => {
-      if (err) return reject(err);
-      resolve({ fields, files });
+  if (
+    extension === 'pptx' ||
+    extension === 'ppt' ||
+    extension === 'xls' ||
+    extension === 'xlsx' ||
+    extension === 'docx'
+  ) {
+    const newDocId = v4();
+    const baseURL = isLocal ? 'http://localhost:3000' : 'https://chatboba.com';
+    const apiURL = baseURL + '/api/upload/getEmbeddingsForText/';
+    const response = await fetch(apiURL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        url: url,
+        chatId: chatId,
+        name: name,
+        newDocId: newDocId,
+        isLocal: isLocal
+      })
     });
-  });
+    if (!response.ok) {
+      console.log(await response.json());
+      res.status(400).json({ message: 'File upload failed' });
+      return;
+    }
+    const resp = (await response.json()) as { message: string };
+    if (resp.message === 'success') {
+      res.status(200).json({ message: 'File uploaded successfully' });
+      return;
+    } else {
+      res.status(400).json({ message: 'File upload failed' });
+      return;
+    }
+  }
 
-  const data1 = data as { files: any };
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  const fileData = data1.files?.file[0] as PersistentFile;
-  const filePath = fileData.toJSON().filepath;
-
-  if (!extension) {
-    res.status(400).json({ message: 'Invalid file extension' });
+  // download file from url
+  const response = await fetch(url);
+  if (!response.ok) {
+    res.status(400).json({ message: 'File upload failed1' });
     return;
   }
+
+  const options = {
+    directory: './tmp/',
+    filename: name + '.' + extension
+  };
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  await get(url, options);
+
+  const filePath = `./tmp/${name}.${extension}`;
 
   const newDocId = v4();
   let loader;
@@ -101,19 +120,24 @@ export default async function handler(
       loader = new TextLoader(filePath);
     } else if (extension === 'json') {
       loader = new JSONLoader(filePath);
-    } else if (unstructuredExtensions.includes(extension)) {
+    } else if (supportedExtensions.includes(extension)) {
       loader = new UnstructuredLoader(filePath);
     }
   } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     // do nothing and test for loader
+    // delete tmp
+    fs.unlinkSync("./tmp");
     res.status(400).json({ message: 'Loader Error' });
   }
 
   if (!loader) {
+    // delete file
+    fs.unlinkSync(filePath);
+
     res.status(400).json({ message: 'Invalid file extension' });
   } else {
     try {
-      const url = `https://gsaywynqkowtwhnyrehr.supabase.co/storage/v1/object/public/media/userFiles/${chatId}/${name}.${extension}`;
       const docs = await loader.load();
       const splitter = new RecursiveCharacterTextSplitter({
         chunkSize: 4000,
@@ -143,6 +167,7 @@ export default async function handler(
         chatId: chatId,
         docId: newDocId
       });
+      fs.unlinkSync("./tmp");
 
       res.status(200).json({ message: 'File uploaded successfully' });
     } catch (err) {

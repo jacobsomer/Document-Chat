@@ -5,10 +5,7 @@ export const supportedExtensions = [
   'docx',
   'ppt',
   'pptx',
-  'csv'
-];
-
-export const unstructuredExtensions = [
+  'csv',
   'md',
   'py',
   'js',

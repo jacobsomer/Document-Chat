@@ -5,6 +5,7 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { v4 } from 'uuid';
 import { createClient } from '@supabase/supabase-js';
+import { YoutubeTranscript } from 'youtube-transcript';
 
 const embeddings = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY // In Node.js defaults to process.env.OPENAI_API_KEY
@@ -50,14 +51,27 @@ export default async function handler(
       }
     } else {
       const docArr: string[] = [];
-
-      const cheerLoader = new CheerioWebBaseLoader(url);
-      const docs = await cheerLoader.load();
       const splitter = new RecursiveCharacterTextSplitter({
         chunkSize: 4000,
         chunkOverlap: 200
       });
-      const docOutput = await splitter.splitDocuments(docs);
+      let docOutput: any[] = [];
+
+      if (url.includes('youtu')) {
+        const transcript = await YoutubeTranscript.fetchTranscript(url);
+        let text = '';
+        transcript.forEach((item) => {
+          text += item.text + ' ';
+        });
+        docOutput = await splitter.splitText(text)
+        
+      }
+      else {
+        const cheerLoader = new CheerioWebBaseLoader(url);
+        const docs = await cheerLoader.load();
+        docOutput = await splitter.splitDocuments(docs);
+      }
+      
       if (docOutput.length == 0) {
         const puppeteerLoader = new PuppeteerWebBaseLoader(url);
         const puppeteer_docs = await puppeteerLoader.load();
@@ -78,8 +92,9 @@ export default async function handler(
         }
       } else {
         for (let i = 0; i < docOutput.length; i++) {
-          const doc = docOutput[i];
-          docArr.push(`${doc?.pageContent ?? ''}`);
+          const doc = docOutput[i] as string | { pageContent: string }
+          const docString = typeof doc === 'string' ? doc : doc?.pageContent;
+          docArr.push(`${docString ?? ''}`);
         }
         const docEmbeddings = await embeddings.embedDocuments(docArr);
         const newDocId = v4();

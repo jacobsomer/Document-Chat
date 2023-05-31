@@ -20,7 +20,6 @@ export default async function handler(
         process.env.NEXT_PUBLIC_SUPABASE_URL || '',
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
       );
-
   const { chatId, userId } = req.body as Query;
   if (!chatId || chatId.length !== 36) {
     res.status(400).json({ message: 'Invalid chatId' });

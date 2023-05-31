@@ -32,9 +32,9 @@ export default function Login(props: { chatURL: string }) {
       ) : (
         <label
           htmlFor="my-modal"
-          className="btn-ghost avatar btn rounded-md px-4 py-2 text-base-content"
+          className="btn bg-[#1d1c1d] px-4 py-2 font-thin text-base-100"
         >
-          Login
+          Try ChatBoba Free
         </label>
       )}
 
