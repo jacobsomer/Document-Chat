@@ -538,7 +538,7 @@ const Chat = (props: ChatProps) => {
                   <h1 className="text-3xl font-bold text-base-content">
                     ChatBoba
                   </h1>
-                  <div className="text-sm text-warning">Beta 0.0.12</div>
+                  <div className="text-sm text-warning">Beta 0.0.13</div>
                 </div>
               </div>
               <div className="absolute right-12">
