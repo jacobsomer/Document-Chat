@@ -63,16 +63,10 @@ export default async function handler(
   ) {
     const newDocId = v4();
     try {
-      await processRequest(
-        url,
-        chatId,
-        name,
-        newDocId,
-        isLocal||false
-      );
-       res.status(200).json({ message: 'File uploaded successfully' });
-    }
-    catch (err) {
+      await processRequest(url, chatId, name, newDocId, isLocal || false);
+      console.log('Hello');
+      res.status(200).json({ message: 'File uploaded successfully' });
+    } catch (err) {
       res.status(400).json({ message: 'File upload failed' });
     }
     return;

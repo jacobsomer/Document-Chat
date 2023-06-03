@@ -24,8 +24,8 @@ async function fetchEmbeddingForObject(url: string) {
 
 export async function processRequest(
   url: string,
-  name: string,
   chatId: string,
+  name: string,
   newDocId: string,
   isLocal: boolean
 ) {
@@ -49,6 +49,7 @@ export async function processRequest(
       );
 
   const text = await fetchEmbeddingForObject(url);
+  console.log(isLocal)
   if (text === null) {
     throw new Error('Error');
   }
@@ -61,7 +62,7 @@ export async function processRequest(
   }
 
   const docEmbeddings = await embeddings.embedDocuments(arr);
-
+  console.log(docEmbeddings.length)
   const insertPromises = docEmbeddings.map(async (embedding, i) => {
     const { error } = await supabase.from('userdocuments').insert({
       url: url,
@@ -70,6 +71,13 @@ export async function processRequest(
       docId: newDocId,
       docName: name
     });
+    // console.log(JSON.stringify({
+    //   url: url,
+    //   body: arr[i],
+    //   embedding: embedding,
+    //   docId: newDocId,
+    //   docName: name
+    // }))
     if (error) {
       console.log(error);
       throw new Error(error.message);
