@@ -8,6 +8,7 @@ export default class FileTree {
   children: FileTree[];
   childrenMap: Map<string, FileTree>;
   files: FileMetadata[]; 
+  isDeleted: boolean;
 
   constructor(name: string, parent?: FileTree) {
     this.name = name;
@@ -15,6 +16,7 @@ export default class FileTree {
     this.children = new Array<FileTree>(); 
     this.childrenMap = new Map<string, FileTree>(); // TODO: look into hashmapping this?
     this.files = new Array<FileMetadata>(); 
+    this.isDeleted = false;
   }
 
   addFile(file: File, options?: any) {
@@ -31,7 +33,7 @@ export default class FileTree {
       const dirName: string = names[0] ? names[0] : "formatting error";
       var directory: FileTree | undefined = this.childrenMap.get(dirName);
       if (!this.childrenMap.get(dirName)) {
-        directory = new FileTree(dirName);
+        directory = new FileTree(dirName, this);
         this.children.push(directory);
         this.childrenMap.set(dirName, directory); 
       } 
@@ -45,6 +47,17 @@ export default class FileTree {
         return metadata;
       }
     }
+  }
+
+  delete() {
+    //this.isDeleted = true;
+  }
+
+  getSize() {
+    var total: number = 0;
+    this.files.forEach((file) => {total += file.size ? file.size : 0;})
+    this.children.forEach((filetree) => {total += filetree.getSize();})
+    return total;
   }
 
   reconstruct() {

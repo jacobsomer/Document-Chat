@@ -24,10 +24,7 @@ const getFileDisplayStyle = (length: number) => {
   return {
     width: '100%',
     height: '100%',
-    position: 'relative',
-    display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
     overflowY: length > 3 ? 'scroll' : undefined,
     msOverflowStyle: 'none',
     scrollbarWidth: 'none',
