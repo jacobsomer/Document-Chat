@@ -66,13 +66,13 @@ const AddMedia = (props: AddMediaProps) => {
         : 'upload error'
     });
     const mainCallback = async () => {
-      console.log(metadata);
       metadata.finishLoading();
+      props.forceUpdateFiletree();
     };
     const errorCallback = async () => {
-      console.log(metadata);
       console.log('upload unsuccessful');
       metadata.finishLoading();
+      props.forceUpdateFiletree();
     };
     console.log(mainCallback);
 
