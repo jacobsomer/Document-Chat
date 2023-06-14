@@ -55,38 +55,44 @@ const AddMedia = (props: AddMediaProps) => {
   ) => {
     // Preemptively create new objects to map to components so that the upload is immediately reflected in the sidebar.
     resetLoadingStates();
-    const metadata: FileMetadata = await props.updateFiletree({
-      url: 'URL placeholder',
-      docId: 'DocID placeholder',
-      docName: event.target.files?.[0]
-        ? event.target.files?.[0].name
-        : 'upload error'
-    });
-    const mainCallback = async () => {
-      metadata.finishLoading();
-      props.forceUpdateFiletree();
-    };
-    const errorCallback = async () => {
-      console.log('upload unsuccessful');
-      metadata.finishLoading();
-      props.forceUpdateFiletree();
-    };
-
+    
     // Extract data from the event to pass into the API endpoint
-    const file = event.target.files?.[0];
-    if (file) {
-      await uploadFile({
-        file: file,
-        chatId: props.chatId,
-        updateFiles: props.updateFiles,
-        successCallback: async () => {await terminateLoadingStates(mainCallback, undefined)},
-        validationErrorCallback: async () => {await terminateLoadingStates(
-            errorCallback,
-            'FileType is not one of: ' + supportedExtensions.toString()
-          )},
-        clientErrorCallback: async () => {await terminateLoadingStates(errorCallback, 'Error uploading file')},
-        serverErrorCallback: async () => {await terminateLoadingStates(errorCallback, 'Internal server error')}
-      });
+    if (event.target.files) {
+      for (var i: number = 0; i < event.target.files.length; i++) {
+
+        const metadata: FileMetadata = await props.updateFiletree({
+          url: 'URL placeholder',
+          docId: 'DocID placeholder',
+          docName: event.target.files[i]
+            ? event.target.files[i].name
+            : 'upload error'
+        });
+        const mainCallback = async () => {
+          metadata.finishLoading();
+          props.forceUpdateFiletree();
+        };
+        const errorCallback = async () => {
+          console.log('upload unsuccessful');
+          metadata.finishLoading();
+          props.forceUpdateFiletree();
+        };
+
+        const file = event.target.files?.[i];
+        if (file) {
+          await uploadFile({
+            file: file,
+            chatId: props.chatId,
+            updateFiles: props.updateFiles,
+            successCallback: async () => {await terminateLoadingStates(mainCallback, undefined)},
+            validationErrorCallback: async () => {await terminateLoadingStates(
+                errorCallback,
+                'FileType is not one of: ' + supportedExtensions.toString()
+              )},
+            clientErrorCallback: async () => {await terminateLoadingStates(errorCallback, 'Error uploading file')},
+            serverErrorCallback: async () => {await terminateLoadingStates(errorCallback, 'Internal server error')}
+          });
+        }
+      }
     }
     return;
   };
@@ -107,13 +113,13 @@ const AddMedia = (props: AddMediaProps) => {
     });
     const successCallback = async () => {
       console.log('upload successful');
-      await metadata.finishLoading();
-      await props.forceUpdateFiletree();
+      metadata.finishLoading();
+      props.forceUpdateFiletree();
     };
     const errorCallback = async () => {
       console.log('upload unsuccessful');
-      await metadata.finishLoading();
-      await props.forceUpdateFiletree();
+      metadata.finishLoading();
+      props.forceUpdateFiletree();
     };
 
     // Extract data from the event to pass into the API endpoint
