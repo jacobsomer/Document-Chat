@@ -31,6 +31,7 @@ export type AddMediaProps = {
   updateFiles:  (chatId: string) => Promise<void>;
   updateFiletree: (file: File) => Promise<FileMetadata>;
   setToolTipString: Dispatch<SetStateAction<string>>;
+  directoryUpload?: boolean;
 }
 
 export type DrawerProps = {

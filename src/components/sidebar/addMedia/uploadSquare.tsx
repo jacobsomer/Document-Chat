@@ -31,7 +31,10 @@ const UploadSquare: React.FC<UploadSquareProps> = ({ handleFileUpload }) => {
           type="file"
           accept=".txt,.pdf,.doc,.docx,.ppt,.pptx,.csv,.doc,.pptx,.md,.py,.js,.html,.css,.java,.c,.cpp,.ts,.tsx,.jsx,.json,.xml,.yaml,.yml,.sql,.php,.rb,.go,.env,.sh,.swift,.kt"
           onChange={handleFileUpload}
-          multiple
+          webkitdirectory=""
+          mozdirectory=""
+          directory=""
+          multiple=""
         />
         <div className={styles.uploadtextcontainer}>
           <div className={styles.uploadtext}>

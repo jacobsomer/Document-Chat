@@ -59,26 +59,26 @@ const AddMedia = (props: AddMediaProps) => {
     // Extract data from the event to pass into the API endpoint
     if (event.target.files) {
       for (var i: number = 0; i < event.target.files.length; i++) {
-
-        const metadata: FileMetadata = await props.updateFiletree({
-          url: 'URL placeholder',
-          docId: 'DocID placeholder',
-          docName: event.target.files[i]
-            ? event.target.files[i].name
-            : 'upload error'
-        });
-        const mainCallback = async () => {
-          metadata.finishLoading();
-          props.forceUpdateFiletree();
-        };
-        const errorCallback = async () => {
-          console.log('upload unsuccessful');
-          metadata.finishLoading();
-          props.forceUpdateFiletree();
-        };
-
         const file = event.target.files?.[i];
-        if (file) {
+
+        if (file && file.name != ".DS_Store") {
+          const metadata: FileMetadata = await props.updateFiletree({
+            url: 'URL placeholder',
+            docId: 'DocID placeholder',
+            docName: file
+              ? file.webkitRelativePath
+              : 'upload error'
+          });
+          const mainCallback = async () => {
+            metadata.finishLoading();
+            props.forceUpdateFiletree();
+          };
+          const errorCallback = async () => {
+            console.log('upload unsuccessful');
+            metadata.finishLoading();
+            props.forceUpdateFiletree();
+          };
+
           await uploadFile({
             file: file,
             chatId: props.chatId,
@@ -92,6 +92,7 @@ const AddMedia = (props: AddMediaProps) => {
             serverErrorCallback: async () => {await terminateLoadingStates(errorCallback, 'Internal server error')}
           });
         }
+        
       }
     }
     return;
@@ -158,7 +159,7 @@ const AddMedia = (props: AddMediaProps) => {
           }}
         >
           <FiUpload />
-          &nbsp;&nbsp;Add Media
+          &nbsp;&nbsp;Add {props.directoryUpload ? "Folder" : "Files" }
         </label>
       )}
 
