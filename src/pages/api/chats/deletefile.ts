@@ -1,5 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
 import { type NextApiRequest, type NextApiResponse } from 'next';
+import { supabase } from '~/lib/supabase';
+
 
 type Query = {
   docId: string;
@@ -9,15 +10,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === 'POST') {
-    const supabase = req.headers.host?.includes('localhost')
-      ? createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
-        )
-      : createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-        );
 
     const { docId } = req.body as Query;
 

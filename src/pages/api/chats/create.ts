@@ -5,6 +5,7 @@ import {
   type NextApiResponse
 } from 'next';
 import { v4 } from 'uuid';
+import { supabase } from '~/lib/supabase';
 
 type Query = {
   userId: string;
@@ -15,15 +16,6 @@ const handler: NextApiHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  const supabase = req.headers.host?.includes('localhost')
-    ? createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
-      )
-    : createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-      );
 
   const { userId, chatId } = req.body as Query;
 

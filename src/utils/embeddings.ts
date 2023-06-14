@@ -1,6 +1,6 @@
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '~/lib/supabase';
 
 async function fetchEmbeddingForObject(url: string) {
   const options = {
@@ -26,8 +26,7 @@ export async function processRequest(
   url: string,
   chatId: string,
   name: string,
-  newDocId: string,
-  isLocal: boolean
+  newDocId: string
 ) {
   const embeddings = new OpenAIEmbeddings({
     openAIApiKey: process.env.OPENAI_API_KEY
@@ -38,18 +37,7 @@ export async function processRequest(
     chunkOverlap: 200
   });
 
-  const supabase = isLocal
-    ? createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
-      )
-    : createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-      );
-
   const text = await fetchEmbeddingForObject(url);
-  console.log(isLocal)
   if (text === null) {
     throw new Error('Error');
   }
@@ -62,7 +50,7 @@ export async function processRequest(
   }
 
   const docEmbeddings = await embeddings.embedDocuments(arr);
-  console.log(docEmbeddings.length)
+  
   const insertPromises = docEmbeddings.map(async (embedding, i) => {
     const { error } = await supabase.from('userdocuments').insert({
       url: url,
@@ -71,13 +59,7 @@ export async function processRequest(
       docId: newDocId,
       docName: name
     });
-    // console.log(JSON.stringify({
-    //   url: url,
-    //   body: arr[i],
-    //   embedding: embedding,
-    //   docId: newDocId,
-    //   docName: name
-    // }))
+
     if (error) {
       console.log(error);
       throw new Error(error.message);

@@ -1,7 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from 'next';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '~/lib/supabase';
 
 const embeddings = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY // In Node.js defaults to process.env.OPENAI_API_KEY
@@ -31,28 +31,17 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { url, name, chatId, newDocId, isLocal } = req.body as {
+  const { url, name, chatId, newDocId } = req.body as {
     url: string;
     name: string;
     chatId: string;
     newDocId: string;
-    isLocal: boolean;
   };
 
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: 4000,
     chunkOverlap: 200
   });
-
-  const supabase = isLocal
-    ? createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
-      )
-    : createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-      );
 
   const text = await fetchEmbeddingForObject(url);
   if (text === null) {

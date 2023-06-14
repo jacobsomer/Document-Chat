@@ -1,19 +1,14 @@
 import { Auth } from '@supabase/auth-ui-react';
 import { useUser } from '@supabase/auth-helpers-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { ThemeSupa, supabase } from '@supabase/auth-ui-shared';
 import { isMobile } from 'react-device-detect';
-import { createClient } from '@supabase/supabase-js';
+import {supabase as supabaseClient }  from "~/lib/supabase"
 
 export default function Login(props: { chatURL: string }) {
   const origin =
     typeof window !== 'undefined' && window.location.origin
       ? window.location.origin
       : '';
-
-  const supabaseClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-  );
 
   const user = useUser();
 

@@ -4,7 +4,7 @@ import { PuppeteerWebBaseLoader } from 'langchain/document_loaders/web/puppeteer
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { v4 } from 'uuid';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '~/lib/supabase';
 import { YoutubeTranscript } from 'youtube-transcript';
 
 const embeddings = new OpenAIEmbeddings({
@@ -22,16 +22,6 @@ export default async function handler(
 ) {
   try {
     const { chatId, url } = req.body as UrlUploadBody;
-
-    const supabase = req.headers.host?.includes('localhost')
-      ? createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
-        )
-      : createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-        );
 
     const { data: userDocs, error: userDocsError } = await supabase
       .from('userdocuments')

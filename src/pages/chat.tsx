@@ -3,26 +3,12 @@ import { useEffect, useCallback, useState } from 'react';
 import { useUser } from '@supabase/auth-helpers-react';
 import { v4 } from 'uuid';
 import { useRouter } from 'next/router';
-import { createClient } from '@supabase/supabase-js';
+import {supabase  }  from "~/lib/supabase"
 
 const MainChat = () => {
   const user = useUser();
   const router = useRouter();
   const [status, setStatus] = useState('loading');
-  const origin =
-    typeof window !== 'undefined' && window.location.origin
-      ? window.location.origin
-      : '';
-  // Create a single supabase client for interacting with your database
-  const supabase = origin.includes('localhost')
-    ? createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
-      )
-    : createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-      );
 
   const createNewChat = useCallback(async () => {
     const chatID = v4();
