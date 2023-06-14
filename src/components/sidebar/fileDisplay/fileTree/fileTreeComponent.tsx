@@ -11,9 +11,10 @@ export const FileTreeComponent = (props: {
   forceUpdateFiletree: () => void;
 }) => {
   const [counter, setCounter] = useState(0);
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const clickHandler = async (e: any) => {
+  const [isCollapsed, setIsCollapsed] = useState(props.depth != 0);
+  const clickHandler = async (e: Event) => {
     setIsCollapsed(!isCollapsed);
+    e.stopPropagation();
   };
 
   if (props.filetree) {

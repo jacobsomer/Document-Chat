@@ -23,6 +23,7 @@ export default class FileTree {
 
     if (names.length == 1) {
       this.files.push(metadata);
+      return metadata;
       // TODO: possible edge case of re-adding a file with the same name of a deleted one. Just
       // ensure that the objects don't interfere and that isDeleted is fully implemented.
       
@@ -34,13 +35,16 @@ export default class FileTree {
         this.children.push(directory);
         this.childrenMap.set(dirName, directory); 
       } 
-      directory?.addFile({
-        docId: file.docId,
-        url: file.url,
-        docName: names.slice(1).join("/"),
-      });    
+      if (directory) {
+        return directory.addFile({
+          docId: file.docId,
+          url: file.url,
+          docName: names.slice(1).join("/"),
+        });  
+      } else {
+        return metadata;
+      }
     }
-    return metadata;
   }
 
   reconstruct() {
