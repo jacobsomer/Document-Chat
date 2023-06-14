@@ -18,6 +18,7 @@ const AddMedia = (props: AddMediaProps) => {
 
   // Call whenever the action to initiate an upload has begun
   const resetLoadingStates = () => {
+    console.log("addMedia: resetLoadingStates")
     setLoading(true);
     setLoadingForAWhile(false);
     setTimeout(() => {
@@ -34,7 +35,9 @@ const AddMedia = (props: AddMediaProps) => {
     callback: () => Promise<void>,
     errorMessage?: string
   ) => {
+    console.log("addMedia: terminateLoadingStates")
     await callback();
+    console.log(callback, errorMessage);
     if (errorMessage) {
       setErrorMessage(errorMessage);
       removeErrorMessageAfter4Seconds();
@@ -62,31 +65,34 @@ const AddMedia = (props: AddMediaProps) => {
         ? event.target.files?.[0].name
         : 'upload error'
     });
-    const successCallback = async () => {
+    const mainCallback = async () => {
+      console.log(metadata);
       metadata.finishLoading();
     };
     const errorCallback = async () => {
+      console.log(metadata);
       console.log('upload unsuccessful');
       metadata.finishLoading();
     };
+    console.log(mainCallback);
 
     // Extract data from the event to pass into the API endpoint
     const file = event.target.files?.[0];
+    console.log(file);
     if (file) {
       await uploadFile({
         file: file,
         chatId: props.chatId,
         updateFiles: props.updateFiles,
-        successCallback: async () => await terminateLoadingStates(successCallback),
-        validationErrorCallback: async () => await terminateLoadingStates(
+        successCallback: async () => {await terminateLoadingStates(mainCallback, undefined)},
+        validationErrorCallback: async () => {await terminateLoadingStates(
             errorCallback,
             'FileType is not one of: ' + supportedExtensions.toString()
-          ),
-        clientErrorCallback: async () => await terminateLoadingStates(errorCallback, 'Error uploading file'),
-        serverErrorCallback: async () => await terminateLoadingStates(errorCallback, 'Internal server error')
+          )},
+        clientErrorCallback: async () => {await terminateLoadingStates(errorCallback, 'Error uploading file')},
+        serverErrorCallback: async () => {await terminateLoadingStates(errorCallback, 'Internal server error')}
       });
     }
-    terminateLoadingStates(async () => {});
     return;
   };
 
@@ -105,11 +111,14 @@ const AddMedia = (props: AddMediaProps) => {
       docName: input
     });
     const successCallback = async () => {
-      metadata.finishLoading();
+      console.log('upload successful');
+      await metadata.finishLoading();
+      await props.forceUpdateFiletree();
     };
     const errorCallback = async () => {
       console.log('upload unsuccessful');
-      metadata.finishLoading();
+      await metadata.finishLoading();
+      await props.forceUpdateFiletree();
     };
 
     // Extract data from the event to pass into the API endpoint
