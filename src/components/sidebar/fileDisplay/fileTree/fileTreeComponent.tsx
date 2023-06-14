@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import FileTree from './fileTreeModel';
-import { FileEntry } from '../file/fileComponentWrapper';
+import { FileComponent } from '../file/fileComponent';
 import FileMetadata from '../file/fileModel';
 import { fileDisplayStyle } from '../fileDisplay';
 import { FileDisplayEntry } from '../fileDisplayEntry';
@@ -15,65 +15,65 @@ export const FileTreeComponent = (props: {
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(props.depth != 0);
   const clickHandler = async (e: Event) => {
-    // setIsCollapsed(!isCollapsed);
+    setIsCollapsed(!isCollapsed);
     e.stopPropagation();
   };
 
   if (props.filetree) {
     return (
-      <div>
+      <div style={fileDisplayStyle}>
         {props.depth != 0 ? (
-          <FileDisplayEntry
-            name={props.filetree.name}
-            url={''}
-            deleteFile={() => {
-              //props.filetree?.delete();
-              props.forceUpdateFiletree();
-            }}
-            size={props.filetree.getSize()}
-          >
-            {isCollapsed ? (
-              <AiFillFolderAdd
-                color="hsl(var(--s))"
-                className={styles.fileIcon}
-              />
-            ) : (
-              <AiFillFolderAdd
-                color="hsl(var(--s))"
-                className={styles.fileIcon}
-              />
-            )}
-          </FileDisplayEntry>
+          <div onMouseDown={clickHandler}>
+            <FileDisplayEntry
+              name={props.filetree.name}
+              url={''}
+              deleteFile={() => {
+                //props.filetree?.delete();
+                props.forceUpdateFiletree();
+              }}
+              size={props.filetree.getSize()}
+            >
+              {isCollapsed ? (
+                <AiFillFolderAdd
+                  color="hsl(var(--s))"
+                  className={styles.fileIcon}
+                />
+              ) : (
+                <AiFillFolderAdd
+                  color="hsl(var(--s))"
+                  className={styles.fileIcon}
+                />
+              )}
+            </FileDisplayEntry>
+          </div>
         ) : (
           <></>
         )}
-        <div style={fileDisplayStyle} onMouseDown={clickHandler}>
-          {!isCollapsed ? (
-            <>
-              {props.filetree?.children.map((filetree: FileTree) => {
-                return (
-                  <FileTreeComponent
-                    depth={props.depth + 1}
-                    filetree={filetree}
-                    forceUpdateFiletree={props.forceUpdateFiletree}
-                  />
-                );
-              })}
-              {props.filetree.files.map((fileMetadata: FileMetadata) => {
-                return fileMetadata.isDeleted ? (
-                  <></>
-                ) : (
-                  <FileEntry
-                    metadata={fileMetadata}
-                    forceUpdateFiletree={props.forceUpdateFiletree}
-                  />
-                );
-              })}
-            </>
-          ) : (
-            <></>
-          )}
-        </div>
+        {!isCollapsed ? (
+          <>
+            {props.filetree?.children.map((filetree: FileTree) => {
+              return (
+                <FileTreeComponent
+                  depth={props.depth + 1}
+                  filetree={filetree}
+                  forceUpdateFiletree={props.forceUpdateFiletree}
+                />
+              );
+            })}
+            {props.filetree.files.map((fileMetadata: FileMetadata) => {
+              return fileMetadata.isDeleted ? (
+                <></>
+              ) : (
+                <FileComponent
+                  metadata={fileMetadata}
+                  forceUpdateFiletree={props.forceUpdateFiletree}
+                />
+              );
+            })}
+          </>
+        ) : (
+          <></>
+        )}
       </div>
     );
   } else {

@@ -1,74 +1,31 @@
+import React from 'react';
+import FileMetadata from './fileModel';
+import { FileDisplay, fileDisplayStyle } from '../fileDisplay';
 import { AiFillFileAdd } from 'react-icons/ai';
-import { BsFillCloudDownloadFill, BsFillTrashFill } from 'react-icons/bs';
 import styles from '~/styles/drawerStyles.module.css';
-import { useState } from 'react';
-import { url } from 'inspector';
+import { FileDisplayEntry } from '../fileDisplayEntry';
 
-const FileComponent = (props: {
-  name: string;
-  url: string;
-  deleteFile: () => void;
-  size?: number;
+// A component to show
+export const FileComponent = (props: { 
+  metadata: FileMetadata,
+  forceUpdateFiletree: () => void,
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const outerClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
-    void e.stopPropagation();
-  }
-
-  const innerClickHandler = (e: React.MouseEvent<SVGElement>) => {
-    void props.deleteFile();
-  }
+  const clickHandler = async (e: Event) => {
+    e.stopPropagation();
+  };
 
   return (
-    <div
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onMouseDown={(outerClickHandler)}
-      key={props.name}
-      className={styles.fileItem}
-      id={props.url}
-    >
-      <AiFillFileAdd color="hsl(var(--s))" className={styles.fileIcon} />
-      <div className="relative w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-base text-base-content">
-        &nbsp; {props.name}
-      </div>
-
-      {isHovered && (
-        <>
-          <div className="absolute right-12 top-1/2 z-50 flex -translate-y-1/2 transform items-center justify-center">
-            {props.url.includes('supabase') ? (
-              <div className="tooltip" data-tip="Download">
-                <a href={props.url}>
-                  <BsFillCloudDownloadFill
-                    color="hsl(var(--s))"
-                    className="w-10 bg-base-100"
-                  />
-                </a>
-              </div>
-            ) : (
-              <div className="tooltip" data-tip="View">
-                <a href={props.url} target="_blank">
-                  <BsFillCloudDownloadFill
-                    color="hsl(var(--s))"
-                    className="w-10 bg-base-100"
-                  />
-                </a>
-              </div>
-            )}
-          </div>
-          <div className="absolute right-4 top-1/2 z-50 flex -translate-y-1/2 transform items-center justify-center">
-            <div className="tooltip" data-tip="Delete">
-              <BsFillTrashFill
-                onClick={innerClickHandler}
-                color="hsl(var(--s))"
-                className="w-10 cursor-pointer bg-base-100"
-              />
-            </div>
-          </div>
-        </>
-      )}
+    <div style={fileDisplayStyle} onMouseDown={clickHandler}>
+      <FileDisplayEntry
+        name={props.metadata.docName + (props.metadata.loading ? ": loading" : "")}
+        url={props.metadata.url}
+        deleteFile={() => { 
+          props.metadata.deleteFile(); 
+          props.forceUpdateFiletree();
+        }}
+        size={props.metadata.size}>
+          <AiFillFileAdd color="hsl(var(--s))" className={styles.fileIcon} />
+        </FileDisplayEntry>
     </div>
   );
 };
-
-export default FileComponent;
