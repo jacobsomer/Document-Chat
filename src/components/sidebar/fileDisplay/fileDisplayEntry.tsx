@@ -17,7 +17,7 @@ export const FileDisplayEntry = (props: {
   }
 
   const innerClickHandler = (e: React.MouseEvent<SVGElement>) => {
-    // void props.deleteFile();
+    void props.deleteFile();
     void e.stopPropagation();
   };
 

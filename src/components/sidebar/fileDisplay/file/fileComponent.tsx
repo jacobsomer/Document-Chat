@@ -11,7 +11,7 @@ export const FileComponent = (props: {
   forceUpdateFiletree: () => void,
 }) => {
   const clickHandler = async (e: Event) => {
-    e.stopPropagation();
+    // e.stopPropagation();
   };
 
   return (
