@@ -13,8 +13,6 @@ export const FileDisplayEntry = (props: {
 
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const outerClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
-  }
 
   const innerClickHandler = (e: React.MouseEvent<SVGElement>) => {
     void props.deleteFile();
@@ -25,7 +23,6 @@ export const FileDisplayEntry = (props: {
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onMouseDown={outerClickHandler}
       key={props.name}
       className={styles.fileItem}
       id={props.url}

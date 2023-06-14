@@ -19,7 +19,7 @@ export const FileTreeComponent = (props: {
     e.stopPropagation();
   };
 
-  if (props.filetree) {
+  if (props.filetree && !props.filetree.isDeleted) {
     return (
       <div style={fileDisplayStyle}>
         {props.depth != 0 ? (
@@ -28,7 +28,7 @@ export const FileTreeComponent = (props: {
               name={props.filetree.name}
               url={''}
               deleteFile={() => {
-                //props.filetree?.delete();
+                props.filetree?.delete();
                 props.forceUpdateFiletree();
               }}
               size={props.filetree.getSize()}

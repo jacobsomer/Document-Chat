@@ -50,7 +50,7 @@ export default class FileTree {
   }
 
   delete() {
-    //this.isDeleted = true;
+    this.isDeleted = true;
   }
 
   getSize() {
