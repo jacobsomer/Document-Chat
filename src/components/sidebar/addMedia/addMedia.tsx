@@ -18,7 +18,6 @@ const AddMedia = (props: AddMediaProps) => {
 
   // Call whenever the action to initiate an upload has begun
   const resetLoadingStates = () => {
-    console.log("addMedia: resetLoadingStates")
     setLoading(true);
     setLoadingForAWhile(false);
     setTimeout(() => {
@@ -35,9 +34,7 @@ const AddMedia = (props: AddMediaProps) => {
     callback: () => Promise<void>,
     errorMessage?: string
   ) => {
-    console.log("addMedia: terminateLoadingStates")
     await callback();
-    console.log(callback, errorMessage);
     if (errorMessage) {
       setErrorMessage(errorMessage);
       removeErrorMessageAfter4Seconds();
@@ -74,11 +71,9 @@ const AddMedia = (props: AddMediaProps) => {
       metadata.finishLoading();
       props.forceUpdateFiletree();
     };
-    console.log(mainCallback);
 
     // Extract data from the event to pass into the API endpoint
     const file = event.target.files?.[0];
-    console.log(file);
     if (file) {
       await uploadFile({
         file: file,

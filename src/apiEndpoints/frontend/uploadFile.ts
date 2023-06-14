@@ -68,10 +68,8 @@ const cleanFileName = (fileName: string) => {
 
   
 export const uploadFile = async (props: UploadFileProps) => {
-    console.log("YO BITCH")
     const extension = props.file.name.split('.').pop();
     if (!extension || !supportedExtensions.includes(extension)) {
-      console.log("YO")
       return await props.validationErrorCallback();
     }
 
@@ -79,7 +77,6 @@ export const uploadFile = async (props: UploadFileProps) => {
     const cleaned_name = cleanFileName(props.file.name.split('.').slice(0, -1).join('.'));
     const url = await getUploadURL(props.chatId, props.file, cleaned_name, extension);
     if (url === 'Error') {
-        console.log("4xx error from uploadFile")
         return await props.clientErrorCallback();
     }
 
@@ -106,10 +103,8 @@ export const uploadFile = async (props: UploadFileProps) => {
         if (closeModal) {
           closeModal.click();
         }
-        console.log("2xx response from uploadFile")
       }
     } catch (e) {
-      console.log("5xx error from uploadFile")
       return await props.serverErrorCallback();
     }
     return await props.successCallback();
