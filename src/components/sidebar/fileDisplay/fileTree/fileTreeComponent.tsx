@@ -4,8 +4,10 @@ import { FileComponent } from '../file/fileComponent';
 import FileMetadata from '../file/fileModel';
 import { fileDisplayStyle } from '../fileDisplay';
 import { FileDisplayEntry } from '../fileDisplayEntry';
+import { MdDownloading } from 'react-icons/md';
 
-import { AiFillFolderAdd } from 'react-icons/ai';
+
+import { AiFillFolderAdd, AiFillFolderOpen } from 'react-icons/ai';
 import styles from '~/styles/drawerStyles.module.css';
 
 export const FileTreeComponent = (props: {
@@ -19,11 +21,12 @@ export const FileTreeComponent = (props: {
     e.stopPropagation();
   };
 
+  var isLoading = props.filetree?.isLoading();
   if (props.filetree && !props.filetree.isDeleted) {
     return (
-      <div style={fileDisplayStyle}>
+      <div style={{marginLeft: (props.depth != 0) ? 24 : 0}}>
         {props.depth != 0 ? (
-          <div onMouseDown={clickHandler}>
+          <div onMouseDown={clickHandler}> 
             <FileDisplayEntry
               name={props.filetree.name}
               url={''}
@@ -33,16 +36,23 @@ export const FileTreeComponent = (props: {
               }}
               size={props.filetree.getSize()}
             >
-              {isCollapsed ? (
-                <AiFillFolderAdd
+              {isLoading ? (
+                <MdDownloading
                   color="hsl(var(--s))"
                   className={styles.fileIcon}
                 />
               ) : (
-                <AiFillFolderAdd
-                  color="hsl(var(--s))"
-                  className={styles.fileIcon}
-                />
+                isCollapsed ? (
+                  <AiFillFolderAdd
+                    color="hsl(var(--s))"
+                    className={styles.fileIcon}
+                  />
+                ) : (
+                  <AiFillFolderOpen
+                    color="hsl(var(--s))"
+                    className={styles.fileIcon}
+                  />
+                )
               )}
             </FileDisplayEntry>
           </div>

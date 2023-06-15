@@ -4,6 +4,18 @@ import styles from '~/styles/drawerStyles.module.css';
 import { useState } from 'react';
 import { url } from 'inspector';
 
+const fileDisplayEntryStyle: any = {
+  position: "relative",
+  width: "80%",
+  fontSize: "16px",
+  color: "black",
+  margin: "8px",
+  borderRadius: "8px",
+  padding: "2px",
+  display: "flex",
+  alignItems: "center",
+};
+
 export const FileDisplayEntry = (props: {
   name: string;
   url: string;

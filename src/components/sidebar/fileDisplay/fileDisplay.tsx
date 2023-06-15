@@ -15,7 +15,7 @@ export const FileDisplay = (props: {
   forceUpdateFiletree: () => void,
 }) => {
   return (
-    <div>
+    <div style={{marginRight: DIRECTORY_LEVEL_OFFSET}}>
       <FileTreeComponent depth={0} filetree={props.fileTreeRoot} forceUpdateFiletree={props.forceUpdateFiletree} />
     </div>
   );

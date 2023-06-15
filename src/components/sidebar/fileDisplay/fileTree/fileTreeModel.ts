@@ -60,6 +60,17 @@ export default class FileTree {
     return total;
   }
 
+  isLoading() {
+    var loading = false;
+    this.files.forEach((file: FileMetadata) => {
+      if (file.loading) loading = true;
+    })
+    this.children.forEach((filetree: FileTree) => {
+      if (filetree.isLoading()) loading = true;
+    })
+    return loading;
+  }
+
   reconstruct() {
     // TODO: actually delete files that are marked with a DeleteFlag, it is better to wait for
     // a bunch of these to batch-delete cron job style. This would also be an entry point to

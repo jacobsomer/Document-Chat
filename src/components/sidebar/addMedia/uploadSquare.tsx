@@ -23,32 +23,58 @@ const UploadSquare: React.FC<UploadSquareProps> = ({ handleFileUpload }) => {
   };
 
   return (
-    <div className={styles.uploadsquare}>
-      <label htmlFor="upload-input" className={styles.uploadlabel}>
-        <input
-          id="upload-input"
-          className={styles.uploadbutton}
-          type="file"
-          accept=".txt,.pdf,.doc,.docx,.ppt,.pptx,.csv,.doc,.pptx,.md,.py,.js,.html,.css,.java,.c,.cpp,.ts,.tsx,.jsx,.json,.xml,.yaml,.yml,.sql,.php,.rb,.go,.env,.sh,.swift,.kt"
-          onChange={handleFileUpload}
-          webkitdirectory=""
-          mozdirectory=""
-          directory=""
-          multiple=""
-        />
-        <div className={styles.uploadtextcontainer}>
-          <div className={styles.uploadtext}>
-            <div className={styles.uploadlabelheader}>
-              {renderUploadText()}
-              <FiUpload className={styles.uploadicon} />
-            </div>
-            <div className={styles.uploadlabelsubheader}>
-              or, drag and drop a file here
+    <div>
+      <div className={styles.uploadsquare}>
+        <label htmlFor="upload-input" className={styles.uploadlabel}>
+          <input
+            id="upload-input"
+            className={styles.uploadbutton}
+            type="file"
+            accept=".txt,.pdf,.doc,.docx,.ppt,.pptx,.csv,.doc,.pptx,.md,.py,.js,.html,.css,.java,.c,.cpp,.ts,.tsx,.jsx,.json,.xml,.yaml,.yml,.sql,.php,.rb,.go,.env,.sh,.swift,.kt"
+            multiple=""
+          />
+          <div className={styles.uploadtextcontainer}>
+            <div className={styles.uploadtext}>
+              <div className={styles.uploadlabelheader}>
+                {renderUploadText()}
+                <FiUpload className={styles.uploadicon} />
+              </div>
+              <div className={styles.uploadlabelsubheader}>
+                or, drag and drop files here
+              </div>
             </div>
           </div>
-        </div>
-      </label>
+        </label>
+      </div>
+      <div style={{padding: 10}}></div>
+      <div className={styles.uploadsquare}>
+        <label htmlFor="upload-input" className={styles.uploadlabel}>
+          <input
+            id="upload-input"
+            className={styles.uploadbutton}
+            type="file"
+            accept=".txt,.pdf,.doc,.docx,.ppt,.pptx,.csv,.doc,.pptx,.md,.py,.js,.html,.css,.java,.c,.cpp,.ts,.tsx,.jsx,.json,.xml,.yaml,.yml,.sql,.php,.rb,.go,.env,.sh,.swift,.kt"
+            onChange={handleFileUpload}
+            webkitdirectory=""
+            mozdirectory=""
+            directory=""
+            multiple=""
+          />
+          <div className={styles.uploadtextcontainer}>
+            <div className={styles.uploadtext}>
+              <div className={styles.uploadlabelheader}>
+                {renderUploadText()}
+                <FiUpload className={styles.uploadicon} />
+              </div>
+              <div className={styles.uploadlabelsubheader}>
+                or, drag and drop a folder here
+              </div>
+            </div>
+          </div>
+        </label>
+      </div>
     </div>
+    
   );
 };
 

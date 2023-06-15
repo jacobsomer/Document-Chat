@@ -20,12 +20,14 @@
 
 .fileItem {
   position: relative;
-  width: 80%;
+  width: 100%;
   color: hsl(var(--pc));
-  background-color: hsl(var(--b1));
-  margin: 8px;
+  margin: 3px;
+  border-style: solid 1px;
+  border-color: hsl(var(--pc));
+  background-color: white;
+  padding: 3px;
   border-radius: 8px;
-  padding: 8px;
   display: flex;
   align-items: center;
 }
