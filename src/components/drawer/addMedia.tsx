@@ -4,7 +4,7 @@ import { supportedExtensions } from '~/utils/consts';
 import { FiUpload } from 'react-icons/fi';
 import { type AddMediaProps } from '~/types/types';
 import { isMobile } from 'react-device-detect';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '~/lib/supabase';
 
 const cleanFileName = (fileName: string) => {
   // replace any characters that are not letters, numbers, dashes, spaces, or underscores with an underscore
@@ -22,16 +22,6 @@ const AddMedia = (props: AddMediaProps) => {
       ? window.location.origin
       : '';
   const isLocal = origin.includes('localhost');
-  // Create a single supabase client for interacting with your database
-  const supabase = isLocal
-    ? createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
-      )
-    : createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-      );
 
   const removeErrorMessageAfter4Seconds = () => {
     setLoading(false);

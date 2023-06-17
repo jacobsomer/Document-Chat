@@ -8,7 +8,9 @@ import { SessionContextProvider } from '@supabase/auth-helpers-react';
 
 const MyApp: AppType = ({ Component, pageProps }: AppProps) => {
   // Create a new supabase browser client on every first render.
-  const [supabaseClient] = useState(() => createBrowserSupabaseClient());
+  const [supabaseClient] = useState(() => createBrowserSupabaseClient(
+   
+  ));
 
   return (
     <SessionContextProvider

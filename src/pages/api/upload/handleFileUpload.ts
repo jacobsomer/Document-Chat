@@ -9,10 +9,10 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { UnstructuredLoader } from 'langchain/document_loaders/fs/unstructured';
 import { JSONLoader } from 'langchain/document_loaders/fs/json';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
-import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import { supportedExtensions } from '~/utils/consts';
 import { processRequest } from '~/utils/embeddings';
+import { supabase } from '~/lib/supabase';
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
 const get = require('async-get-file');
 
@@ -42,18 +42,7 @@ export default async function handler(
     return;
   }
 
-  const isLocal = req.headers.host?.includes('localhost');
-
-  const supabase = isLocal
-    ? createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || ''
-      )
-    : createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-      );
-
+  
   if (
     extension === 'pptx' ||
     extension === 'ppt' ||
@@ -63,7 +52,7 @@ export default async function handler(
   ) {
     const newDocId = v4();
     try {
-      await processRequest(url, chatId, name, newDocId, isLocal || false);
+      await processRequest(url, chatId, name, newDocId);
       console.log('Hello');
       res.status(200).json({ message: 'File uploaded successfully' });
     } catch (err) {
