@@ -29,6 +29,9 @@ export const AddDataHeader = (props: Props) => {
           <h3 className="font-base-content text-lg">Add Data</h3>
         </>
       )}
+      <div>
+        File deleting is currently unsupported, so we suggest organizing data in a local folder to upload to the client. 
+      </div>
     </>
   );
 };

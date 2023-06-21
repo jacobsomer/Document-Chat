@@ -1,79 +1,107 @@
 import { File } from '~/types/types';
 import FileMetadata from '../file/fileModel';
-import formidable from 'formidable';
 
 export default class FileTree {
   name: string;
   parent: FileTree | null;
-  children: FileTree[];
   childrenMap: Map<string, FileTree>;
-  files: FileMetadata[]; 
+  childrenList: FileTree[];
+  fileMap: Map<string, FileMetadata>;
+  fileList: FileMetadata[];
   isDeleted: boolean;
+  isFilesCached: boolean;
+  isDirectoriesCached: boolean;
 
   constructor(name: string, parent?: FileTree) {
     this.name = name;
     this.parent = parent ? parent : null;
-    this.children = new Array<FileTree>(); 
-    this.childrenMap = new Map<string, FileTree>(); // TODO: look into hashmapping this?
-    this.files = new Array<FileMetadata>(); 
+    this.childrenList = new Array<FileTree>(); 
+    this.childrenMap = new Map<string, FileTree>(); 
+    this.fileList = new Array<FileMetadata>(); 
+    this.fileMap = new Map<string, FileMetadata>(); 
+    this.isFilesCached = false;
+    this.isDirectoriesCached = false;
+
     this.isDeleted = false;
   }
 
-  addFile(file: File, options?: any) {
-    const names: string[] = file.docName.split("/");
-    const metadata: FileMetadata = new FileMetadata(file.docName, file.url, this);
-
-    if (names.length == 1) {
-      this.files.push(metadata);
-      return metadata;
-      // TODO: possible edge case of re-adding a file with the same name of a deleted one. Just
-      // ensure that the objects don't interfere and that isDeleted is fully implemented.
-      
-    } else if (names.length > 1) {
-      const dirName: string = names[0] ? names[0] : "formatting error";
-      var directory: FileTree | undefined = this.childrenMap.get(dirName);
-      if (!this.childrenMap.get(dirName)) {
-        directory = new FileTree(dirName, this);
-        this.children.push(directory);
-        this.childrenMap.set(dirName, directory); 
-      } 
-      if (directory) {
-        return directory.addFile({
-          docId: file.docId,
-          url: file.url,
-          docName: names.slice(1).join("/"),
-        });  
-      } else {
-        return metadata;
-      }
-    }
+  // Return a list for easy file iteration
+  getFiles(): Array<FileMetadata> {
+    if (!this.isFilesCached) {
+      this.fileList = new Array<FileMetadata>();
+      this.fileMap.forEach((value, key) => {
+        this.fileList.push(value);
+      })
+      this.isFilesCached = true;
+    } 
+    return this.fileList;
   }
 
-  delete() {
-    this.isDeleted = true;
+  // Return a list for easy file iteration
+  getDirectories(): Array<FileTree> {
+    if (!this.isDirectoriesCached) {
+      this.childrenList = new Array<FileTree>();
+      this.childrenMap.forEach((value, key) => {
+        this.childrenList.push(value);
+      })
+      this.isDirectoriesCached = true;
+    } 
+    return this.childrenList;
   }
 
-  getSize() {
+  getSize(): number {
     var total: number = 0;
-    this.files.forEach((file) => {total += file.size ? file.size : 0;})
-    this.children.forEach((filetree) => {total += filetree.getSize();})
+    this.getFiles().forEach((file) => {total += file.size ? file.size : 0;})
+    this.getDirectories().forEach((filetree) => {total += filetree.getSize();})
     return total;
   }
 
-  isLoading() {
+  isLoading(): boolean {
     var loading = false;
-    this.files.forEach((file: FileMetadata) => {
+    this.getFiles().forEach((file: FileMetadata) => {
       if (file.loading) loading = true;
     })
-    this.children.forEach((filetree: FileTree) => {
+    this.getDirectories().forEach((filetree: FileTree) => {
       if (filetree.isLoading()) loading = true;
     })
     return loading;
   }
 
-  reconstruct() {
-    // TODO: actually delete files that are marked with a DeleteFlag, it is better to wait for
-    // a bunch of these to batch-delete cron job style. This would also be an entry point to
-    // "reset" Langchain's embeddings after figuring out which files to delete.
+  addFile(file: File, options?: any): FileMetadata {
+    const names: string[] = file.docName.split("/");
+    const metadata: FileMetadata = new FileMetadata(file.docName, file.url, this);
+    const dirName: string = names[0] ? names[0] : "formatting error"; // TODO: handle this error better
+
+    if (names.length == 1) {
+      this.fileMap.set(dirName, metadata);
+      this.isFilesCached = false;
+      return metadata; 
+
+    } else {
+      var directory: FileTree | undefined = this.childrenMap.get(dirName) || this.addDirectory(dirName);
+      return directory ? directory.addFile({
+        docId: file.docId,
+        url: file.url,
+        docName: names.slice(1).join("/"),
+      }) : metadata;
+    }
+  }
+
+  addDirectory(dirName: string, options?: any): FileTree {
+    const directory = new FileTree(dirName, this);
+    this.childrenMap.set(dirName, directory); 
+    this.isDirectoriesCached = false;
+    return directory;
+  }
+
+  deleteSelf(): boolean {
+    if (this.parent) {
+      this.parent.childrenMap.delete(this.name);
+      this.parent.isDirectoriesCached = false;
+    }
+    this.isDeleted = true;
+    this.isFilesCached = false;
+    this.isDirectoriesCached = false;
+    return true;
   }
 }

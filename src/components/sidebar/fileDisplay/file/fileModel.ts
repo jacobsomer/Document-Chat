@@ -19,12 +19,7 @@ export default class FileMetadata {
 
   deleteFile() {
     this.isDeleted = true;
-  }
-
-  // TODO: figure out if we want to "delete" the file and have options to recover it,
-  // or if we are going to try to deeply remove it from Langchain.
-  undeleteFile() {
-    this.isDeleted = false;
+    this.parentFileTree.fileMap.delete(this.docName);
   }
 
   finishLoading() {

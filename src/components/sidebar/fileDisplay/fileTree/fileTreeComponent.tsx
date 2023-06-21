@@ -20,6 +20,7 @@ export const FileTreeComponent = (props: {
     setIsCollapsed(!isCollapsed);
     e.stopPropagation();
   };
+  console.log(props.filetree?.getDirectories(), props.filetree?.childrenMap);
 
   var isLoading = props.filetree?.isLoading();
   if (props.filetree && !props.filetree.isDeleted) {
@@ -31,7 +32,7 @@ export const FileTreeComponent = (props: {
               name={props.filetree.name}
               url={''}
               deleteFile={() => {
-                props.filetree?.delete();
+                props.filetree?.deleteSelf();
                 props.forceUpdateFiletree();
               }}
               size={props.filetree.getSize()}
@@ -61,7 +62,7 @@ export const FileTreeComponent = (props: {
         )}
         {!isCollapsed ? (
           <>
-            {props.filetree?.children.map((filetree: FileTree) => {
+            {props.filetree?.getDirectories().map((filetree: FileTree) => {
               return (
                 <FileTreeComponent
                   depth={props.depth + 1}
@@ -70,7 +71,7 @@ export const FileTreeComponent = (props: {
                 />
               );
             })}
-            {props.filetree.files.map((fileMetadata: FileMetadata) => {
+            {props.filetree.getFiles().map((fileMetadata: FileMetadata) => {
               return fileMetadata.isDeleted ? (
                 <></>
               ) : (

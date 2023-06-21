@@ -12,7 +12,7 @@ import { isMobile } from 'react-device-detect';
 import FileTree from './fileDisplay/fileTree/fileTreeModel';
 import { FileDisplay } from './fileDisplay/fileDisplay';
 
-const DEBUG = true;
+const DEBUG = false;
 
 //create your forceUpdate hook
 function useForceUpdate() {
