@@ -1,0 +1,56 @@
+.filesContainer {
+  background-color: red;
+  width: 250px;
+  height: 80vh;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  color: hsl(var(--bc));
+  font-size: large;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.filesContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.fileItem {
+  position: relative;
+  width: 100%;
+  color: hsl(var(--pc));
+  margin: 3px;
+  border-style: solid 1px;
+  border-color: hsl(var(--pc));
+  background-color: white;
+  padding: 3px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.fileIcon {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.deleteIconContainer {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 4px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-icon {
+  position: relative;
+  width: 28px;
+  height: 28px;
+}

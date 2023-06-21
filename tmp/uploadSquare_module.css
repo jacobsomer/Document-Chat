@@ -1,0 +1,76 @@
+.uploadsquare {
+  position: relative;
+  font-family: "Open Sans", sans-serif;
+  color: hsl(var(--bc));
+  border-radius: 10px;
+  border: 2px dotted hsl(var(--bc));
+  background: transparent;
+}
+
+.uploadlabel {
+  width: 100%;
+  height: 100%;
+  display: block;
+  text-align: center;
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding-top: 25px;
+  transition: 0.2s;
+}
+
+.uploadtextcontainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+  padding-bottom: 25px;
+}
+
+.uploadtext {
+  text-align: center;
+}
+
+.uploadlabelheader {
+  font-size: 16px;
+  font-weight: 600;
+  vertical-align: top;
+  width: 100%;
+}
+
+.upload-label-subheader {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  margin-top: 0;
+  display: inline-block;
+  vertical-align: top;
+  width: 100%;
+}
+
+.uploadicon {
+  margin-top: -3px;
+  margin-left: 10px;
+  font-size: 18px;
+  opacity: 0.8;
+  left: 50%;
+  position: relative;
+  transform: translateX(-50%);
+}
+
+.uploadbutton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  font-size: 100px;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.uploadbutton:focus {
+  outline: none;
+}
