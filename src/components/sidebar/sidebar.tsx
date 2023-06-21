@@ -12,10 +12,14 @@ import { isMobile } from 'react-device-detect';
 import FileTree from './fileDisplay/fileTree/fileTreeModel';
 import { FileDisplay } from './fileDisplay/fileDisplay';
 
+const DEBUG = true;
+
 //create your forceUpdate hook
 function useForceUpdate() {
   const [value, setValue] = useState(0); // integer state
+  DEBUG && console.log("useForceUpdate called")
   return () => setValue((value) => value + 1); // update state to force render
+  
   // A function that increment 👆🏻 the previous state like here
   // is better than directly setting `setValue(value + 1)`
 }
@@ -53,6 +57,7 @@ const innerFlexWrapper = {
   height: '100%'
 };
 
+
 export const Sidebar = (props: DrawerProps) => {
   const user = useUser();
   const router = useRouter();
@@ -68,7 +73,9 @@ export const Sidebar = (props: DrawerProps) => {
   const forceUpdate = useForceUpdate();
 
   const updateFiletree = async (file: File, options?: any) => {
-    return fileTreeRoot.addFile(file, options);
+    const newFile = fileTreeRoot.addFile(file, options);
+    DEBUG && console.log("updateFiletree called, new file: {}", newFile.toString())
+    return newFile;
   };
 
   useEffect(() => {

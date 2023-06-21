@@ -12,6 +12,8 @@ import { AddMediaButton } from './addMediaButton';
 import { AddDataHeader } from './addDataHeader';
 import { AddUrl } from './addUrl';
 
+const UPLOAD_DEBUG = true;
+
 const AddMedia = (props: AddMediaProps) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -55,6 +57,8 @@ const AddMedia = (props: AddMediaProps) => {
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    
+    UPLOAD_DEBUG && console.log("addMedia.handleFileUpload called")
     // Preemptively create new objects to map to components so that the upload is immediately reflected in the sidebar.
     resetLoadingStates();
     
@@ -78,6 +82,7 @@ const AddMedia = (props: AddMediaProps) => {
           const errorCallback = async () => {
             console.log('upload unsuccessful');
             metadata.finishLoading();
+            metadata.deleteFile();
             props.forceUpdateFiletree();
           };
 
@@ -85,13 +90,19 @@ const AddMedia = (props: AddMediaProps) => {
             file: file,
             chatId: props.chatId,
             updateFiles: props.updateFiles,
-            successCallback: async () => {await terminateLoadingStates(mainCallback, undefined)},
+            successCallback: async () => {
+              await terminateLoadingStates(mainCallback, undefined)
+            },
             validationErrorCallback: async () => {await terminateLoadingStates(
                 errorCallback,
                 'FileType is not one of: ' + supportedExtensions.toString()
               )},
-            clientErrorCallback: async () => {await terminateLoadingStates(errorCallback, 'Error uploading file')},
-            serverErrorCallback: async () => {await terminateLoadingStates(errorCallback, 'Internal server error')}
+            clientErrorCallback: async () => {
+              await terminateLoadingStates(errorCallback, 'Error uploading file')
+            },
+            serverErrorCallback: async () => {
+              await terminateLoadingStates(errorCallback, 'Internal server error')
+            }
           });
         }
         
