@@ -1,5 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from 'next';
-import { type ChatFile, type File, type UserChat } from '~/types/types';
+import { type ChatFile, type FileModelProps, type UserChat } from '~/types/types';
 import { createClient } from '@supabase/supabase-js';
 
 type Query = {
@@ -70,7 +70,7 @@ export default async function handler(
       return;
     }
 
-    const files: File[] = [];
+    const files: FileModelProps[] = [];
     let name = '';
     for (const file of chatData) {
       const chat = file as ChatFile;
@@ -88,7 +88,7 @@ export default async function handler(
       }
 
       for (const file1 of docData) {
-        const file2 = file1 as File;
+        const file2 = file1 as FileModelProps;
         if (files.find((file) => file.docId === file2.docId)) {
           continue;
         }

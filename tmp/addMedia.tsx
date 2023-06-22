@@ -4,13 +4,14 @@ import { supportedExtensions } from '~/utils/consts';
 
 import { type AddMediaProps } from '~/types/types';
 import { isMobile } from 'react-device-detect';
-import FileMetadata from '../fileDisplay/file/fileModel';
+import FileModel from '../fileDisplay/file/fileModel';
 
 import { uploadFile } from '~/apiEndpoints/frontend/uploadFile';
 import { uploadUrl } from '~/apiEndpoints/frontend/uploadUrl';
 import { AddMediaButton } from './addMediaButton';
 import { AddDataHeader } from './addDataHeader';
 import { AddUrl } from './addUrl';
+import { getUploadURL } from 'tmp/uploadFile';
 
 
 const AddMedia = (props: AddMediaProps) => {
@@ -72,33 +73,37 @@ const AddMedia = (props: AddMediaProps) => {
         if (file && file.name != ".DS_Store") {
           handleSingleFile(file);
         }
-        
       }
     }
     return;
   };
 
   const handleSingleFile = async (file: File) => {
-    const metadata: FileMetadata = await props.updateFiletree({
-      url: 'URL placeholder',
-      docId: 'DocID placeholder',
+
+    const fileModel: FileModel = await props.updateFiletree({
+      url: '',
+      docId: '', // TODO: is this needed if docName is unique?
       docName: file
         ? file.webkitRelativePath
-        : 'upload error'
+        : 'upload error',
+      sourceFile: file,
+      chatId: props.chatId,
+      updateFiles: props.updateFiles,
     });
     const mainCallback = async () => {
-      metadata.finishLoading();
+      fileModel.finishLoading();
       props.forceUpdateFiletree();
     };
     const errorCallback = async () => {
       console.log('upload unsuccessful');
-      metadata.finishLoading();
-      metadata.deleteFile();
+      fileModel.finishLoading();
+      fileModel.deleteFile();
       props.forceUpdateFiletree();
     };
 
     await uploadFile({
       file: file,
+      fileModel: fileModel,
       chatId: props.chatId,
       updateFiles: props.updateFiles,
       successCallback: async () => {
@@ -126,10 +131,11 @@ const AddMedia = (props: AddMediaProps) => {
     if (closeModal) {
       closeModal.click();
     }
-    const metadata: FileMetadata = await props.updateFiletree({
-      url: 'URL placeholder',
-      docId: 'DocID placeholder',
-      docName: input
+    const metadata: FileModel = await props.updateFiletree({
+      url: input,
+      docName: input,
+      chatId: props.chatId,
+      updateFiles: props.updateFiles,
     });
     const successCallback = async () => {
       console.log('upload successful');

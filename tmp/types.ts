@@ -1,11 +1,14 @@
 import { type SupabaseClient } from '@supabase/supabase-js';
 import { type Dispatch, type SetStateAction } from 'react';
-import FileMetadata from '~/components/sidebar/fileDisplay/file/fileModel';
+import FileModel from '~/components/sidebar/fileDisplay/file/fileModel';
 
-export type File = {
+export type FileModelProps = {
   url: string;
   docId: string;
   docName: string;
+  sourceFile?: File;
+  chatId: string,
+  updateFiles: (chatId: string) => Promise<void>;
 };
 
 export type SearchResponse = {
@@ -29,7 +32,7 @@ export type AddMediaProps = {
   chatId: string;
   forceUpdateFiletree: () => void;
   updateFiles:  (chatId: string) => Promise<void>;
-  updateFiletree: (file: File) => Promise<FileMetadata>;
+  updateFiletree: (file: FileModelProps | UrlProps) => Promise<FileModel>;
   setToolTipString: Dispatch<SetStateAction<string>>;
   directoryUpload?: boolean;
 }
@@ -37,7 +40,7 @@ export type AddMediaProps = {
 export type DrawerProps = {
   currentChat: UserChat;
   userChats: UserChat[] | undefined;
-  files: File[];
+  files: FileModelProps[];
   handleClearSubmit: (e: React.MouseEvent<HTMLButtonElement>) => void;
   deleteFile: (docId: string) => Promise<void>;
   updateFiles: (chatId: string) => Promise<void>;
@@ -50,7 +53,7 @@ export type ChatProps =  {
   currentChat: UserChat;
    userChats: UserChat[] | undefined;
   userId: string | undefined;
-  files: File[];
+  files: FileModelProps[];
   deleteFile: (docId: string) => Promise<void>;
   updateFiles: (chatId: string) => Promise<void>;
   createNewChat: () => Promise<void>;

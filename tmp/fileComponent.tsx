@@ -1,5 +1,5 @@
 import React from 'react';
-import FileMetadata from './fileModel';
+import FileModel from './fileModel';
 import { FileDisplay, fileDisplayStyle } from '../fileDisplay';
 import { AiFillFileAdd } from 'react-icons/ai';
 import { MdDownloading } from 'react-icons/md';
@@ -8,7 +8,7 @@ import { FileDisplayEntry } from '../fileDisplayEntry';
 
 // A component to show
 export const FileComponent = (props: { 
-  metadata: FileMetadata,
+  metadata: FileModel,
   forceUpdateFiletree: () => void,
 }) => {
   const clickHandler = async (e: Event) => {

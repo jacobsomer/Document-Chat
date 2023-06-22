@@ -3,7 +3,7 @@ import Account from './account/account';
 import AddMedia from '~/components/sidebar/addMedia/addMedia';
 import Login from '../utils/login';
 import { type MouseEvent, useEffect, useState } from 'react';
-import { File, type DrawerProps } from '~/types/types';
+import { FileModelProps, type DrawerProps } from '~/types/types';
 import { useRouter } from 'next/router';
 import ChatSettings from './account/chatSettings';
 import { HiChevronRight, HiSelector } from 'react-icons/hi';
@@ -69,8 +69,8 @@ export const Sidebar = (props: DrawerProps) => {
 
   const forceUpdate = useForceUpdate();
 
-  const updateFiletree = async (file: File, options?: any) => {
-    const newFile = fileTreeRoot.addFile(file, options);
+  const updateFiletree = async (fileModel: FileModelProps, options?: any) => {
+    const newFile = fileTreeRoot.addFile(fileModel, options);
     return newFile;
   };
 

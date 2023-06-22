@@ -1,13 +1,13 @@
-import { File } from '~/types/types';
-import FileMetadata from '../file/fileModel';
+import { FileModelProps } from '~/types/types';
+import FileModel from '../file/fileModel';
 
 export default class FileTree {
   name: string;
   parent: FileTree | null;
   childrenMap: Map<string, FileTree>;
   childrenList: FileTree[];
-  fileMap: Map<string, FileMetadata>;
-  fileList: FileMetadata[];
+  fileMap: Map<string, FileModel>;
+  fileList: FileModel[];
   isDeleted: boolean;
   isFilesCached: boolean;
   isDirectoriesCached: boolean;
@@ -17,8 +17,8 @@ export default class FileTree {
     this.parent = parent ? parent : null;
     this.childrenList = new Array<FileTree>(); 
     this.childrenMap = new Map<string, FileTree>(); 
-    this.fileList = new Array<FileMetadata>(); 
-    this.fileMap = new Map<string, FileMetadata>(); 
+    this.fileList = new Array<FileModel>(); 
+    this.fileMap = new Map<string, FileModel>(); 
     this.isFilesCached = false;
     this.isDirectoriesCached = false;
 
@@ -26,9 +26,9 @@ export default class FileTree {
   }
 
   // Return a list for easy file iteration
-  getFiles(): Array<FileMetadata> {
+  getFiles(): Array<FileModel> {
     if (!this.isFilesCached) {
-      this.fileList = new Array<FileMetadata>();
+      this.fileList = new Array<FileModel>();
       this.fileMap.forEach((value, key) => {
         this.fileList.push(value);
       })
@@ -58,7 +58,7 @@ export default class FileTree {
 
   isLoading(): boolean {
     var loading = false;
-    this.getFiles().forEach((file: FileMetadata) => {
+    this.getFiles().forEach((file: FileModel) => {
       if (file.loading) loading = true;
     })
     this.getDirectories().forEach((filetree: FileTree) => {
@@ -67,9 +67,9 @@ export default class FileTree {
     return loading;
   }
 
-  addFile(file: File, options?: any): FileMetadata {
-    const names: string[] = file.docName.split("/");
-    const metadata: FileMetadata = new FileMetadata(file.docName, file.url, this);
+  addFile(fileModelProps: FileModelProps, options?: any): FileModel {
+    const names: string[] = fileModelProps.docName.split("/");
+    const metadata: FileModel = new FileModel(fileModelProps, this);
     const dirName: string = names[0] ? names[0] : "formatting error"; // TODO: handle this error better
 
     if (names.length == 1) {
@@ -80,10 +80,13 @@ export default class FileTree {
     } else {
       var directory: FileTree | undefined = this.childrenMap.get(dirName) || this.addDirectory(dirName);
       return directory ? directory.addFile({
-        docId: file.docId,
-        url: file.url,
+        docId: fileModelProps.docId,
+        url: fileModelProps.url,
         docName: names.slice(1).join("/"),
-      }) : metadata;
+        sourceFile: fileModelProps.sourceFile,
+        chatId: fileModelProps.chatId,
+        updateFiles: fileModelProps.updateFiles,
+      },) : metadata;
     }
   }
 
@@ -98,6 +101,9 @@ export default class FileTree {
     if (this.parent) {
       this.parent.childrenMap.delete(this.name);
       this.parent.isDirectoriesCached = false;
+    }
+    for (const file of this.getFiles()) {
+      await file.deleteFile();
     }
     this.isDeleted = true;
     this.isFilesCached = false;

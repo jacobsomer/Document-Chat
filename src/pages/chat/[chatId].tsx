@@ -2,20 +2,20 @@ import { useCallback, useEffect, useState } from 'react';
 import Chat from '~/components/chat/chat';
 import { useUser } from '@supabase/auth-helpers-react';
 import { useRouter } from 'next/router';
-import { type UserChat, type File } from '~/types/types';
+import { type UserChat, type FileModelProps } from '~/types/types';
 import { v4 } from 'uuid';
 
 const ChatRoom = () => {
   const user = useUser();
   const [currentChat, setCurrentChat] = useState<UserChat | null>(null);
   const router = useRouter();
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<FileModelProps[]>([]);
   const [userChats, setUserChats] = useState<UserChat[] | undefined>(undefined);
   const [finishedLoading, setFinishedLoading] = useState(false);
 
   type ChatRoomProps = {
     currentChat: UserChat;
-    files: File[];
+    files: FileModelProps[];
     userChats: UserChat[];
   };
 

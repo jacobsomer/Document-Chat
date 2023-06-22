@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import FileTree from './fileTreeModel';
 import { FileComponent } from '../file/fileComponent';
-import FileMetadata from '../file/fileModel';
+import FileModel from '../file/fileModel';
 import { fileDisplayStyle } from '../fileDisplay';
 import { FileDisplayEntry } from '../fileDisplayEntry';
 import { MdDownloading } from 'react-icons/md';
@@ -70,7 +70,7 @@ export const FileTreeComponent = (props: {
                 />
               );
             })}
-            {props.filetree.getFiles().map((fileMetadata: FileMetadata) => {
+            {props.filetree.getFiles().map((fileMetadata: FileModel) => {
               return fileMetadata.isDeleted ? (
                 <></>
               ) : (
