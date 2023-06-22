@@ -18,7 +18,7 @@ const fileDisplayEntryStyle: any = {
 
 export const FileDisplayEntry = (props: {
   name: string;
-  url: string;
+  url?: string;
   deleteFile: () => void;
   size?: number;
   children: any;
@@ -47,7 +47,7 @@ export const FileDisplayEntry = (props: {
       {isHovered && (
         <>
           <div className="absolute right-12 top-1/2 z-50 flex -translate-y-1/2 transform items-center justify-center">
-            {props.url.includes('supabase') ? (
+            {props.url && (props.url.includes('supabase') ? (
               <div className="tooltip" data-tip="Download">
                 <a href={props.url}>
                   <BsFillCloudDownloadFill
@@ -65,7 +65,7 @@ export const FileDisplayEntry = (props: {
                   />
                 </a>
               </div>
-            )}
+            ))}
           </div>
           <div className="absolute right-4 top-1/2 z-50 flex -translate-y-1/2 transform items-center justify-center">
             <div className="tooltip" data-tip="Delete">

@@ -29,7 +29,6 @@ export const FileTreeComponent = (props: {
           <div onMouseDown={clickHandler}> 
             <FileDisplayEntry
               name={props.filetree.name}
-              url={''}
               deleteFile={() => {
                 props.filetree?.deleteSelf();
                 props.forceUpdateFiletree();
