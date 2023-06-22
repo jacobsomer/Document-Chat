@@ -32,7 +32,7 @@ export type AddMediaProps = {
   chatId: string;
   forceUpdateFiletree: () => void;
   updateFiles:  (chatId: string) => Promise<void>;
-  updateFiletree: (file: FileModelProps | UrlProps) => Promise<FileModel>;
+  updateFiletree: (file: FileModelProps) => Promise<FileModel>;
   setToolTipString: Dispatch<SetStateAction<string>>;
   directoryUpload?: boolean;
 }

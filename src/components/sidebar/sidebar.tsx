@@ -11,6 +11,7 @@ import IntroModal from '../chat/introModal';
 import { isMobile } from 'react-device-detect';
 import FileTree from './fileDisplay/fileTree/fileTreeModel';
 import { FileDisplay } from './fileDisplay/fileDisplay';
+import { AltChat } from './altChat';
 
 //create your forceUpdate hook
 function useForceUpdate() {
@@ -112,42 +113,7 @@ export const Sidebar = (props: DrawerProps) => {
                   'relative h-fit text-center text-5xl text-base-content'
                 }
               >
-                {alternateChatLength && alternateChatLength > 1 ? (
-                  <div className="dropdown-right dropdown">
-                    <label
-                      tabIndex={0}
-                      className="btn-ghost btn m-1 bg-base-100"
-                    >
-                      <HiSelector /> {props.currentChat.chatName}
-                    </label>
-                    <ul
-                      tabIndex={0}
-                      className={
-                        'dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow'
-                      }
-                    >
-                      {props.userChats?.map((chat) => {
-                        if (chat.chatId !== props.currentChat.chatId) {
-                          return (
-                            <li key={chat.chatId}>
-                              <a
-                                onClick={() => {
-                                  void router.push('/chat/' + chat.chatId);
-                                }}
-                              >
-                                {chat.chatName}
-                              </a>
-                            </li>
-                          );
-                        }
-                      })}
-                    </ul>
-                  </div>
-                ) : (
-                  <div className="align-right relative flex h-fit text-4xl text-base-content">
-                    {/* {props.currentChat.chatName} */}
-                  </div>
-                )}
+                <AltChat currentChat={props.currentChat} userChats={props.userChats} alternateChatLength={alternateChatLength} router={router} />
               </div>
             </div>
           ) : (

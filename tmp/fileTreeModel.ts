@@ -97,10 +97,13 @@ export default class FileTree {
     return directory;
   }
 
-  deleteSelf(): boolean {
+  async deleteSelf(): Promise<boolean> {
     if (this.parent) {
       this.parent.childrenMap.delete(this.name);
       this.parent.isDirectoriesCached = false;
+    }
+    for (const file of this.getFiles()) {
+      await file.deleteFile();
     }
     this.isDeleted = true;
     this.isFilesCached = false;

@@ -32,9 +32,9 @@ export default class FileModel {
     this.url = url;
   }
 
-  deleteFile() {
+  async deleteFile() {
     this.isDeleted = true;
-    deleteFile({
+    await deleteFile({
       url: this.url,
       chatId: this.chatId,
       updateFiles: this.updateFiles,
