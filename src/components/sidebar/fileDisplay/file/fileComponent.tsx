@@ -5,6 +5,7 @@ import { AiFillFileAdd, AiOutlineLink } from 'react-icons/ai';
 import { MdDownloading } from 'react-icons/md';
 import styles from '~/styles/drawerStyles.module.css';
 import { FileDisplayEntry } from '../fileDisplayEntry';
+import LoadingSpinner from '../loadingSpinner';
 
 // A component to show
 export const FileComponent = (props: { 
@@ -26,7 +27,7 @@ export const FileComponent = (props: {
         }}
         size={props.metadata.size}>
           {props.metadata.loading ? (
-            <MdDownloading color="hsl(var(--s))" className={styles.fileIcon} />
+                  <LoadingSpinner colorHex={'hsl(var(--s))'} size={16} />
           ) : (
             props.metadata.sourceFile ? 
             <AiFillFileAdd color="hsl(var(--s))" className={styles.fileIcon} /> :
