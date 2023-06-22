@@ -32,6 +32,20 @@
   align-items: center;
 }
 
+.directoryItem {
+  position: relative;
+  width: 100%;
+  color: hsl(var(--pc));
+  margin: 3px;
+  border-style: solid 1px;
+  border-color: white;
+  background-color: hsl(var(--pc));
+  padding: 3px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
 .fileIcon {
   position: relative;
   width: 20px;

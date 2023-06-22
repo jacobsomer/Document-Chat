@@ -4,25 +4,13 @@ import styles from '~/styles/drawerStyles.module.css';
 import { useState } from 'react';
 import { url } from 'inspector';
 
-const fileDisplayEntryStyle: any = {
-  position: "relative",
-  width: "80%",
-  fontSize: "16px",
-  color: "black",
-  margin: "8px",
-  borderRadius: "8px",
-  padding: "2px",
-  display: "flex",
-  alignItems: "center",
-};
-
 export const FileDisplayEntry = (props: {
   name: string;
   url?: string;
   deleteFile: () => void;
   size?: number;
   children: any;
-
+  border?: boolean;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -36,7 +24,18 @@ export const FileDisplayEntry = (props: {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       key={props.name}
-      className={styles.fileItem}
+      style={{
+        position: "relative",
+        width: "100%",
+        fontSize: "16px",
+        ...props.border ? {border: "1px solid hsl(var(--pc))"} : {backgroundColor: "white"},
+        margin: "1px",
+        borderTopLeftRadius: "8px",
+        borderBottomLeftRadius: "8px",
+        padding: "2px",
+        display: "flex",
+        alignItems: "center",
+      }}
       id={props.url}
     >
       {props.children}

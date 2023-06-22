@@ -43,7 +43,7 @@ export const FileTreeComponent = (props: {
     return (
       <div
         style={{
-          marginLeft: props.depth != 0 ? 24 : 0,
+          marginLeft: props.depth != 0 ? 10 : 0,
           maxHeight: collapseSize.toString() + '%',
           //overflowY: 'hidden'
         }}
@@ -57,6 +57,7 @@ export const FileTreeComponent = (props: {
                 props.forceUpdateFiletree();
               }}
               size={props.filetree.getSize()}
+              border={!isCollapsed}
             >
               {isLoading ? (
                 <>
