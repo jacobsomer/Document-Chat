@@ -35,11 +35,14 @@ export const FileDisplayEntry = (props: {
         padding: "2px",
         display: "flex",
         alignItems: "center",
+        color: props.border ? "hsl(var(--bc))" : "hsl(var(--pc))",
       }}
       id={props.url}
     >
       {props.children}
-      <div className="relative w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-base text-base-content">
+      <div className="relative w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-base text-base-content" style={{
+                color: props.border ? "hsl(var(--pc))" : "hsl(var(--s))",
+      }}>
         &nbsp; {props.name}
       </div>
 
@@ -50,8 +53,8 @@ export const FileDisplayEntry = (props: {
               <div className="tooltip" data-tip="Download">
                 <a href={props.url}>
                   <BsFillCloudDownloadFill
-                    color="hsl(var(--s))"
-                    className="w-10 bg-base-100"
+                    color={props.border ? "hsl(var(--pc))" : "hsl(var(--s))"}
+                    className={"w-10" + (!props.border && " bg-base-100")}
                   />
                 </a>
               </div>
@@ -60,7 +63,7 @@ export const FileDisplayEntry = (props: {
                 <a href={props.url} target="_blank">
                   <BsFillCloudDownloadFill
                     color="hsl(var(--s))"
-                    className="w-10 bg-base-100"
+                    className={"w-10" + (!props.border && " bg-base-100")}
                   />
                 </a>
               </div>
@@ -71,7 +74,7 @@ export const FileDisplayEntry = (props: {
               <BsFillTrashFill
                 onClick={innerClickHandler}
                 color="hsl(var(--s))"
-                className="w-10 cursor-pointer bg-base-100"
+                className={"w-10 cursor-pointer" + (!props.border && " bg-base-100")}
               />
             </div>
           </div>

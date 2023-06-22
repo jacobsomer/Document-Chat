@@ -42,7 +42,7 @@ const outerFlexWrapper = {
   display: 'flex',
   justifyContent: 'end',
   alignItems: 'end',
-  padding: '10px'
+  paddingLeft: '10px'
 };
 
 const innerFlexWrapper = {

@@ -44,8 +44,7 @@ export const FileTreeComponent = (props: {
       <div
         style={{
           marginLeft: props.depth != 0 ? 10 : 0,
-          maxHeight: collapseSize.toString() + '%',
-          //overflowY: 'hidden'
+
         }}
       >
         {props.depth != 0 ? (
@@ -74,7 +73,7 @@ export const FileTreeComponent = (props: {
                 />
               ) : (
                 <AiFillFolderOpen
-                  color="hsl(var(--s))"
+                  color="hsl(var(--pc))"
                   className={styles.fileIcon}
                 />
               )}
