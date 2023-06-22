@@ -79,7 +79,7 @@ export const uploadFile = async (props: UploadFileProps) => {
     const url = await getUploadURL(props.chatId, props.file, cleaned_name, extension);
     props.fileModel.addUrl(url);
     
-    if (url === 'Error') {
+    if (!url || url === 'Error') { // TODO: fix this endpoint
         return await props.clientErrorCallback();
     }
 

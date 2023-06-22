@@ -13,6 +13,10 @@ interface UploadSquareProps {
   ) => Promise<void>;
 }
 
+const primaryAcceptedFiles = ".txt,.pdf,.doc,.docx,.ppt,.pptx,.csv,.doc,.pptx,.md,.py,.js,.html,.css,.java,.c,.cpp,.ts,.tsx,.jsx,.json,.xml,.yaml,.yml,.sql,.php,.rb,.go,.env,.sh,.swift,.kt"
+const secondaryAcceptedFiles = ".png,.jpg,.wav,.mp3,.mp4,.mov"
+const allAcceptedFiles = primaryAcceptedFiles
+
 const UploadSquare: React.FC<UploadSquareProps> = ({ handleFileUpload }) => {
   const renderUploadText = () => {
     const isMobile = isMobileDevice(); // replace with your own logic to detect if the user is on a mobile device
@@ -25,9 +29,9 @@ const UploadSquare: React.FC<UploadSquareProps> = ({ handleFileUpload }) => {
   return (
     <div>
       <div className={styles.uploadsquare}>
-        <label htmlFor="upload-input" className={styles.uploadlabel}>
+        <label htmlFor="upload-input-file" className={styles.uploadlabel}>
           <input
-            id="upload-input"
+            id="upload-input-file"
             className={styles.uploadbutton}
             type="file"
             accept=".txt,.pdf,.doc,.docx,.ppt,.pptx,.csv,.doc,.pptx,.md,.py,.js,.html,.css,.java,.c,.cpp,.ts,.tsx,.jsx,.json,.xml,.yaml,.yml,.sql,.php,.rb,.go,.env,.sh,.swift,.kt"
@@ -48,9 +52,9 @@ const UploadSquare: React.FC<UploadSquareProps> = ({ handleFileUpload }) => {
       </div>
       <div style={{padding: 10}}></div>
       <div className={styles.uploadsquare}>
-        <label htmlFor="upload-input" className={styles.uploadlabel}>
+        <label htmlFor="upload-input-folder" className={styles.uploadlabel}>
           <input
-            id="upload-input"
+            id="upload-input-folder"
             className={styles.uploadbutton}
             type="file"
             accept=".txt,.pdf,.doc,.docx,.ppt,.pptx,.csv,.doc,.pptx,.md,.py,.js,.html,.css,.java,.c,.cpp,.ts,.tsx,.jsx,.json,.xml,.yaml,.yml,.sql,.php,.rb,.go,.env,.sh,.swift,.kt"

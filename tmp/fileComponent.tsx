@@ -1,7 +1,7 @@
 import React from 'react';
 import FileModel from './fileModel';
 import { FileDisplay, fileDisplayStyle } from '../fileDisplay';
-import { AiFillFileAdd } from 'react-icons/ai';
+import { AiFillFileAdd, AiOutlineLink } from 'react-icons/ai';
 import { MdDownloading } from 'react-icons/md';
 import styles from '~/styles/drawerStyles.module.css';
 import { FileDisplayEntry } from '../fileDisplayEntry';
@@ -28,7 +28,9 @@ export const FileComponent = (props: {
           {props.metadata.loading ? (
             <MdDownloading color="hsl(var(--s))" className={styles.fileIcon} />
           ) : (
-            <AiFillFileAdd color="hsl(var(--s))" className={styles.fileIcon} />
+            props.metadata.sourceFile ? 
+            <AiFillFileAdd color="hsl(var(--s))" className={styles.fileIcon} /> :
+            <AiOutlineLink color="hsl(var(--s))" className={styles.fileIcon} />
           )}
         </FileDisplayEntry>
     </div>

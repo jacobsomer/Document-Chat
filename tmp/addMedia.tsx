@@ -131,20 +131,22 @@ const AddMedia = (props: AddMediaProps) => {
     if (closeModal) {
       closeModal.click();
     }
-    const metadata: FileModel = await props.updateFiletree({
+    const fileModel: FileModel = await props.updateFiletree({
       url: input,
+      docId: "",
       docName: input,
       chatId: props.chatId,
       updateFiles: props.updateFiles,
     });
     const successCallback = async () => {
       console.log('upload successful');
-      metadata.finishLoading();
+      fileModel.finishLoading();
       props.forceUpdateFiletree();
     };
     const errorCallback = async () => {
       console.log('upload unsuccessful');
-      metadata.finishLoading();
+      fileModel.finishLoading();
+      fileModel.deleteFile();
       props.forceUpdateFiletree();
     };
 
@@ -155,7 +157,7 @@ const AddMedia = (props: AddMediaProps) => {
       chatId: props.chatId,
       updateFiles: props.updateFiles,
       successCallback: async () => await terminateLoadingStates(successCallback),
-      clientErrorCallback: async () => await terminateLoadingStates(errorCallback, 'Error with API'),
+      clientErrorCallback: async () => await terminateLoadingStates(errorCallback, 'Client error'),
       serverErrorCallback: async () => await terminateLoadingStates(errorCallback, 'Internal server error')
     });
     terminateLoadingStates(async () => {});
@@ -182,7 +184,6 @@ const AddMedia = (props: AddMediaProps) => {
           <div>
             <form className="flex w-full max-w-xl flex-col gap-2 py-4">
               <AddUrl isMobile={isMobile} input={input} setInput={setInput} handleUrlUpload={handleUrlUpload} />
-              {loading && <progress className="progress w-56"></progress>}
               {errorMessage && (
                 <p className="text-sm" style={{ color: 'red' }}>
                   {errorMessage}

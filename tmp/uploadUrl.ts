@@ -17,7 +17,6 @@ export const uploadUrl = async (props: UploadUrlProps) => {
       body: JSON.stringify({ url: props.input, chatId: props.chatId })
     });
     if (!response.ok) {
-      console.log("uploadUrl.ts: 400")
       return await props.clientErrorCallback();
     }
     const resp = (await response.json()) as { message: string };

@@ -68,26 +68,37 @@ export default class FileTree {
   }
 
   addFile(fileModelProps: FileModelProps, options?: any): FileModel {
-    const names: string[] = fileModelProps.docName.split("/");
-    const metadata: FileModel = new FileModel(fileModelProps, this);
-    const dirName: string = names[0] ? names[0] : "formatting error"; // TODO: handle this error better
-
-    if (names.length == 1) {
-      this.fileMap.set(dirName, metadata);
-      this.isFilesCached = false;
-      return metadata; 
-
+    if (fileModelProps.sourceFile) {
+      const names: string[] = fileModelProps.docName.split("/");
+      const metadata: FileModel = new FileModel(fileModelProps, this);
+      const dirName: string = names[0] ? names[0] : "formatting error"; // TODO: handle this error better
+  
+      if (names.length == 1) {
+        this.fileMap.set(dirName, metadata);
+        this.isFilesCached = false;
+        return metadata; 
+  
+      } else {
+        var directory: FileTree | undefined = this.childrenMap.get(dirName) || this.addDirectory(dirName);
+        return directory ? directory.addFile({
+          docId: fileModelProps.docId,
+          url: fileModelProps.url,
+          docName: names.slice(1).join("/"),
+          sourceFile: fileModelProps.sourceFile,
+          chatId: fileModelProps.chatId,
+          updateFiles: fileModelProps.updateFiles,
+        },) : metadata;
+      }
     } else {
-      var directory: FileTree | undefined = this.childrenMap.get(dirName) || this.addDirectory(dirName);
-      return directory ? directory.addFile({
-        docId: fileModelProps.docId,
-        url: fileModelProps.url,
-        docName: names.slice(1).join("/"),
-        sourceFile: fileModelProps.sourceFile,
-        chatId: fileModelProps.chatId,
-        updateFiles: fileModelProps.updateFiles,
-      },) : metadata;
+     return this.addUrl(fileModelProps, options);
     }
+  }
+
+  addUrl(fileModelProps: FileModelProps, options?: any): FileModel {
+    const metadata: FileModel = new FileModel(fileModelProps, this);
+    this.fileMap.set(fileModelProps.url, metadata);
+    this.isFilesCached = false;
+    return metadata; 
   }
 
   addDirectory(dirName: string, options?: any): FileTree {
