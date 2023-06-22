@@ -16,10 +16,12 @@ export const uploadUrl = async (props: UploadUrlProps) => {
       },
       body: JSON.stringify({ url: props.input, chatId: props.chatId })
     });
+    console.log(response);
     if (!response.ok) {
       return await props.clientErrorCallback();
     }
     const resp = (await response.json()) as { message: string };
+    console.log(resp);
     if (resp.message === 'File uploaded successfully') {
       await props.updateFiles(props.chatId);
       const closeModal = document.getElementById('closeModal');

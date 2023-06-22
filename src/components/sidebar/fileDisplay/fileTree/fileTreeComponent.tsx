@@ -6,16 +6,33 @@ import { fileDisplayStyle } from '../fileDisplay';
 import { FileDisplayEntry } from '../fileDisplayEntry';
 import { MdDownloading } from 'react-icons/md';
 
-
 import { AiFillFolderAdd, AiFillFolderOpen } from 'react-icons/ai';
 import styles from '~/styles/drawerStyles.module.css';
+import LoadingSpinner from '../loadingSpinner';
 
+const collapseRate = 0.999;
 export const FileTreeComponent = (props: {
   depth: number;
   filetree?: FileTree;
   forceUpdateFiletree: () => void;
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(props.depth != 0);
+  const [collapseSize, setCollapseSize] = useState(props.depth != 0 ? 0 : 100);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCollapseSize(
+        isCollapsed
+          ? collapseSize * collapseRate
+          : (100 - collapseSize) * (1 / collapseRate - 1)
+      );
+    }, 10);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [collapseSize]);
+
   const clickHandler = async (e: Event) => {
     setIsCollapsed(!isCollapsed);
     e.stopPropagation();
@@ -24,9 +41,15 @@ export const FileTreeComponent = (props: {
   var isLoading = props.filetree?.isLoading();
   if (props.filetree && !props.filetree.isDeleted) {
     return (
-      <div style={{marginLeft: (props.depth != 0) ? 24 : 0}}>
+      <div
+        style={{
+          marginLeft: props.depth != 0 ? 24 : 0,
+          maxHeight: collapseSize.toString() + '%',
+          //overflowY: 'hidden'
+        }}
+      >
         {props.depth != 0 ? (
-          <div onMouseDown={clickHandler}> 
+          <div onMouseDown={clickHandler}>
             <FileDisplayEntry
               name={props.filetree.name}
               deleteFile={() => {
@@ -36,22 +59,23 @@ export const FileTreeComponent = (props: {
               size={props.filetree.getSize()}
             >
               {isLoading ? (
-                <MdDownloading
+                <>
+                  {/* <MdDownloading
+                    color="hsl(var(--s))"
+                    className={styles.fileIcon}
+                  /> */}
+                  <LoadingSpinner colorHex={'hsl(var(--s))'} size={16} />
+                </>
+              ) : isCollapsed ? (
+                <AiFillFolderAdd
                   color="hsl(var(--s))"
                   className={styles.fileIcon}
                 />
               ) : (
-                isCollapsed ? (
-                  <AiFillFolderAdd
-                    color="hsl(var(--s))"
-                    className={styles.fileIcon}
-                  />
-                ) : (
-                  <AiFillFolderOpen
-                    color="hsl(var(--s))"
-                    className={styles.fileIcon}
-                  />
-                )
+                <AiFillFolderOpen
+                  color="hsl(var(--s))"
+                  className={styles.fileIcon}
+                />
               )}
             </FileDisplayEntry>
           </div>
