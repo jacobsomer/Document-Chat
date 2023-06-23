@@ -28,7 +28,7 @@ export const FileDisplayEntry = (props: {
         position: "relative",
         width: "100%",
         fontSize: "16px",
-        ...props.border ? {border: "1px solid hsl(var(--pc))", filter: "drop-shadow(0px 0px 10px hsl(var(--s)))"} : {backgroundColor: "white"},
+        ...props.border ? {border: "1px solid hsl(var(--pc))", filter: "drop-shadow(2px 2px 10px hsl(var(--bc)))"} : {backgroundColor: "white"},
         margin: "1px",
         borderTopLeftRadius: "8px",
         borderBottomLeftRadius: "8px",
@@ -42,7 +42,7 @@ export const FileDisplayEntry = (props: {
     >
       {props.children}
       <div className="relative w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-base text-base-content" style={{
-                color: props.border ? "hsl(var(--pc))" : "hsl(var(--s))",
+                color: props.border ? "hsl(var(--pc))" : "hsl(var(--bc))",
       }}>
         &nbsp; {props.name}
       </div>

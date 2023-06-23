@@ -68,7 +68,7 @@ export const FileTreeComponent = (props: {
                 </>
               ) : isCollapsed ? (
                 <AiFillFolderAdd
-                  color="hsl(var(--s))"
+                  color="hsl(var(--b3))"
                   className={styles.fileIcon}
                 />
               ) : (
