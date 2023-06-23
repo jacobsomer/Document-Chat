@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 export type DeleteFileProps = {
-  url: string,
+  docId: string,
   chatId: string,
   updateFiles: (chatId: string) => Promise<void>,
   successCallback: () => Promise<void>, 
@@ -29,6 +29,25 @@ const supabase = isLocal
     );
 
 export const deleteFile = async (props: DeleteFileProps) => {
-    // TODO
-    return props.serverErrorCallback();
+  const enpointURL = `/api/chats/deletefile`;
+  let resp = null;
+  try {
+    const res = await fetch(enpointURL, {
+      method: 'DELETE',
+      body: JSON.stringify({
+        docId: props.docId,
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    resp = (await res.json()) as { message: string };
+    if (resp.message === 'File deleted successfully') {
+      void props.updateFiles(props.chatId);
+    }
+  } catch (e) {
+    return await props.serverErrorCallback();
+  }
+  return await props.successCallback();
 }

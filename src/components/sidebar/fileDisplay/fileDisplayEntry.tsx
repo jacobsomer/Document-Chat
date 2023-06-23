@@ -28,7 +28,7 @@ export const FileDisplayEntry = (props: {
         position: "relative",
         width: "100%",
         fontSize: "16px",
-        ...props.border ? {border: "1px solid hsl(var(--pc))"} : {backgroundColor: "white"},
+        ...props.border ? {border: "1px solid hsl(var(--pc))", filter: "drop-shadow(0px 0px 10px hsl(var(--s)))"} : {backgroundColor: "white"},
         margin: "1px",
         borderTopLeftRadius: "8px",
         borderBottomLeftRadius: "8px",
@@ -36,6 +36,7 @@ export const FileDisplayEntry = (props: {
         display: "flex",
         alignItems: "center",
         color: props.border ? "hsl(var(--bc))" : "hsl(var(--pc))",
+        
       }}
       id={props.url}
     >

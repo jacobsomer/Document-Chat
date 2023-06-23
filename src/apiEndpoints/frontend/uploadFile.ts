@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import FileModel from '../../components/sidebar/fileDisplay/file/fileModel';
 import { supportedExtensions } from '~/utils/consts';
+import { v4 } from 'uuid';
 
 export type UploadFileProps = {
   file: File,
@@ -81,7 +82,8 @@ export const uploadFile = async (props: UploadFileProps) => {
     if (url === 'Error') { // TODO: fix this endpoint
         return await props.clientErrorCallback();
     }
-
+    const docId = props.fileModel.docId;
+    
     const enpointURL = `/api/upload/handleFileUpload`;
     let resp = null;
     try {
@@ -89,6 +91,7 @@ export const uploadFile = async (props: UploadFileProps) => {
         method: 'POST',
         body: JSON.stringify({
           url: url,
+          docId: docId,
           chatId: props.chatId,
           name: cleaned_name,
           extension: extension
@@ -111,3 +114,4 @@ export const uploadFile = async (props: UploadFileProps) => {
     }
     return await props.successCallback();
 }
+

@@ -1,11 +1,13 @@
 import { deleteFile } from "~/apiEndpoints/frontend/deleteFile";
 import FileTree from "../fileTree/fileTreeModel";
 import { FileModelProps } from "tmp/types";
+import { v4 } from "uuid";
 
 export default class FileModel {
   loading: boolean;
   docName: string;
   url: string;
+  docId: string;
   size?: number;
   parentFileTree: FileTree;
   sourceFile?: File;
@@ -19,6 +21,7 @@ export default class FileModel {
     this.chatId = props.chatId;
     this.updateFiles = props.updateFiles;
     this.docName = props.docName;
+    this.docId = v4();
     this.url = props.url;
 
     this.parentFileTree = parentFileTree;
@@ -32,10 +35,14 @@ export default class FileModel {
     this.url = url;
   }
 
+  addDocId(docId: string) {
+    this.docId = docId;
+  }
+
   async deleteFile() {
     this.isDeleted = true;
     await deleteFile({
-      url: this.url,
+      docId: this.url,
       chatId: this.chatId,
       updateFiles: this.updateFiles,
       successCallback: async () => {},

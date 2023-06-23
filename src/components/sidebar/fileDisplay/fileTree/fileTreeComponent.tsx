@@ -43,7 +43,7 @@ export const FileTreeComponent = (props: {
     return (
       <div
         style={{
-          marginLeft: props.depth != 0 ? 10 : 0,
+          marginLeft: props.depth != 0 ? 24 : 0,
 
         }}
       >
@@ -64,7 +64,7 @@ export const FileTreeComponent = (props: {
                     color="hsl(var(--s))"
                     className={styles.fileIcon}
                   /> */}
-                  <LoadingSpinner colorHex={'hsl(var(--s))'} size={16} />
+                  <LoadingSpinner colorHex={isCollapsed ? 'hsl(var(--s))': "hsl(var(--pc))"} size={16} />
                 </>
               ) : isCollapsed ? (
                 <AiFillFolderAdd
