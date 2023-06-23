@@ -8,7 +8,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === 'POST') {
+  if (req.method === 'DELETE') {
     const supabase = req.headers.host?.includes('localhost')
       ? createClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '',
