@@ -2,6 +2,8 @@
 
 Document Chat is an open source project that enables users to engage in chat discussions centered around documents. Built using React, Next.js, and Supabase, this platform integrates real-time chat functionalities with document management, providing a seamless user experience.
 
+![](https://frdnoxefcxhbqneflzqj.supabase.co/storage/v1/object/sign/images/document-chat.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJpbWFnZXMvZG9jdW1lbnQtY2hhdC5wbmciLCJpYXQiOjE3MTM4ODIwOTYsImV4cCI6MTgwMDI4MjA5Nn0.VsiT34VubGzthjCx1RIkg5y1hL8MjIdzurxlFQ0AtCw&t=2024-04-23T14%3A21%3A36.977Z)
+
 ## Features
 
 - **Real-Time Chat**: Users can instantly send and receive messages.
@@ -74,5 +76,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 Jacob Somer - [@jacob_somer_](https://twitter.com/jacob_somer_) - jsomer@cmu.edu
 
 [Project Link](https://github.com/jacobsomer/Document-Chat.git)
+
 
 
