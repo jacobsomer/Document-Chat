@@ -28,8 +28,8 @@ Document Chat is an open source project that enables users to engage in chat dis
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/jacobsomer/Document Chat.git
-cd Chatboba
+git clone https://github.com/jacobsomer/Document-Chat.git
+cd Document-Chat
 ```
 
 2. **Install dependencies**
@@ -73,6 +73,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Jacob Somer - [@jacob_somer_](https://twitter.com/jacob_somer_) - jsomer@cmu.edu
 
-Project Link: [https://github.com/jacobsomer/Chatboba](https://github.com/jacobsomer/Chatboba)
+[Project Link](https://github.com/jacobsomer/Document-Chat.git)
 
 
