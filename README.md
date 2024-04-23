@@ -1,6 +1,6 @@
-# Chatboba
+# Document Chat
 
-Chatboba is an open source project that enables users to engage in chat discussions centered around documents. Built using React, Next.js, and Supabase, this platform integrates real-time chat functionalities with document management, providing a seamless user experience.
+Document Chat is an open source project that enables users to engage in chat discussions centered around documents. Built using React, Next.js, and Supabase, this platform integrates real-time chat functionalities with document management, providing a seamless user experience.
 
 ## Features
 
@@ -28,7 +28,7 @@ Chatboba is an open source project that enables users to engage in chat discussi
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/jacobsomer/Chatboba.git
+git clone https://github.com/jacobsomer/Document Chat.git
 cd Chatboba
 ```
 
